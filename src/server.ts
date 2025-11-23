@@ -1,12 +1,7 @@
 import 'dotenv/config';
 
 import express, { NextFunction, Request, Response } from 'express';
-import {
-  EditMode,
-  GoogleGenAI,
-  PersonGeneration,
-  RawReferenceImage,
-} from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 import { fetch } from 'undici';
 import { customAlphabet } from 'nanoid';
 import { z } from 'zod';
@@ -109,10 +104,7 @@ app.post(
       const { buffer, mimeType } = await downloadImage(payload.imageUrl);
       const stylizedImage = await stylizeImage({
         presetPrompt: preset.prompt,
-        negativePrompt: preset.negativePrompt,
         aspectRatio: payload.aspectRatio ?? preset.aspectRatio,
-        personGeneration: preset.personGeneration,
-        editMode: preset.editMode,
         model: preset.model,
         baseImage: buffer,
         baseMimeType: mimeType,
@@ -145,55 +137,57 @@ app.use(
 
 async function stylizeImage({
   presetPrompt,
-  negativePrompt,
   aspectRatio,
-  personGeneration,
-  editMode,
   model,
   baseImage,
   baseMimeType,
 }: {
   presetPrompt: string;
-  negativePrompt?: string;
   aspectRatio?: string;
-  personGeneration?: PersonGeneration;
-  editMode?: EditMode;
   model?: string;
   baseImage: Buffer;
   baseMimeType: string;
 }): Promise<{ buffer: Buffer; mimeType: string }> {
-  const reference = new RawReferenceImage();
-  reference.referenceImage = {
-    imageBytes: baseImage.toString('base64'),
-    mimeType: baseMimeType,
-  };
-
-  const response = await ai.models.editImage({
-    model: model ?? DEFAULT_IMAGEN_MODEL,
-    prompt: presetPrompt,
-    referenceImages: [reference],
+  // Use Gemini image generation API (Nano Banana)
+  const geminiModel = model ?? 'gemini-2.5-flash-image';
+  
+  const response = await ai.models.generateContent({
+    model: geminiModel,
+    contents: [
+      {
+        parts: [
+          { text: presetPrompt },
+          {
+            inlineData: {
+              mimeType: baseMimeType,
+              data: baseImage.toString('base64'),
+            },
+          },
+        ],
+      },
+    ],
     config: {
-      numberOfImages: 1,
-      aspectRatio: aspectRatio ?? '1:1',
-      negativePrompt,
-      personGeneration,
-      editMode,
-      includeRaiReason: true,
+      responseModalities: ['IMAGE'],
+      imageConfig: {
+        aspectRatio: aspectRatio ?? '1:1',
+      },
     },
   });
 
-  const generated = response.generatedImages?.[0]?.image ??
-    (() => {
-      throw new Error('Imagen response did not include image bytes');
-    })();
+  // Extract image from response
+  const candidate = response.candidates?.[0];
+  if (!candidate?.content?.parts) {
+    throw new Error('Gemini response did not include content parts');
+  }
 
-  if (!generated.imageBytes) {
-    throw new Error('Imagen response missing image bytes payload');
+  const imagePart = candidate.content.parts.find((part: any) => part.inlineData);
+  if (!imagePart?.inlineData?.data) {
+    throw new Error('Gemini response did not include image data');
   }
 
   return {
-    buffer: Buffer.from(generated.imageBytes, 'base64'),
-    mimeType: generated.mimeType ?? 'image/png',
+    buffer: Buffer.from(imagePart.inlineData.data, 'base64'),
+    mimeType: imagePart.inlineData.mimeType ?? 'image/png',
   };
 }
 

@@ -1,6 +1,4 @@
-import { EditMode, PersonGeneration } from '@google/genai';
-
-export const DEFAULT_IMAGEN_MODEL = 'imagen-3.0-capability-001';
+export const DEFAULT_IMAGEN_MODEL = 'gemini-2.5-flash-image';
 
 export type StyleKey =
   | 'linkedin'
@@ -13,11 +11,8 @@ export interface StylePreset {
   key: StyleKey;
   label: string;
   prompt: string;
-  negativePrompt?: string;
   aspectRatio?: string;
   model?: string;
-  personGeneration?: PersonGeneration;
-  editMode?: EditMode;
   captionTemplate: string;
 }
 
@@ -26,56 +21,40 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     key: 'linkedin',
     label: 'LinkedIn Professional Headshot',
     prompt:
-      'Enhance this portrait into a polished, professional LinkedIn-style headshot with even studio lighting, a soft neutral background, and realistic color grading. Keep the identity and clothing intact.',
-    negativePrompt:
-      'No distortions, no exaggerated retouching, no surreal colors, no background clutter, keep proportions natural.',
+      'Using the provided image, create a polished, professional LinkedIn-style headshot with even studio lighting, a soft neutral background, and realistic color grading. Keep the person\'s identity and features intact. The person should be wearing professional attire.',
     aspectRatio: '3:4',
-    personGeneration: PersonGeneration.ALLOW_ADULT,
-    editMode: EditMode.EDIT_MODE_STYLE,
     captionTemplate: "Here's your LinkedIn-ready portrait.",
   },
   cartoon: {
     key: 'cartoon',
     label: 'Cartoon / Anime',
     prompt:
-      'Transform this portrait into a vibrant cartoon illustration with bold outlines, expressive eyes, and bright colors while keeping the person recognisable.',
-    negativePrompt: 'Avoid horror elements, avoid deformed anatomy.',
+      'Using the provided image, transform this person into a vibrant cartoon or anime character with bold outlines, expressive eyes, and bright colors. Keep the person recognizable but with stylized cartoon features.',
     aspectRatio: '1:1',
-    personGeneration: PersonGeneration.ALLOW_ALL,
-    editMode: EditMode.EDIT_MODE_STYLE,
     captionTemplate: 'Cartoon mode activated!',
   },
   cinematic: {
     key: 'cinematic',
     label: 'Cinematic Portrait',
     prompt:
-      'Restyle this portrait as a cinematic movie poster with dramatic lighting, shallow depth of field, rich contrast, and tasteful color grading.',
-    negativePrompt: 'No text overlays, no movie titles, avoid border crops.',
+      'Using the provided image, restyle this portrait as a cinematic movie still with dramatic lighting, shallow depth of field, rich contrast, and tasteful color grading. Create a mood similar to a professional movie poster.',
     aspectRatio: '3:4',
-    personGeneration: PersonGeneration.ALLOW_ADULT,
-    editMode: EditMode.EDIT_MODE_STYLE,
     captionTemplate: 'Cinematic flair, coming right up.',
   },
   vintage: {
     key: 'vintage',
     label: 'Vintage Film',
     prompt:
-      'Render this portrait with warm 35mm film tones, gentle grain, and a subtle retro vignette inspired by 1970s photography.',
-    negativePrompt: 'No heavy scratches, no washed-out faces.',
+      'Using the provided image, render this portrait with warm 35mm film tones, gentle grain, and a subtle retro vignette inspired by 1970s photography. Give it an authentic vintage film look.',
     aspectRatio: '3:4',
-    personGeneration: PersonGeneration.ALLOW_ADULT,
-    editMode: EditMode.EDIT_MODE_STYLE,
     captionTemplate: 'Vintage vibes are live.',
   },
   artistic: {
     key: 'artistic',
     label: 'Artistic Painting',
     prompt:
-      'Interpret this portrait as a fine-art oil painting with textured brush strokes, gallery lighting, and a moody background.',
-    negativePrompt: 'Avoid surreal melting faces, avoid glitch textures.',
+      'Using the provided image, interpret this portrait as a fine-art oil painting with visible textured brush strokes, professional gallery lighting, and a moody artistic background. Make it look like a classical painting.',
     aspectRatio: '1:1',
-    personGeneration: PersonGeneration.ALLOW_ADULT,
-    editMode: EditMode.EDIT_MODE_STYLE,
     captionTemplate: 'Fresh off the easel!',
   },
 };
