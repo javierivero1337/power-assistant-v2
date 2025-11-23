@@ -1,4 +1,4 @@
-export const DEFAULT_IMAGEN_MODEL = 'gemini-3-pro-image-preview';
+export const DEFAULT_IMAGEN_MODEL = 'gemini-2.5-flash-image';
 
 export type StyleKey =
   | 'linkedin'
