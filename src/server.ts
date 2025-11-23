@@ -149,8 +149,7 @@ async function stylizeImage({
   baseMimeType: string;
 }): Promise<{ buffer: Buffer; mimeType: string }> {
   // Use Gemini image generation API (Nano Banana)
-  // Using gemini-2.5-pro since flash-image hits free tier quota limits
-  const geminiModel = model ?? 'gemini-2.5-pro';
+  const geminiModel = model ?? DEFAULT_IMAGEN_MODEL;
   
   const response = await ai.models.generateContent({
     model: geminiModel,
