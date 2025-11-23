@@ -235,7 +235,13 @@ function inferBaseUrl(req: Request): string {
   return `${protocol}://${host}`;
 }
 
-app.listen(PORT, () => {
-  console.log(`⚡️ Stylizer webhook listening on :${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`⚡️ Stylizer webhook listening on :${PORT}`);
+  });
+}
+
+// Export for Vercel serverless
+export default app;
 
