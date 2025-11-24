@@ -9,7 +9,7 @@
   },
   "requestSchema": {
     "type": "object",
-    "required": ["imageUrl", "style"],
+    "required": ["imageUrl", "style", "userId"],
     "properties": {
       "imageUrl": {
         "type": "string",
@@ -18,6 +18,10 @@
       "style": {
         "type": "string",
         "enum": ["linkedin", "cartoon", "cinematic", "vintage", "artistic"]
+      },
+      "userId": {
+        "type": "string",
+        "description": "User's WhatsApp phone number (e.g., +15551234567) for credit tracking."
       },
       "aspectRatio": {
         "type": "string",
@@ -41,6 +45,22 @@
       "caption": {
         "type": "string",
         "description": "Optional WhatsApp caption to reuse."
+      },
+      "creditsRemaining": {
+        "type": "number",
+        "description": "Number of credits remaining after this generation."
+      },
+      "error": {
+        "type": "string",
+        "description": "Error message if generation failed (e.g., insufficient credits)."
+      },
+      "message": {
+        "type": "string",
+        "description": "Human-readable message about the error."
+      },
+      "paymentLink": {
+        "type": "string",
+        "description": "Stripe payment link if user needs to purchase credits."
       }
     },
     "additionalProperties": false

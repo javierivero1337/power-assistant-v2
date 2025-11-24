@@ -50,7 +50,7 @@ Visually the builder should read:
 ```
 You are an automated WhatsApp concierge named StyleBot.
 Responsibilities:
-- Confirm when a user’s photo arrives.
+- Confirm when a user's photo arrives.
 - Offer exactly five style options with numeric shortcuts:
   1. LinkedIn Professional Headshot
   2. Cartoon / Anime
@@ -59,13 +59,23 @@ Responsibilities:
   5. Artistic Painting
 - Accept either a number or the exact style label. Re-prompt for invalid inputs.
 - Use the Kapso tools in this order:
-  • get_whatsapp_context → capture inbound media metadata.
-  • save_variable / get_variable → persist `user_image_url` and `selected_style`.
-  • generate_styled_image (webhook or MCP) → send {imageUrl, styleKey, aspectRatio, imageSize}.
+  • get_whatsapp_context → capture inbound media metadata AND user's phone number.
+  • save_variable / get_variable → persist `user_image_url`, `user_phone_number`, and `selected_style`.
+  • generate_styled_image (webhook or MCP) → send {imageUrl, styleKey, userId, aspectRatio, imageSize}.
+    IMPORTANT: Always include userId (the user's WhatsApp phone number) in the request.
   • send_notification_to_user → acknowledge progress.
   • send_media → deliver the stylized image. Include the style in the caption.
   • complete_task when delivery succeeds.
-- If Gemini fails, send a friendly apology and suggest trying again later.
+- CREDIT SYSTEM HANDLING:
+  • If generate_styled_image returns error "Insufficient credits" (HTTP 402):
+    - Send a friendly message: "You've used all your credits! 🎨 Purchase 50 more credits for just $5 to continue styling your photos."
+    - Include the paymentLink from the error response.
+    - Do NOT retry the request.
+    - Call complete_task.
+  • After successful generation, if creditsRemaining is provided:
+    - Include in your response: "You have X credits remaining."
+    - If creditsRemaining is low (< 5), remind them they can purchase more.
+- If Gemini fails for other reasons, send a friendly apology and suggest trying again later.
 - Never expose API keys or internal metadata.
 ```
 
@@ -76,7 +86,8 @@ You can add localization or brand tone edits, but keep the tool-order instructio
 | Variable | Description | When set |
 | --- | --- | --- |
 | `user_image_url` | Temporary, signed media URL returned by WhatsApp via Kapso | Immediately after reading `get_whatsapp_context` |
-| `selected_style` | Normalized enum (`linkedin`, `cartoon`, `cinematic`, `vintage`, `artistic`) | After validating the user’s reply |
+| `user_phone_number` | User's WhatsApp phone number for credit tracking | Immediately after reading `get_whatsapp_context` |
+| `selected_style` | Normalized enum (`linkedin`, `cartoon`, `cinematic`, `vintage`, `artistic`) | After validating the user's reply |
 
 ---
 
@@ -94,15 +105,26 @@ You can add localization or brand tone edits, but keep the tool-order instructio
    {
      "imageUrl": "string (required)",
      "style": "linkedin | cartoon | cinematic | vintage | artistic",
+     "userId": "string (required) - User's WhatsApp phone number",
      "aspectRatio": "optional string, e.g. 1:1",
      "imageSize": "optional string, e.g. 1024x1024"
    }
    ```
-7. Expected response schema:
+7. Expected response schema (success):
    ```json
    {
      "stylizedImageUrl": "https://cdn.example.com/result.jpg",
-     "caption": "LinkedIn Professional rendition"
+     "caption": "LinkedIn Professional rendition",
+     "creditsRemaining": 42
+   }
+   ```
+8. Expected response schema (insufficient credits - HTTP 402):
+   ```json
+   {
+     "error": "Insufficient credits",
+     "message": "You need credits to generate images. Purchase 50 credits for $5!",
+     "creditsRemaining": 0,
+     "paymentLink": "https://buy.stripe.com/your-link"
    }
    ```
 
@@ -133,6 +155,7 @@ This gives you one integration path that works today (webhook) and a future opti
 1. **Image reception**
    - Call `get_whatsapp_context`.
    - Guard: if no `media` field, ask the user to send one.
+   - Extract and save the user's phone number via `save_variable` as `user_phone_number`.
    - Save the signed `imageUrl` via `save_variable`.
    - Notify the user you received the photo.
 2. **Style selection**
@@ -140,12 +163,17 @@ This gives you one integration path that works today (webhook) and a future opti
    - Parse replies; accept either digits or the style string (case-insensitive).
    - Store the canonical style key with `save_variable`.
 3. **Gemini call**
-   - Build the payload `{ imageUrl: vars.user_image_url, style: vars.selected_style }`.
+   - Build the payload `{ imageUrl: vars.user_image_url, style: vars.selected_style, userId: vars.user_phone_number }`.
    - Invoke `generate_styled_image`.
-   - Handle timeout or error: send fallback message + `complete_task`.
+   - Handle HTTP 402 (insufficient credits):
+     - Extract `paymentLink` from error response.
+     - Send message: "You've used all your credits! Purchase 50 more for $5: [link]"
+     - Call `complete_task`.
+   - Handle other errors: send fallback message + `complete_task`.
 4. **Send output**
    - Use `send_media` with the returned URL.
-   - Caption template: `“Here’s your <Style Name> look. Want to try another style? Reply with the number.”`
+   - Include credits remaining in message: "Here's your <Style Name> look! You have X credits remaining."
+   - If credits < 5, add: "Running low? Get 50 more credits for $5: [payment link]"
    - Offer the user a chance to run another style on the same image (skip re-upload by reusing `user_image_url` until TTL expires).
 
 ---
