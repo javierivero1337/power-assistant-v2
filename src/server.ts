@@ -51,6 +51,17 @@ const requestSchema = z.object({
   userId: z.string().min(1, 'userId is required'),
 });
 
+// Normalize phone number to include + prefix
+function normalizePhoneNumber(phone: string): string {
+  // Remove any spaces
+  let normalized = phone.replace(/\s/g, '');
+  // Add + prefix if missing (assumes international format)
+  if (!normalized.startsWith('+')) {
+    normalized = '+' + normalized;
+  }
+  return normalized;
+}
+
 const app = express();
 app.set('trust proxy', true);
 
@@ -145,7 +156,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const payload = requestSchema.parse(req.body);
-      const { userId } = payload;
+      const userId = normalizePhoneNumber(payload.userId);
 
       // Check user's credit balance
       const currentCredits = await getUserCredits(userId);
