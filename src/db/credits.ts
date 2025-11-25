@@ -1,14 +1,40 @@
-import { kv } from '@vercel/kv';
+import { createClient, RedisClientType } from 'redis';
 
 /**
  * Credit System Database Module
  * 
- * Manages user credits using Vercel KV (Redis).
+ * Manages user credits using Redis (via Upstash/Vercel).
  * Key format: credits:{userId}
  * Value: number (credit balance)
  */
 
 const CREDIT_KEY_PREFIX = 'credits:';
+
+// Redis client singleton
+let redis: RedisClientType | null = null;
+
+/**
+ * Get or create Redis client connection
+ */
+async function getRedisClient(): Promise<RedisClientType> {
+  if (redis && redis.isOpen) {
+    return redis;
+  }
+
+  const redisUrl = process.env.REDIS_URL;
+  if (!redisUrl) {
+    throw new Error('REDIS_URL environment variable is not set');
+  }
+
+  redis = createClient({ url: redisUrl });
+  
+  redis.on('error', (err) => {
+    console.error('[redis:error]', err);
+  });
+
+  await redis.connect();
+  return redis;
+}
 
 /**
  * Get the credit balance for a user
@@ -17,9 +43,10 @@ const CREDIT_KEY_PREFIX = 'credits:';
  */
 export async function getUserCredits(userId: string): Promise<number> {
   try {
+    const client = await getRedisClient();
     const key = `${CREDIT_KEY_PREFIX}${userId}`;
-    const credits = await kv.get<number>(key);
-    return credits ?? 0;
+    const credits = await client.get(key);
+    return credits ? parseInt(credits, 10) : 0;
   } catch (error) {
     console.error('[credits:getUserCredits]', error);
     throw new Error('Failed to retrieve user credits');
@@ -35,14 +62,15 @@ export async function deductCredit(
   userId: string
 ): Promise<{ success: boolean; remaining: number }> {
   try {
+    const client = await getRedisClient();
     const key = `${CREDIT_KEY_PREFIX}${userId}`;
     
     // Use atomic decrement to prevent race conditions
-    const newBalance = await kv.decr(key);
+    const newBalance = await client.decr(key);
     
     // If balance went negative, increment it back and return failure
     if (newBalance < 0) {
-      await kv.incr(key);
+      await client.incr(key);
       return { success: false, remaining: 0 };
     }
     
@@ -68,10 +96,11 @@ export async function addCredits(
       throw new Error('Credit amount must be positive');
     }
     
+    const client = await getRedisClient();
     const key = `${CREDIT_KEY_PREFIX}${userId}`;
     
     // Use atomic increment
-    const newBalance = await kv.incrby(key, amount);
+    const newBalance = await client.incrBy(key, amount);
     
     console.log(`[credits:addCredits] Added ${amount} credits to ${userId}. New balance: ${newBalance}`);
     
@@ -88,11 +117,12 @@ export async function addCredits(
  */
 export async function initializeUser(userId: string): Promise<void> {
   try {
+    const client = await getRedisClient();
     const key = `${CREDIT_KEY_PREFIX}${userId}`;
-    const exists = await kv.exists(key);
+    const exists = await client.exists(key);
     
     if (!exists) {
-      await kv.set(key, 0);
+      await client.set(key, '0');
       console.log(`[credits:initializeUser] Initialized user ${userId} with 0 credits`);
     }
   } catch (error) {
@@ -116,8 +146,9 @@ export async function setCredits(
       throw new Error('Credit amount cannot be negative');
     }
     
+    const client = await getRedisClient();
     const key = `${CREDIT_KEY_PREFIX}${userId}`;
-    await kv.set(key, amount);
+    await client.set(key, amount.toString());
     
     console.log(`[credits:setCredits] Set ${userId} balance to ${amount} credits`);
     
@@ -129,18 +160,18 @@ export async function setCredits(
 }
 
 /**
- * Check if Vercel KV is properly configured and accessible
- * @returns true if KV is accessible, false otherwise
+ * Check if Redis is properly configured and accessible
+ * @returns true if Redis is accessible, false otherwise
  */
 export async function checkKVConnection(): Promise<boolean> {
   try {
+    const client = await getRedisClient();
     const testKey = 'health:check';
-    await kv.set(testKey, Date.now(), { ex: 10 }); // Expires in 10 seconds
-    await kv.get(testKey);
+    await client.set(testKey, Date.now().toString(), { EX: 10 }); // Expires in 10 seconds
+    await client.get(testKey);
     return true;
   } catch (error) {
     console.error('[credits:checkKVConnection]', error);
     return false;
   }
 }
-
