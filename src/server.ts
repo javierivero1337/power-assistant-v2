@@ -267,8 +267,8 @@ app.post('/stripe-webhook', async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'No userId in session' });
       }
 
-      // Add 50 credits to the user
-      const CREDITS_PER_PURCHASE = 50;
+      // Add 20 credits to the user
+      const CREDITS_PER_PURCHASE = 20;
       const newBalance = await addCredits(userId, CREDITS_PER_PURCHASE);
 
       console.log('[stripe-webhook] Credits added:', {
