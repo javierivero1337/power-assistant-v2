@@ -160,6 +160,26 @@ export async function setCredits(
 }
 
 /**
+ * Delete a user's credit record entirely
+ * @param userId - User identifier (phone number)
+ * @returns true if deleted, false if user didn't exist
+ */
+export async function deleteUser(userId: string): Promise<boolean> {
+  try {
+    const client = await getRedisClient();
+    const key = `${CREDIT_KEY_PREFIX}${userId}`;
+    const deleted = await client.del(key);
+    
+    console.log(`[credits:deleteUser] Deleted user ${userId}: ${deleted > 0}`);
+    
+    return deleted > 0;
+  } catch (error) {
+    console.error('[credits:deleteUser]', error);
+    throw new Error('Failed to delete user');
+  }
+}
+
+/**
  * Check if Redis is properly configured and accessible
  * @returns true if Redis is accessible, false otherwise
  */

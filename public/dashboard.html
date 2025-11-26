@@ -19,6 +19,7 @@
       --accent-glow: rgba(99, 102, 241, 0.3);
       --success: #22c55e;
       --warning: #f59e0b;
+      --danger: #ef4444;
       --cyan: #06b6d4;
     }
 
@@ -138,7 +139,12 @@
       font-weight: 600;
     }
 
-    .logout-btn {
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .logout-btn, .add-user-btn {
       padding: 0.5rem 1rem;
       background: transparent;
       border: 1px solid var(--border);
@@ -149,9 +155,21 @@
       transition: all 0.2s;
     }
 
-    .logout-btn:hover {
+    .logout-btn:hover, .add-user-btn:hover {
       border-color: var(--text-secondary);
       color: var(--text-primary);
+    }
+
+    .add-user-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .add-user-btn:hover {
+      background: #5558e3;
+      border-color: #5558e3;
+      color: white;
     }
 
     /* Stats Grid */
@@ -347,6 +365,39 @@
       white-space: nowrap;
     }
 
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      padding: 0.4rem 0.75rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .action-btn.edit:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .action-btn.delete:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
     /* Pagination */
     .pagination {
       display: flex;
@@ -429,6 +480,174 @@
       display: block;
     }
 
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      animation: modalIn 0.2s ease-out;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-field {
+      margin-bottom: 1rem;
+    }
+
+    .modal-field label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-field input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .modal-field input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .modal-field input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-cancel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .modal-cancel:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .modal-confirm {
+      background: var(--accent);
+      border: none;
+      color: white;
+    }
+
+    .modal-confirm:hover {
+      background: #5558e3;
+    }
+
+    .modal-confirm.danger {
+      background: var(--danger);
+    }
+
+    .modal-confirm.danger:hover {
+      background: #dc2626;
+    }
+
+    .modal-warning {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      color: var(--danger);
+      font-size: 0.875rem;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      z-index: 1001;
+      animation: toastIn 0.3s ease-out;
+    }
+
+    .toast.success {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .toast.error {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .container {
@@ -455,6 +674,11 @@
       .tabs {
         flex-wrap: wrap;
       }
+
+      .header-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
     }
   </style>
 </head>
@@ -474,7 +698,10 @@
   <div id="dashboard" class="container">
     <header>
       <h1>Credits Dashboard</h1>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <div class="header-actions">
+        <button class="add-user-btn" onclick="showAddUserModal()">+ Add User</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
     </header>
 
     <!-- Stats -->
@@ -517,11 +744,12 @@
             <tr>
               <th>Phone Number</th>
               <th>Current Balance</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="users-body">
             <tr>
-              <td colspan="2">
+              <td colspan="3">
                 <div class="loading">
                   <div class="spinner"></div>
                 </div>
@@ -572,6 +800,62 @@
             <button id="next-btn" onclick="nextPage()" disabled>Next</button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+      <h2>Edit Credits</h2>
+      <div class="modal-field">
+        <label>Phone Number</label>
+        <input type="text" id="edit-user-id" disabled>
+      </div>
+      <div class="modal-field">
+        <label>Credits</label>
+        <input type="number" id="edit-credits" min="0" placeholder="Enter credit amount">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+        <button class="modal-confirm" onclick="saveCredits()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal">
+      <h2>Delete User</h2>
+      <div class="modal-warning">
+        This will permanently delete all credit data for this user. This action cannot be undone.
+      </div>
+      <div class="modal-field">
+        <label>Phone Number</label>
+        <input type="text" id="delete-user-id" disabled>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+        <button class="modal-confirm danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal-overlay" id="add-modal">
+    <div class="modal">
+      <h2>Add New User</h2>
+      <div class="modal-field">
+        <label>Phone Number</label>
+        <input type="text" id="add-user-id" placeholder="+15551234567">
+      </div>
+      <div class="modal-field">
+        <label>Initial Credits</label>
+        <input type="number" id="add-credits" min="0" value="0" placeholder="Enter credit amount">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeModal('add-modal')">Cancel</button>
+        <button class="modal-confirm" onclick="addNewUser()">Add User</button>
       </div>
     </div>
   </div>
@@ -659,7 +943,7 @@
 
     async function loadUsers() {
       const tbody = document.getElementById('users-body');
-      tbody.innerHTML = `<tr><td colspan="2"><div class="loading"><div class="spinner"></div></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="3"><div class="loading"><div class="spinner"></div></div></td></tr>`;
 
       try {
         const res = await fetch('/admin/users', {
@@ -683,7 +967,7 @@
       } catch (err) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="2">
+            <td colspan="3">
               <div class="empty-state">
                 <p>Failed to load users</p>
               </div>
@@ -700,7 +984,7 @@
       if (filteredUsers.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="2">
+            <td colspan="3">
               <div class="empty-state">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -718,6 +1002,10 @@
         <tr>
           <td class="phone">${escapeHtml(user.userId)}</td>
           <td><span class="credits-badge ${user.credits === 0 ? 'zero' : ''}">${user.credits}</span></td>
+          <td class="actions">
+            <button class="action-btn edit" onclick="showEditModal('${escapeHtml(user.userId)}', ${user.credits})">Edit</button>
+            <button class="action-btn delete" onclick="showDeleteModal('${escapeHtml(user.userId)}')">Delete</button>
+          </td>
         </tr>
       `).join('');
 
@@ -741,6 +1029,129 @@
       document.getElementById('user-search-input').value = '';
       filteredUsers = allUsers;
       renderUsers();
+    }
+
+    // Modal functions
+    function showEditModal(userId, credits) {
+      document.getElementById('edit-user-id').value = userId;
+      document.getElementById('edit-credits').value = credits;
+      document.getElementById('edit-modal').classList.add('active');
+    }
+
+    function showDeleteModal(userId) {
+      document.getElementById('delete-user-id').value = userId;
+      document.getElementById('delete-modal').classList.add('active');
+    }
+
+    function showAddUserModal() {
+      document.getElementById('add-user-id').value = '';
+      document.getElementById('add-credits').value = '0';
+      document.getElementById('add-modal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    async function saveCredits() {
+      const userId = document.getElementById('edit-user-id').value;
+      const credits = parseInt(document.getElementById('edit-credits').value);
+
+      if (isNaN(credits) || credits < 0) {
+        showToast('Please enter a valid credit amount', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/admin/credits/set', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Kapso-Webhook-Secret': secret
+          },
+          body: JSON.stringify({ userId, amount: credits })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to update credits');
+        }
+
+        closeModal('edit-modal');
+        showToast(`Credits updated for ${userId}`, 'success');
+        loadUsers();
+      } catch (err) {
+        showToast('Failed to update credits', 'error');
+      }
+    }
+
+    async function confirmDelete() {
+      const userId = document.getElementById('delete-user-id').value;
+
+      try {
+        const res = await fetch(`/admin/users/${encodeURIComponent(userId)}`, {
+          method: 'DELETE',
+          headers: {
+            'X-Kapso-Webhook-Secret': secret
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to delete user');
+        }
+
+        closeModal('delete-modal');
+        showToast(`User ${userId} deleted`, 'success');
+        loadUsers();
+      } catch (err) {
+        showToast('Failed to delete user', 'error');
+      }
+    }
+
+    async function addNewUser() {
+      const userId = document.getElementById('add-user-id').value.trim();
+      const credits = parseInt(document.getElementById('add-credits').value);
+
+      if (!userId) {
+        showToast('Please enter a phone number', 'error');
+        return;
+      }
+
+      if (isNaN(credits) || credits < 0) {
+        showToast('Please enter a valid credit amount', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/admin/credits/set', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Kapso-Webhook-Secret': secret
+          },
+          body: JSON.stringify({ userId, amount: credits })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to add user');
+        }
+
+        closeModal('add-modal');
+        showToast(`User ${userId} added with ${credits} credits`, 'success');
+        loadUsers();
+      } catch (err) {
+        showToast('Failed to add user', 'error');
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
     }
 
     async function loadTransactions() {
@@ -897,6 +1308,24 @@
 
     document.getElementById('txn-search-input').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') searchTransactions();
+    });
+
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.classList.remove('active');
+        }
+      });
+    });
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+          modal.classList.remove('active');
+        });
+      }
     });
   </script>
 </body>

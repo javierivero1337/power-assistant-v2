@@ -14,7 +14,7 @@ import {
   getStylePreset,
   STYLE_MENU,
 } from './styles/presets.js';
-import { getUserCredits, deductCredit, addCredits, checkKVConnection, getAllUsersWithCredits } from './db/credits.js';
+import { getUserCredits, deductCredit, addCredits, setCredits, checkKVConnection, getAllUsersWithCredits, deleteUser } from './db/credits.js';
 import { logTransaction, CreditTransaction, getTransactions, getTransactionStats, getUserTransactionHistory } from './db/transactions.js';
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -166,6 +166,44 @@ app.post('/admin/credits/add', requireWebhookSecret, async (req, res) => {
   } catch (error) {
     console.error('[admin:credits:add]', error);
     res.status(500).json({ error: 'Failed to add credits' });
+  }
+});
+
+// Admin endpoint: Set credits to a specific value
+app.post('/admin/credits/set', requireWebhookSecret, async (req, res) => {
+  try {
+    const { userId, amount } = req.body;
+    
+    if (!userId || typeof userId !== 'string') {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+    
+    if (typeof amount !== 'number' || amount < 0) {
+      return res.status(400).json({ error: 'amount must be a non-negative number' });
+    }
+    
+    const newBalance = await setCredits(userId, amount);
+    res.json({ userId, newBalance });
+  } catch (error) {
+    console.error('[admin:credits:set]', error);
+    res.status(500).json({ error: 'Failed to set credits' });
+  }
+});
+
+// Admin endpoint: Delete a user entirely
+app.delete('/admin/users/:userId', requireWebhookSecret, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const deleted = await deleteUser(userId);
+    
+    if (!deleted) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ success: true, userId });
+  } catch (error) {
+    console.error('[admin:users:delete]', error);
+    res.status(500).json({ error: 'Failed to delete user' });
   }
 });
 

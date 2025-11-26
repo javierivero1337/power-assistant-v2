@@ -49,7 +49,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     key: 'lego',
     label: 'Lego Version',
     prompt:
-      'Using the provided image, transform this person into an authentic LEGO minifigure. The result should look like a real plastic LEGO toy with the characteristic yellow skin, simple curved smile, dot eyes, and blocky body shape. Include realistic plastic texture with slight reflections, the classic LEGO hair piece matching their hairstyle, and appropriate minifigure accessories. The background should be simple and clean to showcase the minifigure.',
+      'Using the provided image, transform this person into a LEGO-inspired character. The image should capture the distinctive blocky, modular aesthetic of LEGO, with elements that suggest plastic construction and interlocking bricks. Incorporate smooth, stylized surfaces and a sense of simplified, toy-like realism. Maintain the subjects key features in a recognizable yet distinctly LEGO-fied manner. The overall feel should be playful and vibrant, as if the character has been built from LEGO pieces, with bright, even lighting.',
     aspectRatio: '1:1',
     captionTemplate: '🧱 ¡Tu versión LEGO ha llegado!',
   },
@@ -57,8 +57,8 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     key: 'cinematic',
     label: 'Cinematic B&W',
     prompt:
-      'Using the provided image, create a dramatic studio portrait with cinematic black-and-white color grading. Apply professional skin tone adjustment before converting to monochrome. Use high contrast with deep blacks and bright highlights, dramatic side lighting creating sculptural shadows on the face, shallow depth of field effect, and film grain texture. The mood should be intense and editorial, like a Hollywood publicity still from the golden age of cinema.',
-    aspectRatio: '3:4',
+      'Super realistic studio portrait. Use the person in the uploaded image. Do not change or alter the face, bone structure, gender, age, skin tone, hairstyle, or identity. Keep the same hair length and style exactly as in the uploaded photo. Pose: Head slightly tilted downward, eyes looking directly into the camera, creating a strong, mysterious expression.Clothing: A black high-neck sweater. One hand casually touching or lightly adjusting the collar (not covering the mouth). The face remains mostly visible, only a subtle gesture with the hand near the collar.Lighting & Background: Warm, soft studio lighting with a gentle shadow on one side of the face. Dark red background, plain, uniform, no patterns. Slight background blur, delicate film grain, and soft vignette on the edges.Framing: Chest-up portrait, subject centered in the frame.Rendering Style: Photorealistic, high resolution, natural realistic skin texture, no beautification, preserve real facial details and identity.',
+          aspectRatio: '3:4',
     captionTemplate: '🎬 Cinematográfico en blanco y negro.',
   },
   magazine: {
