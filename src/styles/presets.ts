@@ -33,7 +33,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     key: 'cartoon',
     label: 'Cartoon / Anime',
     prompt:
-      'Using the provided image, transform this person into a vibrant cartoon or anime character with bold clean outlines, expressive enlarged eyes, smooth cel-shaded coloring, and bright saturated colors. Keep the person recognizable but with stylized cartoon features. The style should be fun, energetic, and reminiscent of modern anime or Pixar-style animation.',
+      'Using the provided image, transform this portrait into a comic book art style. The image should feature thick, dark outlines, vibrant yet flat colors, and clear shading that defines shapes rather than realistic blending. Emphasize a clean, graphic novel aesthetic with a hand-drawn feel, similar to modern webcomics or animated series character designs. Focus on strong character expressions and a dynamic composition. Bright, even lighting. Friendly pose',
     aspectRatio: '1:1',
     captionTemplate: '🎬 ¡Modo caricatura activado!',
   },
@@ -73,7 +73,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     key: '3d',
     label: '3D Caricature',
     prompt:
-      'Using the provided image, create a highly stylized 3D caricature render with exaggerated but charming facial features - slightly larger head, expressive eyes, and playful proportions. Render in a smooth, polished Pixar/DreamWorks style with clean subsurface scattering on skin, soft ambient occlusion lighting, and professional studio lighting setup. Place on a bold solid color background (vibrant blue, orange, or purple) to emphasize the character\'s charm and presence. The overall look should be fun, professional, and ready for a profile picture.',
+      'Using the provided image, transform this portrait into a 3D animated character portrait. The style should be reminiscent of modern Pixar or Dreamworks animation – with large, expressive eyes, smooth skin texture, slightly exaggerated but friendly facial features, and a vibrant, clean aesthetic. The lighting should be soft and inviting, similar to professional animation studio renders. Focus on a warm and approachable tone. High detail, vivid colors, cinematic animation still. Full body shot, looking directly at the viewer.',
     aspectRatio: '1:1',
     captionTemplate: '🎮 ¡Tu versión 3D está lista!',
   },
