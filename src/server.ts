@@ -51,14 +51,22 @@ const requestSchema = z.object({
   userId: z.string().min(1, 'userId is required'),
 });
 
-// Normalize phone number to include + prefix
+// Normalize phone number to a consistent format
 function normalizePhoneNumber(phone: string): string {
-  // Remove any spaces
-  let normalized = phone.replace(/\s/g, '');
+  // Remove any spaces, dashes, parentheses
+  let normalized = phone.replace(/[\s\-\(\)]/g, '');
+  
   // Add + prefix if missing (assumes international format)
   if (!normalized.startsWith('+')) {
     normalized = '+' + normalized;
   }
+  
+  // Handle Mexico phone numbers: +521XXXXXXXXXX → +52XXXXXXXXXX
+  // WhatsApp uses +521 for mobile, but we normalize to +52
+  if (normalized.startsWith('+521') && normalized.length === 14) {
+    normalized = '+52' + normalized.slice(4);
+  }
+  
   return normalized;
 }
 
@@ -277,6 +285,9 @@ app.post('/stripe-webhook', async (req: Request, res: Response) => {
         console.error('[stripe-webhook] No userId found in session');
         return res.status(400).json({ error: 'No userId in session' });
       }
+
+      // Normalize the phone number for consistency
+      userId = normalizePhoneNumber(userId);
 
       // Add 20 credits to the user
       const CREDITS_PER_PURCHASE = 20;
