@@ -175,3 +175,50 @@ export async function checkKVConnection(): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Get all users with their credit balances
+ * @returns Array of users with their credits
+ */
+export async function getAllUsersWithCredits(): Promise<Array<{ userId: string; credits: number }>> {
+  try {
+    const client = await getRedisClient();
+    
+    // Scan for all credit keys
+    const keys: string[] = [];
+    let cursor: string = '0';
+    
+    do {
+      const result = await client.scan(cursor, {
+        MATCH: `${CREDIT_KEY_PREFIX}*`,
+        COUNT: 100,
+      });
+      cursor = String(result.cursor);
+      keys.push(...result.keys);
+    } while (cursor !== '0');
+    
+    if (keys.length === 0) {
+      return [];
+    }
+    
+    // Get all credit values
+    const users: Array<{ userId: string; credits: number }> = [];
+    
+    for (const key of keys) {
+      const credits = await client.get(key);
+      const userId = key.replace(CREDIT_KEY_PREFIX, '');
+      users.push({
+        userId,
+        credits: credits ? parseInt(credits, 10) : 0,
+      });
+    }
+    
+    // Sort by credits descending
+    users.sort((a, b) => b.credits - a.credits);
+    
+    return users;
+  } catch (error) {
+    console.error('[credits:getAllUsersWithCredits]', error);
+    throw new Error('Failed to retrieve all users with credits');
+  }
+}

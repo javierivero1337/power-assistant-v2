@@ -19,6 +19,7 @@
       --accent-glow: rgba(99, 102, 241, 0.3);
       --success: #22c55e;
       --warning: #f59e0b;
+      --cyan: #06b6d4;
     }
 
     * {
@@ -156,7 +157,7 @@
     /* Stats Grid */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
       margin-bottom: 2rem;
     }
@@ -165,25 +166,61 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1.25rem;
     }
 
     .stat-card .label {
       color: var(--text-secondary);
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       margin-bottom: 0.5rem;
     }
 
     .stat-card .value {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 700;
       font-family: 'JetBrains Mono', monospace;
     }
 
     .stat-card .value.currency::before {
       content: '$';
-      font-size: 1.25rem;
+      font-size: 1rem;
       color: var(--text-secondary);
+    }
+
+    .stat-card.highlight {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
     }
 
     /* Search */
@@ -261,7 +298,7 @@
       border-bottom: none;
     }
 
-    tr:hover td {
+    tbody tr:hover td {
       background: rgba(99, 102, 241, 0.05);
     }
 
@@ -279,6 +316,16 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.875rem;
       font-weight: 500;
+    }
+
+    .credits-badge.zero {
+      background: rgba(136, 136, 160, 0.15);
+      color: var(--text-secondary);
+    }
+
+    .credits-badge.add {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan);
     }
 
     .amount {
@@ -373,6 +420,15 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .container {
@@ -394,6 +450,10 @@
 
       .hide-mobile {
         display: none;
+      }
+
+      .tabs {
+        flex-wrap: wrap;
       }
     }
   </style>
@@ -419,58 +479,98 @@
 
     <!-- Stats -->
     <div class="stats-grid">
+      <div class="stat-card highlight">
+        <div class="label">Total Users</div>
+        <div class="value" id="stat-total-users">-</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="label">Total Credits</div>
+        <div class="value" id="stat-total-credits">-</div>
+      </div>
       <div class="stat-card">
-        <div class="label">Total Transactions</div>
+        <div class="label">Stripe Transactions</div>
         <div class="value" id="stat-transactions">-</div>
       </div>
       <div class="stat-card">
-        <div class="label">Credits Issued</div>
-        <div class="value" id="stat-credits">-</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Revenue</div>
+        <div class="label">Stripe Revenue</div>
         <div class="value currency" id="stat-revenue">-</div>
       </div>
-      <div class="stat-card">
-        <div class="label">Unique Users</div>
-        <div class="value" id="stat-users">-</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('users')">Users & Balances</button>
+      <button class="tab-btn" onclick="switchTab('transactions')">Stripe Transactions</button>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="users-tab" class="tab-content active">
+      <div class="search-bar">
+        <input type="text" id="user-search-input" placeholder="Filter by phone number...">
+        <button onclick="filterUsers()">Search</button>
+        <button class="clear-btn" onclick="clearUserFilter()">Clear</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Phone Number</th>
+              <th>Current Balance</th>
+            </tr>
+          </thead>
+          <tbody id="users-body">
+            <tr>
+              <td colspan="2">
+                <div class="loading">
+                  <div class="spinner"></div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <div class="pagination-info" id="users-pagination-info">Loading...</div>
+          <div class="pagination-btns"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Search -->
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Filter by phone number (e.g. +1555123...)">
-      <button onclick="search()">Search</button>
-      <button class="clear-btn" onclick="clearSearch()">Clear</button>
-    </div>
+    <!-- Transactions Tab -->
+    <div id="transactions-tab" class="tab-content">
+      <div class="search-bar">
+        <input type="text" id="txn-search-input" placeholder="Filter by phone number...">
+        <button onclick="searchTransactions()">Search</button>
+        <button class="clear-btn" onclick="clearTransactionSearch()">Clear</button>
+      </div>
 
-    <!-- Table -->
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Phone</th>
-            <th>Credits</th>
-            <th>Amount</th>
-            <th class="hide-mobile">Email</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody id="transactions-body">
-          <tr>
-            <td colspan="5">
-              <div class="loading">
-                <div class="spinner"></div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="pagination">
-        <div class="pagination-info" id="pagination-info">Loading...</div>
-        <div class="pagination-btns">
-          <button id="prev-btn" onclick="prevPage()" disabled>Previous</button>
-          <button id="next-btn" onclick="nextPage()" disabled>Next</button>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Phone</th>
+              <th>Credits</th>
+              <th>Amount</th>
+              <th class="hide-mobile">Email</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-body">
+            <tr>
+              <td colspan="5">
+                <div class="loading">
+                  <div class="spinner"></div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <div class="pagination-info" id="txn-pagination-info">Loading...</div>
+          <div class="pagination-btns">
+            <button id="prev-btn" onclick="prevPage()" disabled>Previous</button>
+            <button id="next-btn" onclick="nextPage()" disabled>Next</button>
+          </div>
         </div>
       </div>
     </div>
@@ -482,6 +582,8 @@
     const limit = 20;
     let currentFilter = '';
     let totalTransactions = 0;
+    let allUsers = [];
+    let filteredUsers = [];
 
     // Check for stored session
     if (sessionStorage.getItem('dashboardSecret')) {
@@ -499,7 +601,7 @@
       }
 
       try {
-        const res = await fetch('/admin/transactions?limit=1', {
+        const res = await fetch('/admin/users', {
           headers: { 'X-Kapso-Webhook-Secret': secret }
         });
         
@@ -529,6 +631,7 @@
     function showDashboard() {
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
+      loadUsers();
       loadTransactions();
     }
 
@@ -539,6 +642,105 @@
       document.getElementById('dashboard').style.display = 'none';
       document.getElementById('secret-input').value = '';
       document.getElementById('auth-error').style.display = 'none';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      if (tab === 'users') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('users-tab').classList.add('active');
+      } else {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('transactions-tab').classList.add('active');
+      }
+    }
+
+    async function loadUsers() {
+      const tbody = document.getElementById('users-body');
+      tbody.innerHTML = `<tr><td colspan="2"><div class="loading"><div class="spinner"></div></div></td></tr>`;
+
+      try {
+        const res = await fetch('/admin/users', {
+          headers: { 'X-Kapso-Webhook-Secret': secret }
+        });
+
+        if (res.status === 401) {
+          logout();
+          return;
+        }
+
+        const data = await res.json();
+        allUsers = data.users;
+        filteredUsers = allUsers;
+        
+        // Update stats
+        document.getElementById('stat-total-users').textContent = data.summary.totalUsers.toLocaleString();
+        document.getElementById('stat-total-credits').textContent = data.summary.totalCredits.toLocaleString();
+
+        renderUsers();
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="2">
+              <div class="empty-state">
+                <p>Failed to load users</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById('users-body');
+      const info = document.getElementById('users-pagination-info');
+
+      if (filteredUsers.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="2">
+              <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <p>No users found</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        info.textContent = 'No results';
+        return;
+      }
+
+      tbody.innerHTML = filteredUsers.map(user => `
+        <tr>
+          <td class="phone">${escapeHtml(user.userId)}</td>
+          <td><span class="credits-badge ${user.credits === 0 ? 'zero' : ''}">${user.credits}</span></td>
+        </tr>
+      `).join('');
+
+      info.textContent = `Showing ${filteredUsers.length} user${filteredUsers.length !== 1 ? 's' : ''}`;
+    }
+
+    function filterUsers() {
+      const input = document.getElementById('user-search-input');
+      const filter = input.value.trim().toLowerCase();
+      
+      if (!filter) {
+        filteredUsers = allUsers;
+      } else {
+        filteredUsers = allUsers.filter(u => u.userId.toLowerCase().includes(filter));
+      }
+      
+      renderUsers();
+    }
+
+    function clearUserFilter() {
+      document.getElementById('user-search-input').value = '';
+      filteredUsers = allUsers;
+      renderUsers();
     }
 
     async function loadTransactions() {
@@ -564,9 +766,7 @@
         
         // Update stats
         document.getElementById('stat-transactions').textContent = data.stats.totalTransactions.toLocaleString();
-        document.getElementById('stat-credits').textContent = data.stats.totalCreditsIssued.toLocaleString();
         document.getElementById('stat-revenue').textContent = (data.stats.totalRevenue / 100).toFixed(2);
-        document.getElementById('stat-users').textContent = data.stats.uniqueUsers.toLocaleString();
 
         totalTransactions = data.pagination.total;
         
@@ -582,7 +782,8 @@
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <p>No transactions found</p>
+                  <p>No Stripe transactions yet</p>
+                  <p style="font-size: 0.8rem; margin-top: 0.5rem;">Transactions will appear here after Stripe payments</p>
                 </div>
               </td>
             </tr>
@@ -593,7 +794,7 @@
         tbody.innerHTML = data.transactions.map(txn => `
           <tr>
             <td class="phone">${escapeHtml(txn.userId)}</td>
-            <td><span class="credits-badge">+${txn.creditsAdded}</span></td>
+            <td><span class="credits-badge add">+${txn.creditsAdded}</span></td>
             <td class="amount">$${(txn.amountPaid / 100).toFixed(2)}</td>
             <td class="email hide-mobile">${txn.email ? escapeHtml(txn.email) : '-'}</td>
             <td class="time">${formatTime(txn.createdAt)}</td>
@@ -614,7 +815,7 @@
     }
 
     function updatePagination(pagination) {
-      const info = document.getElementById('pagination-info');
+      const info = document.getElementById('txn-pagination-info');
       const prevBtn = document.getElementById('prev-btn');
       const nextBtn = document.getElementById('next-btn');
 
@@ -645,15 +846,15 @@
       }
     }
 
-    function search() {
-      const input = document.getElementById('search-input');
+    function searchTransactions() {
+      const input = document.getElementById('txn-search-input');
       currentFilter = input.value.trim();
       currentOffset = 0;
       loadTransactions();
     }
 
-    function clearSearch() {
-      document.getElementById('search-input').value = '';
+    function clearTransactionSearch() {
+      document.getElementById('txn-search-input').value = '';
       currentFilter = '';
       currentOffset = 0;
       loadTransactions();
@@ -690,10 +891,13 @@
       if (e.key === 'Enter') authenticate();
     });
 
-    document.getElementById('search-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') search();
+    document.getElementById('user-search-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') filterUsers();
+    });
+
+    document.getElementById('txn-search-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchTransactions();
     });
   </script>
 </body>
 </html>
-

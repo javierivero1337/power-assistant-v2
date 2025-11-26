@@ -14,7 +14,7 @@ import {
   getStylePreset,
   STYLE_MENU,
 } from './styles/presets.js';
-import { getUserCredits, deductCredit, addCredits, checkKVConnection } from './db/credits.js';
+import { getUserCredits, deductCredit, addCredits, checkKVConnection, getAllUsersWithCredits } from './db/credits.js';
 import { logTransaction, CreditTransaction, getTransactions, getTransactionStats, getUserTransactionHistory } from './db/transactions.js';
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -214,6 +214,26 @@ app.get('/admin/users/:userId/credits', requireWebhookSecret, async (req, res) =
   } catch (error) {
     console.error('[admin:users:credits]', error);
     res.status(500).json({ error: 'Failed to retrieve user credits' });
+  }
+});
+
+// Admin endpoint: List all users with credit balances
+app.get('/admin/users', requireWebhookSecret, async (_req, res) => {
+  try {
+    const users = await getAllUsersWithCredits();
+    const totalCredits = users.reduce((sum, u) => sum + u.credits, 0);
+    
+    res.json({
+      users,
+      summary: {
+        totalUsers: users.length,
+        totalCredits,
+        usersWithCredits: users.filter(u => u.credits > 0).length,
+      },
+    });
+  } catch (error) {
+    console.error('[admin:users]', error);
+    res.status(500).json({ error: 'Failed to retrieve users' });
   }
 });
 
