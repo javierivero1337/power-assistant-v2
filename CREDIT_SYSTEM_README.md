@@ -280,6 +280,43 @@ See `docs/testing/CREDIT_SYSTEM_TESTS.md` for comprehensive test scenarios.
 4. **No Negative Balances**: Deduction checks balance first
 5. **Environment Variables**: Secrets never committed to git
 
+## Admin Dashboard
+
+A built-in dashboard is available to view all credit transactions by phone number.
+
+### Accessing the Dashboard
+
+1. Navigate to: `https://your-app.vercel.app/admin/dashboard`
+2. Enter your `KAPSO_WEBHOOK_SECRET` when prompted
+3. The secret is stored in your browser's session storage (cleared when you close the tab)
+
+### Dashboard Features
+
+- **Stats Overview**: Total transactions, credits issued, revenue, unique users
+- **Transaction List**: All Stripe credit purchases with phone, amount, and timestamp
+- **Search/Filter**: Filter transactions by phone number
+- **Pagination**: Browse through all historical transactions
+
+### Admin API Endpoints
+
+**List all transactions**:
+```bash
+curl "https://your-app.vercel.app/admin/transactions?limit=50&offset=0" \
+  -H "X-Kapso-Webhook-Secret: YOUR_SECRET"
+```
+
+**Filter by user**:
+```bash
+curl "https://your-app.vercel.app/admin/transactions?userId=+15551234567" \
+  -H "X-Kapso-Webhook-Secret: YOUR_SECRET"
+```
+
+**Get user credits with history**:
+```bash
+curl "https://your-app.vercel.app/admin/users/+15551234567/credits" \
+  -H "X-Kapso-Webhook-Secret: YOUR_SECRET"
+```
+
 ## Monitoring
 
 ### Key Metrics to Track
@@ -300,6 +337,7 @@ https://vercel.com/your-username/power-assistant-v2/logs
 [credits:addCredits] Added 50 credits to +15551234567
 [stripe-webhook] Credits added: {userId, creditsAdded, newBalance}
 [credits:deductCredit] Deducted credit from +15551234567
+[transactions:log] Logged transaction cs_xxx for +15551234567
 ```
 
 ## Troubleshooting
@@ -344,13 +382,15 @@ For issues or questions:
 
 ### New Files
 - `src/db/credits.ts` - Credit management logic
+- `src/db/transactions.ts` - Transaction logging for dashboard
+- `public/dashboard.html` - Admin dashboard UI
 - `docs/setup/STRIPE_SETUP.md` - Stripe configuration guide
 - `docs/testing/CREDIT_SYSTEM_TESTS.md` - Testing guide
 - `CREDIT_SYSTEM_README.md` - This file
 
 ### Modified Files
 - `package.json` - Added @vercel/kv and stripe dependencies
-- `src/server.ts` - Added credit checks, Stripe webhook, admin endpoints
+- `src/server.ts` - Added credit checks, Stripe webhook, admin endpoints, dashboard
 - `docs/workflows/generate-styled-image-tool.json` - Updated tool schema
 - `docs/workflows/whatsapp-image-styler.md` - Updated agent instructions
 

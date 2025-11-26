@@ -1,6 +1,8 @@
 import 'dotenv/config';
 
 import express, { NextFunction, Request, Response } from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
 import { fetch } from 'undici';
 import { customAlphabet } from 'nanoid';
@@ -13,6 +15,7 @@ import {
   STYLE_MENU,
 } from './styles/presets.js';
 import { getUserCredits, deductCredit, addCredits, checkKVConnection } from './db/credits.js';
+import { logTransaction, CreditTransaction, getTransactions, getTransactionStats, getUserTransactionHistory } from './db/transactions.js';
 
 const PORT = Number(process.env.PORT ?? 4000);
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -70,6 +73,9 @@ function normalizePhoneNumber(phone: string): string {
   return normalized;
 }
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 app.set('trust proxy', true);
 
@@ -115,6 +121,11 @@ app.get('/health', async (_req, res) => {
   });
 });
 
+// Serve dashboard UI
+app.get('/admin/dashboard', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
+});
+
 app.get('/media/:id', (req, res) => {
   purgeExpired();
   const record = mediaStore.get(req.params.id);
@@ -155,6 +166,54 @@ app.post('/admin/credits/add', requireWebhookSecret, async (req, res) => {
   } catch (error) {
     console.error('[admin:credits:add]', error);
     res.status(500).json({ error: 'Failed to add credits' });
+  }
+});
+
+// Admin endpoint: List all transactions with optional filtering
+app.get('/admin/transactions', requireWebhookSecret, async (req, res) => {
+  try {
+    const userId = req.query.userId as string | undefined;
+    const limit = parseInt(req.query.limit as string) || 50;
+    const offset = parseInt(req.query.offset as string) || 0;
+    
+    const { transactions, total } = await getTransactions({ userId, limit, offset });
+    const stats = await getTransactionStats();
+    
+    res.json({
+      transactions,
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore: offset + transactions.length < total,
+      },
+      stats,
+    });
+  } catch (error) {
+    console.error('[admin:transactions]', error);
+    res.status(500).json({ error: 'Failed to retrieve transactions' });
+  }
+});
+
+// Admin endpoint: Get user credits with transaction history
+app.get('/admin/users/:userId/credits', requireWebhookSecret, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const normalizedUserId = normalizePhoneNumber(userId);
+    
+    const credits = await getUserCredits(normalizedUserId);
+    const { transactions, totalCreditsFromPurchases } = await getUserTransactionHistory(normalizedUserId);
+    
+    res.json({
+      userId: normalizedUserId,
+      currentBalance: credits,
+      totalCreditsFromPurchases,
+      creditsUsed: totalCreditsFromPurchases - credits,
+      transactions,
+    });
+  } catch (error) {
+    console.error('[admin:users:credits]', error);
+    res.status(500).json({ error: 'Failed to retrieve user credits' });
   }
 });
 
@@ -292,6 +351,18 @@ app.post('/stripe-webhook', async (req: Request, res: Response) => {
       // Add 20 credits to the user
       const CREDITS_PER_PURCHASE = 20;
       const newBalance = await addCredits(userId, CREDITS_PER_PURCHASE);
+
+      // Log the transaction for the dashboard
+      const transaction: CreditTransaction = {
+        id: session.id,
+        userId,
+        creditsAdded: CREDITS_PER_PURCHASE,
+        amountPaid: session.amount_total ?? 0,
+        currency: session.currency ?? 'usd',
+        createdAt: Date.now(),
+        email: session.customer_details?.email ?? undefined,
+      };
+      await logTransaction(transaction);
 
       console.log('[stripe-webhook] Credits added:', {
         userId,

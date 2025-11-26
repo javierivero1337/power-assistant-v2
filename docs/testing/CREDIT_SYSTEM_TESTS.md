@@ -140,6 +140,59 @@ curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15551234567"
 **Pass Criteria**:
 - Status code: 401
 
+#### Test 2.5: List All Transactions
+```bash
+curl -X GET "https://power-assistant-v2.vercel.app/admin/transactions?limit=10" \
+  -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET"
+```
+
+**Expected Response**:
+```json
+{
+  "transactions": [...],
+  "pagination": {
+    "total": 5,
+    "limit": 10,
+    "offset": 0,
+    "hasMore": false
+  },
+  "stats": {
+    "totalTransactions": 5,
+    "totalCreditsIssued": 100,
+    "totalRevenue": 1000,
+    "uniqueUsers": 2,
+    "lastTransactionAt": 1700000000000
+  }
+}
+```
+
+**Pass Criteria**:
+- Status code: 200
+- Returns transaction list with pagination
+- Stats include totals
+
+#### Test 2.6: Get User Credits with Transaction History
+```bash
+curl -X GET "https://power-assistant-v2.vercel.app/admin/users/+15551234567/credits" \
+  -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET"
+```
+
+**Expected Response**:
+```json
+{
+  "userId": "+15551234567",
+  "currentBalance": 45,
+  "totalCreditsFromPurchases": 50,
+  "creditsUsed": 5,
+  "transactions": [...]
+}
+```
+
+**Pass Criteria**:
+- Status code: 200
+- Shows current balance and purchase history
+- Correctly calculates credits used
+
 ---
 
 ### 3. Image Generation with Credits
@@ -479,6 +532,16 @@ curl -s "$BASE_URL/admin/credits/$TEST_USER" \
   -H "X-Kapso-Webhook-Secret: $WEBHOOK_SECRET" | jq
 
 echo "\n✅ Tests complete!"
+
+# Test 6: List Transactions
+echo "\n6️⃣ Listing transactions"
+curl -s "$BASE_URL/admin/transactions?limit=5" \
+  -H "X-Kapso-Webhook-Secret: $WEBHOOK_SECRET" | jq
+
+# Test 7: Get User Credit History
+echo "\n7️⃣ Getting user credit history"
+curl -s "$BASE_URL/admin/users/$TEST_USER/credits" \
+  -H "X-Kapso-Webhook-Secret: $WEBHOOK_SECRET" | jq
 ```
 
 Make it executable and run:
@@ -498,6 +561,8 @@ chmod +x test-credits.sh
 - [ ] Can add credits manually
 - [ ] Can check credit balance
 - [ ] New users start with 0 credits
+- [ ] Admin dashboard loads at `/admin/dashboard`
+- [ ] Dashboard authenticates with webhook secret
 
 ### Credit System Tests
 - [ ] Image generation succeeds with sufficient credits
@@ -513,6 +578,7 @@ chmod +x test-credits.sh
 - [ ] Credits are added automatically after payment
 - [ ] Webhook signature verification works
 - [ ] Invalid webhooks are rejected
+- [ ] Transaction appears in admin dashboard after payment
 
 ### Edge Cases
 - [ ] Concurrent requests don't create negative balances

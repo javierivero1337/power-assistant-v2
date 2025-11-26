@@ -191,6 +191,7 @@ Your credit system is now live. Users can:
 - **Stripe Dashboard**: https://dashboard.stripe.com/test/payments
 - **Vercel Logs**: https://vercel.com/your-username/power-assistant-v2/logs
 - **Health Check**: https://power-assistant-v2.vercel.app/health
+- **Credits Dashboard**: https://power-assistant-v2.vercel.app/admin/dashboard
 
 ### When Ready for Production
 1. Complete Stripe business verification
@@ -229,11 +230,12 @@ curl https://power-assistant-v2.vercel.app/health
 
 ### Important URLs
 - **Your app**: https://power-assistant-v2.vercel.app
+- **Credits Dashboard**: https://power-assistant-v2.vercel.app/admin/dashboard
 - **Vercel dashboard**: https://vercel.com/dashboard
 - **Stripe dashboard**: https://dashboard.stripe.com
 - **Kapso platform**: https://app.kapso.ai
 
 ---
 
-**Need more details?** Check `IMPLEMENTATION_SUMMARY.md` for the complete deployment checklist.
+
 

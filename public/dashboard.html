@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credits Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a24;
+      --border: #2a2a3a;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Auth Screen */
+    #auth-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: 
+        radial-gradient(ellipse at 50% 0%, var(--accent-glow) 0%, transparent 50%),
+        var(--bg-primary);
+    }
+
+    .auth-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .auth-box h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-box p {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .auth-box input {
+      width: 100%;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .auth-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .auth-box button {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s;
+    }
+
+    .auth-box button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .auth-error {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* Dashboard */
+    #dashboard {
+      display: none;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .stat-card .label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-card .value.currency::before {
+      content: '$';
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+    }
+
+    /* Search */
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-bar input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .search-bar button {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .clear-btn {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text-secondary) !important;
+    }
+
+    /* Table */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+    }
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .phone {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .credits-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .amount {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+    }
+
+    .time {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .email {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--bg-secondary);
+    }
+
+    .pagination-info {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .pagination-btns {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .pagination-btns button {
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pagination-btns button:hover:not(:disabled) {
+      border-color: var(--accent);
+    }
+
+    .pagination-btns button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Empty State */
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      justify-content: center;
+      padding: 3rem;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .search-bar {
+        flex-direction: column;
+      }
+
+      th, td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .hide-mobile {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth Screen -->
+  <div id="auth-screen">
+    <div class="auth-box">
+      <h1>Credits Dashboard</h1>
+      <p>Enter your admin secret to continue</p>
+      <input type="password" id="secret-input" placeholder="X-Kapso-Webhook-Secret" autocomplete="off">
+      <button onclick="authenticate()">Access Dashboard</button>
+      <p class="auth-error" id="auth-error">Invalid secret. Please try again.</p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="container">
+    <header>
+      <h1>Credits Dashboard</h1>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Total Transactions</div>
+        <div class="value" id="stat-transactions">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Credits Issued</div>
+        <div class="value" id="stat-credits">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Revenue</div>
+        <div class="value currency" id="stat-revenue">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unique Users</div>
+        <div class="value" id="stat-users">-</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Filter by phone number (e.g. +1555123...)">
+      <button onclick="search()">Search</button>
+      <button class="clear-btn" onclick="clearSearch()">Clear</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Phone</th>
+            <th>Credits</th>
+            <th>Amount</th>
+            <th class="hide-mobile">Email</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-body">
+          <tr>
+            <td colspan="5">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <div class="pagination-info" id="pagination-info">Loading...</div>
+        <div class="pagination-btns">
+          <button id="prev-btn" onclick="prevPage()" disabled>Previous</button>
+          <button id="next-btn" onclick="nextPage()" disabled>Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let secret = '';
+    let currentOffset = 0;
+    const limit = 20;
+    let currentFilter = '';
+    let totalTransactions = 0;
+
+    // Check for stored session
+    if (sessionStorage.getItem('dashboardSecret')) {
+      secret = sessionStorage.getItem('dashboardSecret');
+      showDashboard();
+    }
+
+    async function authenticate() {
+      const input = document.getElementById('secret-input');
+      secret = input.value.trim();
+      
+      if (!secret) {
+        showAuthError('Please enter a secret');
+        return;
+      }
+
+      try {
+        const res = await fetch('/admin/transactions?limit=1', {
+          headers: { 'X-Kapso-Webhook-Secret': secret }
+        });
+        
+        if (res.status === 401) {
+          showAuthError('Invalid secret. Please try again.');
+          return;
+        }
+        
+        if (!res.ok) {
+          showAuthError('Server error. Please try again.');
+          return;
+        }
+
+        sessionStorage.setItem('dashboardSecret', secret);
+        showDashboard();
+      } catch (err) {
+        showAuthError('Connection failed. Please try again.');
+      }
+    }
+
+    function showAuthError(msg) {
+      const error = document.getElementById('auth-error');
+      error.textContent = msg;
+      error.style.display = 'block';
+    }
+
+    function showDashboard() {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadTransactions();
+    }
+
+    function logout() {
+      sessionStorage.removeItem('dashboardSecret');
+      secret = '';
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('secret-input').value = '';
+      document.getElementById('auth-error').style.display = 'none';
+    }
+
+    async function loadTransactions() {
+      const tbody = document.getElementById('transactions-body');
+      tbody.innerHTML = `<tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr>`;
+
+      try {
+        let url = `/admin/transactions?limit=${limit}&offset=${currentOffset}`;
+        if (currentFilter) {
+          url += `&userId=${encodeURIComponent(currentFilter)}`;
+        }
+
+        const res = await fetch(url, {
+          headers: { 'X-Kapso-Webhook-Secret': secret }
+        });
+
+        if (res.status === 401) {
+          logout();
+          return;
+        }
+
+        const data = await res.json();
+        
+        // Update stats
+        document.getElementById('stat-transactions').textContent = data.stats.totalTransactions.toLocaleString();
+        document.getElementById('stat-credits').textContent = data.stats.totalCreditsIssued.toLocaleString();
+        document.getElementById('stat-revenue').textContent = (data.stats.totalRevenue / 100).toFixed(2);
+        document.getElementById('stat-users').textContent = data.stats.uniqueUsers.toLocaleString();
+
+        totalTransactions = data.pagination.total;
+        
+        // Update pagination
+        updatePagination(data.pagination);
+
+        // Render transactions
+        if (data.transactions.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p>No transactions found</p>
+                </div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = data.transactions.map(txn => `
+          <tr>
+            <td class="phone">${escapeHtml(txn.userId)}</td>
+            <td><span class="credits-badge">+${txn.creditsAdded}</span></td>
+            <td class="amount">$${(txn.amountPaid / 100).toFixed(2)}</td>
+            <td class="email hide-mobile">${txn.email ? escapeHtml(txn.email) : '-'}</td>
+            <td class="time">${formatTime(txn.createdAt)}</td>
+          </tr>
+        `).join('');
+
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <p>Failed to load transactions</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function updatePagination(pagination) {
+      const info = document.getElementById('pagination-info');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      const start = pagination.offset + 1;
+      const end = Math.min(pagination.offset + pagination.limit, pagination.total);
+      
+      if (pagination.total === 0) {
+        info.textContent = 'No results';
+      } else {
+        info.textContent = `Showing ${start}-${end} of ${pagination.total}`;
+      }
+
+      prevBtn.disabled = pagination.offset === 0;
+      nextBtn.disabled = !pagination.hasMore;
+    }
+
+    function prevPage() {
+      if (currentOffset > 0) {
+        currentOffset = Math.max(0, currentOffset - limit);
+        loadTransactions();
+      }
+    }
+
+    function nextPage() {
+      if (currentOffset + limit < totalTransactions) {
+        currentOffset += limit;
+        loadTransactions();
+      }
+    }
+
+    function search() {
+      const input = document.getElementById('search-input');
+      currentFilter = input.value.trim();
+      currentOffset = 0;
+      loadTransactions();
+    }
+
+    function clearSearch() {
+      document.getElementById('search-input').value = '';
+      currentFilter = '';
+      currentOffset = 0;
+      loadTransactions();
+    }
+
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Enter key to submit
+    document.getElementById('secret-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') authenticate();
+    });
+
+    document.getElementById('search-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') search();
+    });
+  </script>
+</body>
+</html>
+
