@@ -65,7 +65,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     key: 'magazine',
     label: 'Magazine Cover',
     prompt:
-      'Using the provided image, create a retro vintage editorial magazine cover aesthetic. The person should be styled in an elegant black suit with a Pinterest-worthy 90s movie star vibe. Add a small flower bouquet in hand, windswept hair effect, and a romanticized dreamy atmosphere. The background should be minimalist with deep shadows and dramatic contrast. Apply warm golden hour lighting with sunset tones, vintage film grain, and a mysterious artistic atmosphere. The overall feeling should be timeless editorial elegance.',
+      'Using the provided image, transform this picture into a A cinematic close-up editorial portrait wearing sleek black blazer, and black turtleneck, very low angle chin tilted upward, direct gaze with subtle smirk, seamless vivid orange studio background, 85mm lens, f/4, ISO 100, shutter 1/200s, cinematic dual-tone lighting with warm orange glow and cool blue rim highlights',
     aspectRatio: '3:4',
     captionTemplate: '📰 Portada de revista, estilo editorial.',
   },
