@@ -312,12 +312,22 @@ app.post(
       let buffer: Buffer;
       let mimeType: string;
       
+      console.log('[generate-styled-image] Payload received:', {
+        hasImageUrl: !!payload.imageUrl,
+        hasImageBase64: !!payload.imageBase64,
+        imageUrlPreview: payload.imageUrl?.substring(0, 100),
+        style: payload.style,
+        userId: payload.userId,
+      });
+      
       if (payload.imageBase64) {
         // Direct base64 input (preferred - avoids auth issues)
+        console.log('[generate-styled-image] Using base64 input');
         buffer = Buffer.from(payload.imageBase64, 'base64');
         mimeType = payload.imageMimeType ?? 'image/jpeg';
       } else if (payload.imageUrl) {
         // URL download (may fail if URL requires auth)
+        console.log('[generate-styled-image] Downloading from URL:', payload.imageUrl);
         const downloaded = await downloadImage(payload.imageUrl);
         buffer = downloaded.buffer;
         mimeType = downloaded.mimeType;
@@ -532,13 +542,36 @@ async function downloadImage(url: string): Promise<{
   buffer: Buffer;
   mimeType: string;
 }> {
-  const response = await fetch(url);
+  console.log('[downloadImage] Attempting to download:', url);
+  
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; Revelio/1.0)',
+      'Accept': 'image/*,*/*',
+    },
+    redirect: 'follow',
+  });
+  
   if (!response.ok) {
+    console.error('[downloadImage] Failed:', {
+      status: response.status,
+      statusText: response.statusText,
+      url: response.url,
+      headers: Object.fromEntries(response.headers.entries()),
+    });
     throw new Error(`Failed to download image: ${response.status}`);
   }
+  
   const mimeType =
     response.headers.get('content-type')?.split(';')[0] ?? 'image/jpeg';
   const arrayBuffer = await response.arrayBuffer();
+  
+  console.log('[downloadImage] Success:', {
+    finalUrl: response.url,
+    mimeType,
+    size: arrayBuffer.byteLength,
+  });
+  
   return {
     buffer: Buffer.from(arrayBuffer),
     mimeType,
