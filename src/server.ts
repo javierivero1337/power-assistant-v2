@@ -486,6 +486,7 @@ async function stylizeImage({
       responseModalities: ['IMAGE'],
       imageConfig: {
         aspectRatio: aspectRatio ?? '1:1',
+        imageSize: '1K', // 1K resolution (1024px) - same token cost as 2K (1210 tokens)
       },
     },
   });
