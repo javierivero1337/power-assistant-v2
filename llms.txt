@@ -1,0 +1,1076 @@
+# Kapso Documentation
+
+## Docs
+
+- [Flows & Agents API](https://docs.kapso.ai/api/legacy/agents-introduction.md): Getting started with the Kapso Agents & Flows API
+- [Get agent execution details](https://docs.kapso.ai/api/legacy/agents/agent-executions/get-agent-execution-details.md): Returns details for a specific agent execution
+- [List agent executions](https://docs.kapso.ai/api/legacy/agents/agent-executions/list-agent-executions.md): Returns a list of executions for the specified agent
+- [Resume a paused agent execution](https://docs.kapso.ai/api/legacy/agents/agent-executions/resume-a-paused-agent-execution.md): Resumes an execution that was previously paused
+- [Start a new agent execution](https://docs.kapso.ai/api/legacy/agents/agent-executions/start-a-new-agent-execution.md): Triggers a new execution of the specified agent
+- [Update agent execution status](https://docs.kapso.ai/api/legacy/agents/agent-executions/update-agent-execution-status.md): Updates the status of an agent execution
+- [Create agent WhatsApp configuration](https://docs.kapso.ai/api/legacy/agents/agent-whatsapp-configs/create-agent-whatsapp-configuration.md): Associates a WhatsApp configuration with the agent
+- [Delete agent WhatsApp configuration](https://docs.kapso.ai/api/legacy/agents/agent-whatsapp-configs/delete-agent-whatsapp-configuration.md): Removes a WhatsApp configuration association from the agent
+- [Get agent WhatsApp configuration](https://docs.kapso.ai/api/legacy/agents/agent-whatsapp-configs/get-agent-whatsapp-configuration.md): Returns details for a specific agent WhatsApp configuration
+- [List agent WhatsApp configurations](https://docs.kapso.ai/api/legacy/agents/agent-whatsapp-configs/list-agent-whatsapp-configurations.md): Returns a list of WhatsApp configurations associated with the agent
+- [Update agent WhatsApp configuration](https://docs.kapso.ai/api/legacy/agents/agent-whatsapp-configs/update-agent-whatsapp-configuration.md): Updates an existing agent WhatsApp configuration
+- [Create a new agent](https://docs.kapso.ai/api/legacy/agents/agents/create-a-new-agent.md): Creates a new agent with default graph structure
+- [Get agent details](https://docs.kapso.ai/api/legacy/agents/agents/get-agent-details.md): Returns details for a specific agent
+- [Get agent with graph](https://docs.kapso.ai/api/legacy/agents/agents/get-agent-with-graph.md): Returns agent details including the langgraph definition
+- [List all agents](https://docs.kapso.ai/api/legacy/agents/agents/list-all-agents.md): Returns a list of all agents for the authenticated project
+- [Update an agent](https://docs.kapso.ai/api/legacy/agents/agents/update-an-agent.md): Updates an existing agent's details
+- [Create a new flow execution](https://docs.kapso.ai/api/legacy/agents/flow-executions/create-a-new-flow-execution.md): Triggers a new execution of a flow via API. The flow must have an active API trigger configured.
+- [Get flow execution details](https://docs.kapso.ai/api/legacy/agents/flow-executions/get-flow-execution-details.md): Returns details for a specific flow execution
+- [List flow executions](https://docs.kapso.ai/api/legacy/agents/flow-executions/list-flow-executions.md): Returns a list of executions for a specific flow
+- [Resume a waiting flow execution](https://docs.kapso.ai/api/legacy/agents/flow-executions/resume-a-waiting-flow-execution.md): Resumes a flow execution that is in waiting state
+- [Create a flow trigger](https://docs.kapso.ai/api/legacy/agents/flow-triggers/create-a-flow-trigger.md): Creates a new trigger for a flow (inbound_message or api_call)
+- [Delete a flow trigger](https://docs.kapso.ai/api/legacy/agents/flow-triggers/delete-a-flow-trigger.md): Deletes a flow trigger (does not delete the triggerable)
+- [List flow triggers](https://docs.kapso.ai/api/legacy/agents/flow-triggers/list-flow-triggers.md): Returns a list of triggers for a specific flow
+- [Update a flow trigger](https://docs.kapso.ai/api/legacy/agents/flow-triggers/update-a-flow-trigger.md): Updates a flow trigger's active status
+- [Create a new flow](https://docs.kapso.ai/api/legacy/agents/flows/create-a-new-flow.md): Creates a new flow with basic data and optional definition
+- [Get flow details](https://docs.kapso.ai/api/legacy/agents/flows/get-flow-details.md): Returns details for a specific flow
+- [Get flow with definition](https://docs.kapso.ai/api/legacy/agents/flows/get-flow-with-definition.md): Returns flow details including the complete definition structure
+- [List all flows](https://docs.kapso.ai/api/legacy/agents/flows/list-all-flows.md): Returns a list of all flows for the authenticated project
+- [Update a flow](https://docs.kapso.ai/api/legacy/agents/flows/update-a-flow.md): Updates an existing flow's details and optionally its definition
+- [Create voice agent WhatsApp config assignment](https://docs.kapso.ai/api/legacy/agents/voice-agent-whatsapp-configs/create-voice-agent-whatsapp-config-assignment.md): Assigns a WhatsApp configuration to a voice agent
+- [Delete voice agent WhatsApp config assignment](https://docs.kapso.ai/api/legacy/agents/voice-agent-whatsapp-configs/delete-voice-agent-whatsapp-config-assignment.md): Removes a WhatsApp config assignment from a voice agent
+- [List voice agent WhatsApp config assignments](https://docs.kapso.ai/api/legacy/agents/voice-agent-whatsapp-configs/list-voice-agent-whatsapp-config-assignments.md): Returns a list of WhatsApp config assignments for a voice agent
+- [Update voice agent WhatsApp config assignment](https://docs.kapso.ai/api/legacy/agents/voice-agent-whatsapp-configs/update-voice-agent-whatsapp-config-assignment.md): Updates a voice agent WhatsApp config assignment
+- [Create a voice agent](https://docs.kapso.ai/api/legacy/agents/voice-agents/create-a-voice-agent.md): Creates a new voice agent with provider configuration
+- [Delete a voice agent](https://docs.kapso.ai/api/legacy/agents/voice-agents/delete-a-voice-agent.md): Deletes a voice agent and its provider configuration
+- [Get voice agent details](https://docs.kapso.ai/api/legacy/agents/voice-agents/get-voice-agent-details.md): Returns details for a specific voice agent
+- [List voice agents](https://docs.kapso.ai/api/legacy/agents/voice-agents/list-voice-agents.md): Returns a list of voice agents for the authenticated project
+- [Update a voice agent](https://docs.kapso.ai/api/legacy/agents/voice-agents/update-a-voice-agent.md): Updates an existing voice agent's details and provider configuration
+- [Proxy DELETE request to connected app account](https://docs.kapso.ai/api/legacy/functions/app-accounts-proxy/proxy-delete-request-to-connected-app-account.md): Makes a DELETE request to an external API on behalf of a connected app account.
+The Pipedream proxy handles OAuth credential injection and forwards the request
+to the target API endpoint.
+
+- [Proxy GET request to connected app account](https://docs.kapso.ai/api/legacy/functions/app-accounts-proxy/proxy-get-request-to-connected-app-account.md): Makes a GET request to an external API on behalf of a connected app account.
+The Pipedream proxy handles OAuth credential injection and forwards the request
+to the target API endpoint.
+
+- [Proxy PATCH request to connected app account](https://docs.kapso.ai/api/legacy/functions/app-accounts-proxy/proxy-patch-request-to-connected-app-account.md): Makes a PATCH request to an external API on behalf of a connected app account.
+The Pipedream proxy handles OAuth credential injection and forwards the request
+with the provided body to the target API endpoint.
+
+- [Proxy POST request to connected app account](https://docs.kapso.ai/api/legacy/functions/app-accounts-proxy/proxy-post-request-to-connected-app-account.md): Makes a POST request to an external API on behalf of a connected app account.
+The Pipedream proxy handles OAuth credential injection and forwards the request
+with the provided body to the target API endpoint.
+
+- [Proxy PUT request to connected app account](https://docs.kapso.ai/api/legacy/functions/app-accounts-proxy/proxy-put-request-to-connected-app-account.md): Makes a PUT request to an external API on behalf of a connected app account.
+The Pipedream proxy handles OAuth credential injection and forwards the request
+with the provided body to the target API endpoint.
+
+- [Create a function secret](https://docs.kapso.ai/api/legacy/functions/function-secrets/create-a-function-secret.md): Creates a new secret for a deployed function. Secrets are encrypted environment variables
+accessible in your function code:
+- Cloudflare Workers: `env.SECRET_NAME`  
+- Supabase Functions: `Deno.env.get('SECRET_NAME')`
+
+Note: Secret values are write-only and cannot be retrieved after creation.
+
+- [Delete a function secret](https://docs.kapso.ai/api/legacy/functions/function-secrets/delete-a-function-secret.md): Permanently deletes a secret from a function. This action cannot be undone.
+- [List function secrets](https://docs.kapso.ai/api/legacy/functions/function-secrets/list-function-secrets.md): Lists all secrets configured for a function. Only secret names are returned - values are never exposed.
+The function must be deployed to have secrets.
+
+- [Create a new function](https://docs.kapso.ai/api/legacy/functions/functions/create-a-new-function.md): Creates a new function in draft status
+- [Delete a function](https://docs.kapso.ai/api/legacy/functions/functions/delete-a-function.md): Deletes a function and all its associated data
+- [Deploy or redeploy a function](https://docs.kapso.ai/api/legacy/functions/functions/deploy-or-redeploy-a-function.md): Deploys a function to the specified platform (Cloudflare Workers or Supabase Functions). This endpoint supports:
+- Initial deployment of draft functions
+- Redeployment of already deployed functions (useful after code updates)
+- Retry deployment of functions in error status
+
+The deployment target is determined by the function's function_type field:
+- cloudflare_worker: Deploys to Cloudflare Workers
+- supabase_function: Deploys to Supabase Functions (requires Supabase project integration)
+
+The deployment is asynchronous - the function returns immediately and deployment happens in the background.
+
+- [Get function details](https://docs.kapso.ai/api/legacy/functions/functions/get-function-details.md): Returns details for a specific function
+- [Invoke a deployed function](https://docs.kapso.ai/api/legacy/functions/functions/invoke-a-deployed-function.md): Invokes a deployed function with the provided request body. The function must be in 'deployed' status.
+
+The request body is passed directly to the function, and the function's response is returned.
+Function invocations are tracked for billing and analytics purposes.
+
+- [List all functions](https://docs.kapso.ai/api/legacy/functions/functions/list-all-functions.md): Returns a list of all functions for the authenticated project
+- [Update a function](https://docs.kapso.ai/api/legacy/functions/functions/update-a-function.md): Updates an existing function's details
+- [Create customer](https://docs.kapso.ai/api/legacy/platform/customers/create-customer.md): Create a new customer that can connect their WhatsApp
+- [Delete customer](https://docs.kapso.ai/api/legacy/platform/customers/delete-customer.md): Delete a customer and all associated data
+- [Get customer](https://docs.kapso.ai/api/legacy/platform/customers/get-customer.md): Get a specific customer by ID
+- [List customers](https://docs.kapso.ai/api/legacy/platform/customers/list-customers.md): Get all customers for your project
+- [Update customer](https://docs.kapso.ai/api/legacy/platform/customers/update-customer.md): Update customer details
+- [Create setup link](https://docs.kapso.ai/api/legacy/platform/setup-links/create-setup-link.md): Generate a setup link for customer WhatsApp onboarding.
+Creating a new link automatically revokes any existing active links.
+Links expire after 30 days.
+
+- [List setup links](https://docs.kapso.ai/api/legacy/platform/setup-links/list-setup-links.md): Get all setup links for a customer
+- [Update setup link](https://docs.kapso.ai/api/legacy/platform/setup-links/update-setup-link.md): Update an existing setup link's configuration.
+Can be used to modify redirect URLs, theme settings, connection types, status, or expiration.
+
+- [Add recipients (batch)](https://docs.kapso.ai/api/legacy/platform/whatsapp-broadcasts/add-recipients-batch.md): Bulk-add recipients to a draft broadcast.
+
+**Constraints:**
+- Accepts up to 1,000 recipients per request
+- Broadcast must be in draft status
+- Phone numbers are normalized to E.164 format without + prefix
+
+**Template Parameters:**
+- Array format for positional parameters: `["Param1", "Param2"]`
+- Object format for named parameters with support for media headers:
+  ```json
+  {
+    "first_name": "Alicia",
+    "discount_code": "JULY25",
+    "header_url": "https://example.com/image.jpg",
+    "header_filename": "promo.jpg"
+  }
+  ```
+
+- [Create broadcast](https://docs.kapso.ai/api/legacy/platform/whatsapp-broadcasts/create-broadcast.md): Create a draft WhatsApp broadcast tied to a production WhatsApp config and template.
+
+**Requirements:**
+- WhatsApp config must be production type
+- Template must be approved and linked to the config
+
+- [Get broadcast details](https://docs.kapso.ai/api/legacy/platform/whatsapp-broadcasts/get-broadcast-details.md): Poll overall progress and metrics for a broadcast.
+
+Use this endpoint to monitor broadcast progress and get delivery statistics.
+
+- [List broadcast recipients](https://docs.kapso.ai/api/legacy/platform/whatsapp-broadcasts/list-broadcast-recipients.md): Get paginated list of recipients with delivery and response status.
+
+- [List broadcasts](https://docs.kapso.ai/api/legacy/platform/whatsapp-broadcasts/list-broadcasts.md): Get all broadcasts for your project with optional filtering.
+
+Returns broadcasts ordered by most recent first.
+
+- [Trigger broadcast send](https://docs.kapso.ai/api/legacy/platform/whatsapp-broadcasts/trigger-broadcast-send.md): Transition a draft broadcast with recipients into sending status.
+
+**Requirements:**
+- Broadcast must be in draft status
+- Broadcast must have at least one recipient
+
+The broadcast job is enqueued server-side and processes asynchronously.
+Use GET /whatsapp_broadcasts/{broadcast_id} to poll progress.
+
+- [Create a new WhatsApp config](https://docs.kapso.ai/api/legacy/platform/whatsapp-configs/create-a-new-whatsapp-config.md): Creates a new WhatsApp configuration for a specific customer.
+
+**Note:** Manual configuration is not recommended. Use the embedded signup flow for easier customer onboarding.
+See the [onboarding guide](/docs/how-to/whatsapp/onboard-customers) for the preferred approach.
+
+- [Delete WhatsApp config](https://docs.kapso.ai/api/legacy/platform/whatsapp-configs/delete-whatsapp-config.md): Deletes a WhatsApp configuration
+- [Get WhatsApp config details](https://docs.kapso.ai/api/legacy/platform/whatsapp-configs/get-whatsapp-config-details.md): Returns details for a specific WhatsApp configuration
+- [Get WhatsApp config health status](https://docs.kapso.ai/api/legacy/platform/whatsapp-configs/get-whatsapp-config-health-status.md): Performs a comprehensive health check on a WhatsApp configuration to verify its operational status.
+
+**Health Checks Performed:**
+- Phone number access verification
+- Messaging health status (ability to send messages)
+- Webhook subscription status
+- Webhook verification status
+
+**Response Status:**
+- `healthy`: All checks pass
+- `degraded`: Some non-critical checks fail (e.g., webhook issues)
+- `unhealthy`: Critical checks fail (e.g., phone number access, token validity)
+- `error`: Service error occurred during health check
+
+**Note:** Test message sending is disabled by default for performance reasons.
+
+- [List WhatsApp configs for a customer](https://docs.kapso.ai/api/legacy/platform/whatsapp-configs/list-whatsapp-configs-for-a-customer.md): Returns a list of WhatsApp configurations for a specific customer
+- [Update WhatsApp config](https://docs.kapso.ai/api/legacy/platform/whatsapp-configs/update-whatsapp-config.md): Updates a WhatsApp configuration's details
+- [Get display name request](https://docs.kapso.ai/api/legacy/platform/whatsapp-display-names/get-display-name-request.md): Returns a specific display name request by ID
+- [List display name requests](https://docs.kapso.ai/api/legacy/platform/whatsapp-display-names/list-display-name-requests.md): Returns the display name request history for a WhatsApp configuration (most recent first)
+- [Submit a display name change](https://docs.kapso.ai/api/legacy/platform/whatsapp-display-names/submit-a-display-name-change.md): Submits a new WhatsApp display name for review via Meta for this configuration.
+
+Requirements:
+- The WhatsApp configuration must be `production`
+- `phone_number_id` and `access_token` must be present on the configuration
+- Only one active request (`submitted`/`pending_review`) can exist at a time
+
+- [Create a WhatsApp webhook](https://docs.kapso.ai/api/legacy/platform/whatsapp-webhooks/create-a-whatsapp-webhook.md): Creates a new webhook for receiving WhatsApp events for this configuration
+- [Delete WhatsApp webhook](https://docs.kapso.ai/api/legacy/platform/whatsapp-webhooks/delete-whatsapp-webhook.md): Deletes a WhatsApp webhook
+- [Get WhatsApp webhook details](https://docs.kapso.ai/api/legacy/platform/whatsapp-webhooks/get-whatsapp-webhook-details.md): Returns details for a specific WhatsApp webhook
+- [List WhatsApp webhooks](https://docs.kapso.ai/api/legacy/platform/whatsapp-webhooks/list-whatsapp-webhooks.md): Returns a list of webhooks configured for a WhatsApp configuration
+- [Update WhatsApp webhook](https://docs.kapso.ai/api/legacy/platform/whatsapp-webhooks/update-whatsapp-webhook.md): Updates a WhatsApp webhook's configuration
+- [Create a conversation assignment](https://docs.kapso.ai/api/legacy/whatsapp/conversation-assignments/create-a-conversation-assignment.md): Creates a new assignment for a WhatsApp conversation
+- [List conversation assignments](https://docs.kapso.ai/api/legacy/whatsapp/conversation-assignments/list-conversation-assignments.md): Returns a list of assignments for a specific WhatsApp conversation
+- [Update a conversation assignment](https://docs.kapso.ai/api/legacy/whatsapp/conversation-assignments/update-a-conversation-assignment.md): Updates an existing conversation assignment (e.g., notes, user, active status)
+- [Get WhatsApp call details](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-calls/get-whatsapp-call-details.md): Returns details for a specific WhatsApp call
+- [List WhatsApp calls](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-calls/list-whatsapp-calls.md): Returns a list of WhatsApp calls with optional filtering
+- [Delete WhatsApp config](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-configs/delete-whatsapp-config.md): Deletes a WhatsApp configuration
+- [Get WhatsApp config details](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-configs/get-whatsapp-config-details.md): Returns details for a specific WhatsApp configuration
+- [Get WhatsApp config health status](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-configs/get-whatsapp-config-health-status.md): Performs a comprehensive health check on a WhatsApp configuration to verify its operational status.
+
+**Health Checks Performed:**
+- Phone number access verification
+- Messaging health status (ability to send messages)
+- Webhook subscription status
+- Webhook verification status
+
+**Response Status:**
+- `healthy`: All checks pass
+- `degraded`: Some non-critical checks fail (e.g., webhook issues)
+- `unhealthy`: Critical checks fail (e.g., phone number access, token validity)
+- `error`: Service error occurred during health check
+
+**Note:** Test message sending is disabled by default for performance reasons.
+
+- [List WhatsApp configs](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-configs/list-whatsapp-configs.md): Returns a list of WhatsApp configurations available to the project.
+
+Results are scoped to configurations accessible by the API key's project.
+
+- [Update WhatsApp config](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-configs/update-whatsapp-config.md): Updates a WhatsApp configuration's details
+- [Get specific call permission](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contact-call-permissions/get-specific-call-permission.md): Returns a specific call permission for a WhatsApp contact and configuration.
+The contact can be identified by either UUID or phone number (wa_id).
+
+- [List call permissions for a WhatsApp contact](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contact-call-permissions/list-call-permissions-for-a-whatsapp-contact.md): Returns all call permissions for a specific WhatsApp contact.
+The contact can be identified by either UUID or phone number (wa_id).
+
+- [Create a note for a WhatsApp contact](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contact-notes/create-a-note-for-a-whatsapp-contact.md): Create a new note for a specific WhatsApp contact
+- [Delete a note](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contact-notes/delete-a-note.md): Delete a specific note for a WhatsApp contact
+- [Get a specific note](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contact-notes/get-a-specific-note.md): Retrieve a specific note for a WhatsApp contact
+- [List notes for a WhatsApp contact](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contact-notes/list-notes-for-a-whatsapp-contact.md): Retrieve all notes for a specific WhatsApp contact
+- [Update a note](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contact-notes/update-a-note.md): Update a specific note for a WhatsApp contact
+- [Create a WhatsApp contact](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contacts/create-a-whatsapp-contact.md): Create a new WhatsApp contact for the project
+- [Get a WhatsApp contact](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contacts/get-a-whatsapp-contact.md): Retrieve a specific WhatsApp contact by ID or phone number
+- [List WhatsApp contacts](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contacts/list-whatsapp-contacts.md): Retrieve a paginated list of WhatsApp contacts for the project
+- [Update a WhatsApp contact](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-contacts/update-a-whatsapp-contact.md): Update a WhatsApp contact's profile name and metadata
+- [Get agent execution association details](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-conversations/get-agent-execution-association-details.md): Returns details for a specific agent execution association
+- [Get WhatsApp conversation details](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-conversations/get-whatsapp-conversation-details.md): Returns details for a specific WhatsApp conversation
+- [List agent executions for a WhatsApp conversation](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-conversations/list-agent-executions-for-a-whatsapp-conversation.md): Returns all agent executions associated with a specific WhatsApp conversation
+- [List WhatsApp conversations](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-conversations/list-whatsapp-conversations.md): Returns a list of WhatsApp conversations
+- [Update WhatsApp conversation status](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-conversations/update-whatsapp-conversation-status.md): Updates the status of a specific WhatsApp conversation
+- [Delete WhatsApp message](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-messages/delete-whatsapp-message.md): Deletes a WhatsApp message from the system.
+
+**Note:**
+This operation only deletes the message from the system, not from WhatsApp itself.
+
+- [List messages in a WhatsApp conversation](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-messages/list-messages-in-a-whatsapp-conversation.md): Returns a list of messages for a specific WhatsApp conversation
+- [Mark WhatsApp message as read](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-messages/mark-whatsapp-message-as-read.md): Marks an inbound WhatsApp message as read and syncs the status with WhatsApp API.
+
+**Key Features:**
+- Only inbound messages can be marked as read
+- Optimistically updates local status for immediate feedback
+- Asynchronously syncs with WhatsApp API via background job
+- Skips messages already marked as read
+- Supports optional typing indicator control
+
+**Sandbox Mode:**
+Messages from sandbox conversations (no WhatsApp config) are handled appropriately with sandbox-specific processing.
+
+- [Send a new WhatsApp message](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-messages/send-a-new-whatsapp-message.md): Sends a new message through WhatsApp Cloud API and creates the message record
+- [Send a WhatsApp message (standalone)](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-messages/send-a-whatsapp-message-standalone.md): Sends a new WhatsApp message without requiring a conversation ID.
+This endpoint automatically finds or creates a conversation based on the phone number and WhatsApp configuration.
+
+**Configuration Selection:**
+- If `whatsapp_config_id` is provided, uses that specific configuration
+- If `customer_id` is provided, uses the customer's WhatsApp configuration
+- If neither is provided, uses the first available configuration for the project
+
+**Conversation Management:**
+- Automatically finds existing active conversations for the phone number
+- Creates new conversations if none exist
+- Updates conversation activity timestamps
+- Creates WhatsApp contacts as needed
+
+**Message Types:**
+Supports all message types including text, template, media, interactive, location, reaction, and contacts.
+
+**Agent Integration:**
+Respects agent execution states and handoff rules. Messages are blocked when an agent execution is active and not in handoff, failed, or stopped state.
+
+- [Create a new WhatsApp template](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/create-a-new-whatsapp-template.md): Creates a new draft template that can be later submitted to WhatsApp for approval.
+
+When a whatsapp_config_id (or customer_id) is provided, the template is automatically
+associated with all production configs that share the same WhatsApp Business Account (WABA).
+
+Note: You cannot associate templates with configs from different WABAs. Attempting to do so
+will return a 422 validation error.
+
+- [Delete a WhatsApp template](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/delete-a-whatsapp-template.md): Deletes a WhatsApp template from both the local database and WhatsApp's servers.
+
+**Behavior:**
+- If template is already marked as removed, returns the template without making API calls
+- Otherwise, deletes the template from WhatsApp API first, then marks it as removed locally
+- Requires a production WhatsApp configuration associated with the template's Business Account
+
+**Note:** This operation marks the template as removed rather than completely deleting it from the database.
+
+- [Edit a WhatsApp template on Meta](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/edit-a-whatsapp-template-on-meta.md): Edits a WhatsApp template via Meta's Graph API and updates the local record.
+
+- Allowed statuses: approved, rejected, or disabled
+- Editable fields: category, components, time_to_live
+- Category cannot be changed for approved templates
+
+Returns the updated template on success.
+
+- [Get WhatsApp template details](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/get-whatsapp-template-details.md): Returns details for a specific WhatsApp template
+- [Get WhatsApp template sync status](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/get-whatsapp-template-sync-status.md): Retrieve the status of WhatsApp template synchronization operations.
+
+**Filtering Options:**
+- By specific sync request IDs
+- By Business Account ID
+- By WhatsApp config ID (automatically resolves to Business Account)
+- By customer ID (finds all Business Accounts for customer's configs)
+
+**Default Behavior:**
+- Without filters: Returns the latest sync request per Business Account
+- With sync_request_ids: Returns those specific sync requests ordered by created_at desc
+
+**Response:**
+- Array of sync requests with their current status
+- Summary statistics including counts by status and last finished timestamp
+
+- [List WhatsApp templates](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/list-whatsapp-templates.md): Returns a list of WhatsApp templates available for the project
+- [Send a WhatsApp template message](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/send-a-whatsapp-template-message.md): Sends a WhatsApp template message to a specified phone number
+- [Submit a WhatsApp template for approval](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/submit-a-whatsapp-template-for-approval.md): Submits a draft template to WhatsApp for approval. Only draft templates can be submitted.
+- [Sync WhatsApp templates](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/sync-whatsapp-templates.md): Synchronize WhatsApp templates from Meta with the local database.
+
+**Sync Options:**
+- With `whatsapp_config_id`: Queue sync for that specific config
+- With `customer_id`: Queue sync for all production configs of that customer
+- With no parameters: Queue sync for all production configs in the project
+
+**Important Notes:**
+- Sync operations are grouped by WhatsApp Business Account ID
+- Only one active sync can run per Business Account at a time
+- If a sync is already running/queued for a Business Account, the existing sync request is returned
+- The sync operation is asynchronous and runs in the background
+- Use the sync_status endpoint to track progress
+
+**Response Structure:**
+The response includes an array of sync requests (one per Business Account) with:
+- Individual sync request details and status
+- Summary statistics (total requests, jobs enqueued, already in progress)
+
+- [Update a WhatsApp template](https://docs.kapso.ai/api/legacy/whatsapp/whatsapp-templates/update-a-whatsapp-template.md): Updates an existing draft template. Only draft templates can be updated.
+- [Get business profile](https://docs.kapso.ai/api/meta/whatsapp/business-profile/get-business-profile.md): Retrieve the WhatsApp Business profile information. WhatsApp users can view your business profile by clicking your business's name or number in a WhatsApp message thread.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Update business profile](https://docs.kapso.ai/api/meta/whatsapp/business-profile/update-business-profile.md): Update WhatsApp business profile information.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API /PHONE_NUMBER_ID/whatsapp_business_profile.
+
+Use this endpoint to update:
+- About text (1-139 characters, appears below profile image)
+- Business address and description
+- Contact email
+- Profile picture (via handle from resumable upload)
+- Business category (vertical)
+- Website links (max 2)
+
+**Restrictions**:
+- About text: 1-139 chars, rendered emojis supported, hyperlinks won't be clickable, no markdown
+- Address: max 256 characters
+- Description: max 512 characters
+- Email: max 128 characters, valid email format
+- Websites: max 2 URLs, max 256 chars each, must include http:// or https://
+
+**Note**: Sandbox configurations are blocked (returns 403).
+
+- [Get call permission state](https://docs.kapso.ai/api/meta/whatsapp/calls/get-call-permission-state.md): Get the call permission state for a business phone number with a specific WhatsApp user.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+Returns the current permission status and available actions with their limits. Permission can be:
+- **no_permission**: No calling permission granted
+- **temporary**: Temporary permission with expiration time
+
+Actions include:
+- **send_call_permission_request**: Send permission request message
+- **start_call**: Initiate a call
+
+Each action has time-based limits (e.g., max 2 permission requests per 24 hours).
+
+- [List calls](https://docs.kapso.ai/api/meta/whatsapp/calls/list-calls.md): Retrieve a paginated list of WhatsApp voice calls.
+
+**Kapso Extension**: This endpoint returns call records stored in Kapso's database, not Meta's API.
+
+Supports filtering by direction, status, and time range. Uses cursor-based pagination.
+
+- [Perform call action](https://docs.kapso.ai/api/meta/whatsapp/calls/perform-call-action.md): Perform various call actions via the WhatsApp Calling API.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+Supports the following actions:
+- **connect**: Initiate an outbound call to a WhatsApp user
+- **pre_accept**: Pre-establish WebRTC connection before accepting call
+- **accept**: Accept an inbound call from a WhatsApp user
+- **reject**: Reject an inbound call
+- **terminate**: End an active call
+
+- [Get contact details](https://docs.kapso.ai/api/meta/whatsapp/contacts/get-contact-details.md): Retrieve detailed information about a specific contact.
+- [List contacts](https://docs.kapso.ai/api/meta/whatsapp/contacts/list-contacts.md): Retrieve a paginated list of WhatsApp contacts for your project.
+
+Supports filtering by WhatsApp ID, customer association, and more.
+
+- [Get conversation details](https://docs.kapso.ai/api/meta/whatsapp/conversations/get-conversation-details.md): Retrieve detailed information about a specific conversation.
+
+## Kapso Extensions
+
+The response includes:
+- Full contact information
+- Message statistics
+- Conversation metadata
+
+- [List conversations](https://docs.kapso.ai/api/meta/whatsapp/conversations/list-conversations.md): Retrieve a paginated list of WhatsApp conversations for a phone number.
+
+Conversations are ordered by last activity (most recent first).
+Supports filtering by status, activity time range, and phone number.
+
+## Kapso Extensions
+
+The response includes Kapso-specific conversation metadata:
+- Message counts (total and unread)
+- Associated contact information
+- Conversation status and timestamps
+
+- [Create flow](https://docs.kapso.ai/api/meta/whatsapp/flows/create-flow.md): Create a new WhatsApp Flow.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Create flow (phone number scoped)](https://docs.kapso.ai/api/meta/whatsapp/flows/create-flow-phone-number-scoped.md): Create a new WhatsApp Flow for a phone number.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+**Note**: Requires WhatsappConfig with matching phone_number_id.
+
+- [Delete flow](https://docs.kapso.ai/api/meta/whatsapp/flows/delete-flow.md): Delete a draft flow. This action is not reversible.
+
+**Only DRAFT flows can be deleted.** Published flows cannot be deleted but can be deprecated.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+**Note**: This endpoint uses the `/flows/` prefix. It is an alias provided for better developer experience.
+
+- [Deprecate flow](https://docs.kapso.ai/api/meta/whatsapp/flows/deprecate-flow.md): Deprecate a published flow.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Get flow assets](https://docs.kapso.ai/api/meta/whatsapp/flows/get-flow-assets.md): Get flow JSON assets and URLs.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Get flow details](https://docs.kapso.ai/api/meta/whatsapp/flows/get-flow-details.md): Retrieve detailed information about a specific flow.
+
+By default returns: id, name, status, categories, validation_errors.
+
+Use `fields` parameter to request additional information like preview URLs, health status, metrics, etc.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [List flows](https://docs.kapso.ai/api/meta/whatsapp/flows/list-flows.md): List all WhatsApp Flows for a business account.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [List flows (phone number scoped)](https://docs.kapso.ai/api/meta/whatsapp/flows/list-flows-phone-number-scoped.md): List all WhatsApp Flows for a phone number.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+**Note**: Requires WhatsappConfig with matching phone_number_id.
+
+- [Publish flow](https://docs.kapso.ai/api/meta/whatsapp/flows/publish-flow.md): Publish a flow. This action is not reversible.
+
+Once published, the flow and its assets become immutable.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Update flow metadata](https://docs.kapso.ai/api/meta/whatsapp/flows/update-flow-metadata.md): Update flow name, categories, endpoint_uri, or application_id.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Upload flow JSON](https://docs.kapso.ai/api/meta/whatsapp/flows/upload-flow-json.md): Upload or update flow JSON definition. The file must be attached as multipart/form-data.
+
+Returns validation errors in the Flow JSON, if any.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Delete media](https://docs.kapso.ai/api/meta/whatsapp/media/delete-media.md): Delete a media file from WhatsApp.
+
+You can optionally provide `phone_number_id` query parameter to verify the media belongs to that phone number before deletion.
+
+- [Get media URL](https://docs.kapso.ai/api/meta/whatsapp/media/get-media-url.md): Retrieve the download URL for a media file.
+
+**Important:** The returned URL is temporary and expires after 5 minutes.
+
+You can optionally provide `phone_number_id` query parameter to verify the media belongs to that phone number before retrieval.
+
+- [Upload media](https://docs.kapso.ai/api/meta/whatsapp/media/upload-media.md): Upload media files to WhatsApp. The media ID returned can be used when sending messages.
+
+**Supported formats and size limits:**
+
+**Images** (jpeg, png)
+- Max size: 5MB
+
+**Videos** (mp4, 3gp)
+- Max size: 16MB
+
+**Audio** (aac, mp3, ogg, opus)
+- Max size: 16MB
+
+**Documents** (pdf, doc, docx, ppt, pptx, xls, xlsx)
+- Max size: 100MB
+
+**Stickers** (webp)
+- Static: max 100KB
+- Animated: max 500KB
+
+- [List messages](https://docs.kapso.ai/api/meta/whatsapp/messages/list-messages.md): Retrieve a paginated list of WhatsApp messages for a phone number.
+
+Supports filtering by conversation, direction, status, and time range.
+Uses cursor-based pagination for efficient scrolling through large result sets.
+
+- [Send a message](https://docs.kapso.ai/api/meta/whatsapp/messages/send-a-message.md): Send a WhatsApp message to a recipient.
+
+Supports all WhatsApp message types:
+- **text**: Plain text messages with optional URL preview
+- **image**: Images with optional caption
+- **video**: Videos with optional caption
+- **audio**: Audio files
+- **document**: Documents with optional caption and filename
+- **sticker**: Stickers
+- **location**: Location sharing
+- **contacts**: Contact cards
+- **interactive**: Interactive messages (buttons, lists, flows)
+- **template**: Message templates
+- **reaction**: Emoji reactions to messages
+
+- [Get phone number details](https://docs.kapso.ai/api/meta/whatsapp/phone-numbers/get-phone-number-details.md): Retrieve detailed information about a specific phone number.
+
+By default returns basic information. Use `fields` parameter to request additional data like throughput limits, account mode, certificate status, etc.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [List phone numbers](https://docs.kapso.ai/api/meta/whatsapp/phone-numbers/list-phone-numbers.md): List all phone numbers associated with a business account.
+
+Returns basic phone number information including verification status and quality rating.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+- [Update phone number settings](https://docs.kapso.ai/api/meta/whatsapp/phone-numbers/update-phone-number-settings.md): Update phone number settings. Common use case is updating the two-step verification PIN.
+
+**Proxy endpoint**: Proxies directly to Meta Graph API.
+
+**Note**: Two-step verification is required for WhatsApp Business API. The PIN must be 6 digits.
+
+- [Create message template](https://docs.kapso.ai/api/meta/whatsapp/templates/create-message-template.md): Create a new WhatsApp message template.
+
+Templates must be approved by WhatsApp before they can be used.
+After creation, templates enter a PENDING state until reviewed.
+
+**Side effect**: Enqueues a template sync job on success.
+
+- [Delete message template](https://docs.kapso.ai/api/meta/whatsapp/templates/delete-message-template.md): Delete a WhatsApp message template.
+
+**Specify either `name` or `hsm_id` to identify the template to delete.**
+
+- [List message templates](https://docs.kapso.ai/api/meta/whatsapp/templates/list-message-templates.md): Retrieve a list of approved message templates for this phone number.
+
+Templates must be approved by WhatsApp before they can be used.
+
+- [API Introduction](https://docs.kapso.ai/api/meta/whatsapp/whatsapp-introduction.md): Getting started with the Kapso WhatsApp API
+- [Add recipients](https://docs.kapso.ai/api/platform/v1/broadcasts/add-recipients.md): Add up to 1000 recipients to a draft broadcast. Duplicates are skipped.
+
+Recipients use Meta's component syntax with body, header, and button components.
+
+- [Create broadcast](https://docs.kapso.ai/api/platform/v1/broadcasts/create-broadcast.md): Create a broadcast campaign in draft mode.
+
+Workflow: create broadcast → add recipients → send. Broadcasts stay in draft until you call the send endpoint.
+
+- [Get broadcast](https://docs.kapso.ai/api/platform/v1/broadcasts/get-broadcast.md)
+- [List broadcasts](https://docs.kapso.ai/api/platform/v1/broadcasts/list-broadcasts.md): Get broadcast campaigns, most recent first.
+- [List recipients](https://docs.kapso.ai/api/platform/v1/broadcasts/list-recipients.md): Get recipients for this broadcast with delivery status.
+- [Send broadcast](https://docs.kapso.ai/api/platform/v1/broadcasts/send-broadcast.md): Start sending messages to all recipients. This is asynchronous - use GET /broadcasts/{id} to monitor progress.
+- [Update conversation status](https://docs.kapso.ai/api/platform/v1/conversations/update-conversation-status.md): Close completed conversations or reopen them for follow-ups.
+- [Create customer](https://docs.kapso.ai/api/platform/v1/customers/create-customer.md)
+- [Delete customer](https://docs.kapso.ai/api/platform/v1/customers/delete-customer.md)
+- [Get customer](https://docs.kapso.ai/api/platform/v1/customers/get-customer.md)
+- [List customers](https://docs.kapso.ai/api/platform/v1/customers/list-customers.md): Returns customers in your project, most recent first.
+- [Update customer](https://docs.kapso.ai/api/platform/v1/customers/update-customer.md)
+- [List display name requests](https://docs.kapso.ai/api/platform/v1/display-names/list-display-name-requests.md): View all display name change requests for this number, most recent first.
+- [Retrieve display name request](https://docs.kapso.ai/api/platform/v1/display-names/retrieve-display-name-request.md): Check status of a display name change request. Poll this endpoint to monitor Meta's review progress.
+- [Submit display name request](https://docs.kapso.ai/api/platform/v1/display-names/submit-display-name-request.md): Request a display name change. Meta reviews most changes within 24-48 hours. Some names may be approved instantly.
+
+- [Create function](https://docs.kapso.ai/api/platform/v1/functions/functions/create-function.md): Create a new serverless function in draft status. The function will be saved but not deployed to the runtime platform.
+
+After creating a function:
+1. Review and test the code locally
+2. Deploy using POST /functions/{id}/deploy
+3. Invoke using POST /functions/{id}/invoke
+
+Choose function_type based on your deployment requirements:
+- `cloudflare_worker`: Fast global edge deployment with standard JavaScript
+- `supabase_function`: Deno runtime with built-in Supabase client
+
+The function slug will be auto-generated from the name if not provided (lowercase with hyphens).
+
+- [Create function secret](https://docs.kapso.ai/api/platform/v1/functions/functions/create-function-secret.md): Create a secret for this function. Secrets are injected as environment variables when your function executes.
+
+Use secrets to store sensitive data without hardcoding in function code:
+- API keys (Stripe, OpenAI, Twilio, etc.)
+- Database connection strings
+- OAuth credentials
+- Service account tokens
+
+Requirements:
+- Function must be in 'deployed' status (422 if not)
+- Secret name must be uppercase alphanumeric with underscores (e.g., STRIPE_API_KEY)
+- Secret name must be unique within the function
+
+Secret types are automatically detected:
+- String values → text type
+- Object/array values → json type
+
+Important: The secret value is only returned in the creation response. It cannot be retrieved later. Store the value securely after creation if needed.
+
+After creating a secret, it's immediately available in your function as an environment variable with the specified name.
+
+- [Delete function](https://docs.kapso.ai/api/platform/v1/functions/functions/delete-function.md): Permanently delete a serverless function. This will also remove the function from the runtime platform and delete all associated secrets.
+
+After deletion:
+- Function will be removed from Cloudflare Workers or Supabase Edge Functions
+- All function secrets are automatically deleted
+- Function endpoint URL will return 404
+- Function invocation records are preserved for audit history
+
+This operation cannot be undone. Make sure to backup function code if needed before deletion.
+
+- [Delete function secret](https://docs.kapso.ai/api/platform/v1/functions/functions/delete-function-secret.md): Permanently delete a secret from this function. The secret will be removed from the runtime environment and will no longer be available as an environment variable.
+
+Requirements:
+- Function must be in 'deployed' status (422 if not)
+- Secret must exist (404 if not found)
+
+After deletion:
+- Secret is immediately removed from function runtime environment
+- Function can no longer access the secret value
+- Any function invocations referencing the deleted secret will fail
+
+This operation cannot be undone. Make sure the secret is no longer needed before deletion. If the function code still references the deleted secret, invocations may fail with undefined variable errors.
+
+- [Deploy function](https://docs.kapso.ai/api/platform/v1/functions/functions/deploy-function.md): Deploy a function to the serverless runtime platform asynchronously. Deployment happens in the background and may take 10-60 seconds.
+
+You'll receive a 202 Accepted response immediately. To check deployment status:
+1. Poll GET /functions/{id} to monitor status field
+2. Wait for status to change from 'draft' to 'deployed' (success) or 'error' (failure)
+3. Check last_deployed_at timestamp to confirm deployment completion
+
+Deployment process:
+- For `cloudflare_worker`: Code is deployed to Cloudflare's global edge network
+- For `supabase_function`: Code is deployed to Supabase Edge Functions with Deno runtime
+
+Deployment will fail (status='error') if:
+- Function code has syntax errors
+- Function type is 'supabase_function' but no Supabase project is configured
+- Runtime platform API is unavailable
+
+After successful deployment, the function is immediately available for invocation via POST /functions/{id}/invoke.
+
+- [Invoke function](https://docs.kapso.ai/api/platform/v1/functions/functions/invoke-function.md): Execute a deployed serverless function with a custom JSON payload. The request body is forwarded directly to your function code.
+
+Request payload structure is completely flexible - send any valid JSON that your function expects. Your function receives the payload as the request body and can parse it however needed.
+
+Response structure mirrors whatever your function returns. This endpoint acts as a pass-through proxy to your serverless function.
+
+The function must be in 'deployed' status to be invoked. If the function is in 'draft' or 'error' status, the request will fail with 422 validation error.
+
+Execution tracking:
+- All invocations are tracked with timing and request/response data
+- Failed invocations return an `invocation_id` for debugging
+- Check function invocation history via GET /functions/{id} (extended view)
+
+Error handling:
+- Function execution errors are captured and returned with details
+- Errors are truncated to 512 characters for storage
+- Original error context is preserved in invocation record
+
+- [List function secrets](https://docs.kapso.ai/api/platform/v1/functions/functions/list-function-secrets.md): Retrieve all secret names configured for this function. Secret values are NEVER included in list responses for security.
+
+Secrets are injected as environment variables when your function executes. Use this endpoint to:
+- Audit which secrets are configured
+- Verify secret names before creating new ones
+- Check secret types (text, json, inherited)
+
+Important: If the function is not deployed, this endpoint returns an empty array. Secrets can only be managed for deployed functions.
+
+Secret values are only returned once when creating a secret via POST /functions/{id}/secrets. After creation, values cannot be retrieved - only the secret name and type are visible.
+
+- [List functions](https://docs.kapso.ai/api/platform/v1/functions/functions/list-functions.md): Retrieve all serverless functions for your project. Functions are custom JavaScript code that runs on-demand in response to API invocations.
+
+Use this endpoint to:
+- List all configured functions
+- Review function deployment status
+- Audit function creation and updates
+
+- [Retrieve function](https://docs.kapso.ai/api/platform/v1/functions/functions/retrieve-function.md): Get complete details for a serverless function including code, configuration, deployment status, and computed URLs.
+
+Use this endpoint to:
+- Review function code before updating
+- Check deployment status and version
+- Get endpoint URL for external invocation
+- Retrieve runtime configuration
+
+- [Update function](https://docs.kapso.ai/api/platform/v1/functions/functions/update-function.md): Update function metadata or code. Supports partial updates - only include fields you want to change.
+
+Common updates:
+- Update function code (requires redeployment to take effect)
+- Change function name or description
+- Update runtime configuration
+- Modify function slug
+
+Important: Code updates are saved immediately but do NOT automatically deploy. After updating code, you must call POST /functions/{id}/deploy for changes to take effect in production.
+
+- [Assign WhatsApp phone number](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/assign-whatsapp-phone-number.md): Assign a WhatsApp phone number to route voice calls to this voice agent. When users initiate voice calls from WhatsApp to this number, the call will be handled by this agent.
+
+Each voice agent can have multiple phone number assignments, but only one can be marked as primary. The primary number is used as the default for new calls.
+
+Assignment rules:
+- Phone number must exist in your project
+- Phone number cannot be assigned to multiple voice agents simultaneously
+- Only one assignment per agent can be primary
+- Assignments can be enabled/disabled without deletion
+
+After assignment:
+- Voice calls to the phone number will route to this agent
+- If is_primary=true, this becomes the default number for the agent
+
+- [Create voice agent](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/create-voice-agent.md): Create a new voice agent with provider configuration. Voice agents handle WhatsApp voice calls and route them to third-party voice providers.
+
+After creating a voice agent:
+1. Assign WhatsApp phone numbers using POST /voice_agents/{id}/whatsapp/phone_numbers
+2. Configure provider settings (API keys, agent name, etc.)
+3. Test voice call routing
+
+Currently supported providers:
+- Pipecat (VoiceAgents::PipecatProvider): Requires public_api_key, private_api_key, and agent_name
+
+- [Delete voice agent](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/delete-voice-agent.md): Permanently delete a voice agent. This will also remove all WhatsApp phone number assignments for this agent.
+
+After deletion:
+- All assigned phone numbers will no longer route voice calls to this agent
+- Active voice calls may be dropped
+- WhatsApp phone number assignments are automatically removed
+
+This operation cannot be undone. Make sure to reassign phone numbers to other voice agents if needed.
+
+- [Delete WhatsApp phone number assignment](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/delete-whatsapp-phone-number-assignment.md): Permanently remove a phone number assignment from this voice agent using the assignment_id (not phone_number_id).
+
+The assignment_id is the 'id' field returned when creating or listing assignments.
+To find the assignment_id for a specific phone number, use GET /voice_agents/{voice_agent_id}/whatsapp/phone_numbers.
+
+After deletion:
+- Voice calls to this number will not be handled by this agent
+- If this was the primary assignment, you should assign a new primary number
+- Active voice calls may be dropped
+
+This operation cannot be undone. If you need to temporarily disable routing, use PATCH to set enabled=false instead.
+
+- [List voice agents](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/list-voice-agents.md): Retrieve all voice agents for your project. Voice agents handle WhatsApp voice calls and route them to configured voice providers.
+
+Use this endpoint to:
+- List all configured voice agents
+- Filter by provider type
+- Audit voice agent creation over time
+
+- [List WhatsApp phone number assignments](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/list-whatsapp-phone-number-assignments.md): Retrieve all WhatsApp phone numbers assigned to this voice agent. Assignments define which phone numbers route voice calls to this agent.
+
+Use this endpoint to:
+- Review all phone numbers handling voice calls for this agent
+- Check which number is the primary assignment
+- Audit assignment status (enabled/disabled)
+
+- [Retrieve voice agent](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/retrieve-voice-agent.md): Get complete details for a voice agent including provider configuration.
+
+Use this endpoint to:
+- Review voice agent configuration
+- Check provider settings
+- Get voice agent name and metadata
+
+- [Update voice agent](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/update-voice-agent.md): Update voice agent configuration. Supports partial updates - only include fields you want to change.
+
+Common updates:
+- Change voice agent name
+- Update provider configuration (API keys, agent name, base URL)
+- Switch provider type
+
+Note: Updating provider configuration may require restarting active voice calls to use the new settings.
+
+- [Update WhatsApp phone number assignment](https://docs.kapso.ai/api/platform/v1/functions/voice-agents/update-whatsapp-phone-number-assignment.md): Update an existing phone number assignment using the assignment_id (not phone_number_id).
+
+The assignment_id is the 'id' field returned when creating or listing assignments.
+To find the assignment_id for a specific phone number, use GET /voice_agents/{voice_agent_id}/whatsapp/phone_numbers.
+
+Common updates:
+- Make this the primary number (is_primary=true) - will demote the current primary
+- Disable assignment temporarily (enabled=false) - stops routing without deleting
+- Re-enable disabled assignment (enabled=true)
+
+Note: Setting is_primary=true on this assignment will automatically set is_primary=false on any other primary assignment for this voice agent.
+
+- [Create workflow trigger](https://docs.kapso.ai/api/platform/v1/functions/workflow-triggers/create-workflow-trigger.md): Create a new trigger for a workflow. Triggers define when the workflow should automatically execute.
+
+Trigger types:
+- `inbound_message`: Workflow starts when WhatsApp messages arrive at specified phone number (requires phone_number_id)
+- `api_call`: Workflow starts only via POST /workflows/{id}/executions (no phone_number_id needed)
+
+After creating a trigger:
+- For inbound_message: Messages to the phone_number_id will start workflow executions
+- For api_call: Workflow can only be started via API endpoint
+
+Note: A workflow can have multiple triggers (e.g., multiple phone numbers, or both inbound_message and api_call).
+
+- [Delete workflow trigger](https://docs.kapso.ai/api/platform/v1/functions/workflow-triggers/delete-workflow-trigger.md): Permanently delete a workflow trigger. This will stop the workflow from executing automatically based on this trigger.
+
+After deletion:
+- For inbound_message triggers: Messages to the phone_number_id will no longer start this workflow
+- For api_call triggers: The workflow can still be started manually via POST /workflows/{id}/executions
+
+This operation cannot be undone. If you need to temporarily disable a trigger, use PATCH to set active=false instead.
+
+- [List workflow triggers](https://docs.kapso.ai/api/platform/v1/functions/workflow-triggers/list-workflow-triggers.md): Retrieve all triggers configured for a workflow. Triggers define when and how a workflow should automatically execute.
+
+Use this endpoint to:
+- Review configured triggers for a workflow
+- Audit which phone numbers trigger this workflow
+- Check trigger active status
+
+- [Update workflow trigger](https://docs.kapso.ai/api/platform/v1/functions/workflow-triggers/update-workflow-trigger.md): Update a workflow trigger. Currently only the 'active' status can be modified.
+
+Use this to:
+- Temporarily disable a trigger without deleting it (set active=false)
+- Re-enable a previously disabled trigger (set active=true)
+
+Note: To change trigger type or phone_number_id, delete the trigger and create a new one.
+
+- [Create workflow](https://docs.kapso.ai/api/platform/v1/functions/workflows/create-workflow.md): Create a new workflow in draft status. You can provide a minimal definition (just a start node) and build out the workflow later, or provide a complete workflow definition with all nodes and edges.
+
+After creating a workflow, you can:
+1. Update the definition to add more nodes/edges
+2. Create triggers to specify when the workflow should execute
+3. Activate the workflow by changing status to 'active'
+
+- [List workflow executions](https://docs.kapso.ai/api/platform/v1/functions/workflows/list-workflow-executions.md): Retrieve execution history for a workflow. Executions are returned in reverse chronological order (most recent first). Use query parameters to filter by status, time range, or pagination.
+
+**Response**: Returns summary data (id, status, tracking_id, timestamps, workflow, current_step). Does not include execution_context or events. Use GET /workflow_executions/{id} to retrieve full execution details.
+
+Common use cases:
+- Monitor active executions for a workflow
+- Review failed executions for debugging
+- Audit execution history over time
+- Find waiting executions that need user input
+
+- [List workflows](https://docs.kapso.ai/api/platform/v1/functions/workflows/list-workflows.md): Retrieve all workflows for your project. Workflows are returned ordered by creation time (newest first). Use query parameters to filter by status, name, or creation date.
+
+Common use cases:
+- List all active workflows ready for execution
+- Find workflows by partial name match
+- Audit workflow creation over time
+
+- [Resume waiting workflow execution](https://docs.kapso.ai/api/platform/v1/functions/workflows/resume-waiting-workflow-execution.md): Resume a workflow execution that is in 'waiting' status. Workflows enter waiting status when they reach a wait_for_response step or are explicitly paused.
+
+Send a message with:
+- `kind`: Message type, defaults to "payload" if omitted
+- `data`: The actual payload - can be a string for simple text responses (e.g., "yes", "no") or an object for structured data (e.g., button clicks, form submissions)
+
+After resuming, the workflow will continue processing from the waiting step with the provided message data.
+
+**Response**: Returns minimal execution data (id, status, tracking_id, timestamps, workflow, current_step). Does not include execution_context or events. Use GET /workflow_executions/{id} to retrieve full execution details.
+
+- [Retrieve workflow](https://docs.kapso.ai/api/platform/v1/functions/workflows/retrieve-workflow.md): Get complete details for a specific workflow including its definition, status, execution stats, and metadata.
+
+Use this endpoint to:
+- Retrieve workflow configuration before updating
+- Check workflow status and execution count
+- Get the current workflow definition for cloning or backup
+
+- [Retrieve workflow execution](https://docs.kapso.ai/api/platform/v1/functions/workflows/retrieve-workflow-execution.md): Get complete details for a workflow execution including current status, execution context, variables, and full event history.
+
+**This is the only endpoint that returns the full execution_context** (vars, system, context, metadata) along with the complete event history.
+
+Use this endpoint to:
+- Monitor execution progress and current step
+- Debug failed executions with full event log
+- Review execution variables and context
+- Check error details when status is 'failed'
+
+The response includes:
+- Current status and step
+- Complete event chronology (step transitions, agent actions, variable updates)
+- Full execution_context with standard structure (vars, system, context, metadata)
+- Error details if execution failed
+
+- [Start workflow execution](https://docs.kapso.ai/api/platform/v1/functions/workflows/start-workflow-execution.md): Start a new execution of a workflow asynchronously. The workflow will begin processing in the background.
+
+You'll receive a 202 Accepted response with a tracking_id immediately. Use this tracking_id to:
+- Poll GET /workflow_executions with tracking_id filter to check status
+- Correlate execution events with your own systems
+
+The execution will fail if:
+- The workflow is not in 'active' status
+- Required phone_number is missing or invalid
+- The workflow definition is malformed
+
+Use cases:
+- Start workflow from external trigger (API, webhook, scheduled job)
+- Test workflow with specific initial variables
+- Retry failed execution with same parameters
+
+- [Update workflow](https://docs.kapso.ai/api/platform/v1/functions/workflows/update-workflow.md): Update workflow metadata or definition. Supports partial updates - only include fields you want to change.
+
+Common updates:
+- Change workflow name or description
+- Update workflow definition (add/modify/remove nodes and edges)
+- Activate workflow by setting status to 'active'
+- Archive workflow by setting status to 'archived'
+
+Note: You can update the definition of an active workflow. Changes take effect immediately for new executions (running executions continue with the old definition).
+
+- [Upload media](https://docs.kapso.ai/api/platform/v1/media/upload-media.md): Upload media files for WhatsApp messaging from public URLs.
+
+Supports two delivery methods:
+- `meta_media`: Standard upload to Meta's media endpoint (30-day lifetime)
+- `meta_resumable_asset`: Resumable upload flow for profile pictures and large files
+
+**Security**: SSRF-protected - blocks private IPs, localhost, and metadata endpoints
+
+**Size limits**:
+- Images: 5 MB
+- Audio/Video: 16 MB
+- Documents: 100 MB
+
+Requests exceeding these limits fail immediately.
+
+- [Check phone health](https://docs.kapso.ai/api/platform/v1/phone-numbers/check-phone-health.md): Live health check via Meta APIs and Kapso services.
+- [Connect phone number](https://docs.kapso.ai/api/platform/v1/phone-numbers/connect-phone-number.md): Connect a WhatsApp number to this customer using Meta credentials.
+
+Get credentials from Meta's App Dashboard after completing embedded signup or manual setup.
+
+- [Delete phone number](https://docs.kapso.ai/api/platform/v1/phone-numbers/delete-phone-number.md)
+- [Get phone number](https://docs.kapso.ai/api/platform/v1/phone-numbers/get-phone-number.md)
+- [List phone numbers](https://docs.kapso.ai/api/platform/v1/phone-numbers/list-phone-numbers.md): Get WhatsApp numbers in your project, most recent first.
+- [Update phone number](https://docs.kapso.ai/api/platform/v1/phone-numbers/update-phone-number.md)
+- [Create setup link](https://docs.kapso.ai/api/platform/v1/setup-links/create-setup-link.md): Generate a hosted onboarding page for customers to connect their WhatsApp number.
+
+The link guides them through Meta's embedded signup and optionally provisions a new number.
+
+- [List setup links](https://docs.kapso.ai/api/platform/v1/setup-links/list-setup-links.md): Get WhatsApp onboarding links for a customer, most recent first.
+- [Update setup link](https://docs.kapso.ai/api/platform/v1/setup-links/update-setup-link.md)
+- [Create webhook](https://docs.kapso.ai/api/platform/v1/webhooks/create-webhook.md): Subscribe to WhatsApp events for this number.
+
+Use buffering to batch high-volume events like inbound messages. Without buffering, each message triggers an immediate webhook delivery.
+
+- [Delete webhook](https://docs.kapso.ai/api/platform/v1/webhooks/delete-webhook.md)
+- [Get webhook](https://docs.kapso.ai/api/platform/v1/webhooks/get-webhook.md)
+- [List webhooks](https://docs.kapso.ai/api/platform/v1/webhooks/list-webhooks.md): Get webhooks for this number, most recent first.
+- [Update webhook](https://docs.kapso.ai/api/platform/v1/webhooks/update-webhook.md)
+- [Agent class](https://docs.kapso.ai/builder-reference/agent-class.md): Create and manage conversational agents
+- [Agent edges](https://docs.kapso.ai/builder-reference/agent-edges.md): Connect nodes and control conversation flow
+- [Agent nodes](https://docs.kapso.ai/builder-reference/agent-nodes.md): Building blocks for conversational agents
+- [AI fields](https://docs.kapso.ai/builder-reference/ai-fields.md): Dynamic content generation in flows
+- [Flow class](https://docs.kapso.ai/builder-reference/flow-class.md): Create and manage WhatsApp workflows
+- [Flow edges](https://docs.kapso.ai/builder-reference/flow-edges.md): Connect nodes in WhatsApp workflows
+- [Flow nodes](https://docs.kapso.ai/builder-reference/flow-nodes.md): Building blocks for WhatsApp workflows
+- [Flow overview](https://docs.kapso.ai/builder-reference/flow-overview.md): Semi-deterministic WhatsApp workflows with AI capabilities
+- [SubagentNode](https://docs.kapso.ai/builder-reference/nodes/agent-subagent-node.md): Multi-tool composite node for flexible agent building
+- [Kapso SDK](https://docs.kapso.ai/builder-reference/overview.md): Build conversational AI agents and deterministic flows
+- [Changelog](https://docs.kapso.ai/changelog.md): Product updates and announcements
+- [kapso agent init](https://docs.kapso.ai/cli/commands/agent-init.md): Create a new agent locally
+- [kapso agent list](https://docs.kapso.ai/cli/commands/agent-list.md): List agents (local and/or remote)
+- [kapso agent pull](https://docs.kapso.ai/cli/commands/agent-pull.md): Pull specific agent from cloud
+- [kapso agent push](https://docs.kapso.ai/cli/commands/agent-push.md): Push agent to cloud (create or update)
+- [kapso agent snapshot](https://docs.kapso.ai/cli/commands/agent-snapshot.md): Create test snapshot and get web URL
+- [kapso push](https://docs.kapso.ai/cli/commands/deploy.md): Push resources to Kapso Cloud
+- [kapso flow init](https://docs.kapso.ai/cli/commands/flow-init.md): Create a new flow locally
+- [kapso flow list](https://docs.kapso.ai/cli/commands/flow-list.md): List flows (local and/or remote)
+- [kapso flow pull](https://docs.kapso.ai/cli/commands/flow-pull.md): Pull specific flow from cloud
+- [kapso flow push](https://docs.kapso.ai/cli/commands/flow-push.md): Push flow to cloud (create or update)
+- [kapso functions](https://docs.kapso.ai/cli/commands/functions.md): Manage serverless functions with Kapso CLI
+- [kapso login](https://docs.kapso.ai/cli/commands/login.md): Authenticate with Kapso Cloud
+- [kapso logout](https://docs.kapso.ai/cli/commands/logout.md): Log out from your Kapso account
+- [kapso pull](https://docs.kapso.ai/cli/commands/pull.md): Download project or individual resources from Kapso Cloud
+- [kapso version](https://docs.kapso.ai/cli/commands/version.md): Display version information
+- [Introduction](https://docs.kapso.ai/cli/introduction.md): Get started with the Kapso CLI and Builder SDK
+- [Agent webhooks](https://docs.kapso.ai/docs/build-agents/agent-webhooks.md): Two-way communication between your systems and Kapso agents
+- [Builder SDK](https://docs.kapso.ai/docs/build-agents/builder-sdk-reference.md): Introduction to building agents with the Kapso Python SDK
+- [Build with AI editors](https://docs.kapso.ai/docs/build-agents/cli.md)
+- [Edges](https://docs.kapso.ai/docs/build-agents/edges.md): Connecting nodes and defining conversational paths
+- [Started by external trigger](https://docs.kapso.ai/docs/build-agents/external-trigger-flow.md): How agents process execution initiated by API calls or webhooks
+- [Default Node](https://docs.kapso.ai/docs/build-agents/node-types/default-node.md): The most versatile node for general conversation and reasoning
+- [Handoff Node](https://docs.kapso.ai/docs/build-agents/node-types/handoff-node.md): Transfer conversations to human operators
+- [Knowledge Base Node](https://docs.kapso.ai/docs/build-agents/node-types/knowledge-base-node.md): Access specific knowledge sources for responses
+- [Special Nodes](https://docs.kapso.ai/docs/build-agents/node-types/special-nodes.md): Essential entry and exit points for Agent Graphs
+- [Start and End nodes](https://docs.kapso.ai/docs/build-agents/node-types/start-end-nodes.md): Required entry and exit points for agent execution flow
+- [Subagent Node](https://docs.kapso.ai/docs/build-agents/node-types/subagent-node.md): Combines multiple tool types into a single powerful node
+- [Warm End Node](https://docs.kapso.ai/docs/build-agents/node-types/warm-end-node.md): Gracefully conclude conversations
+- [Webhook Node](https://docs.kapso.ai/docs/build-agents/node-types/webhook-node.md): Make HTTP requests to external services and APIs
+- [WhatsApp Template Node](https://docs.kapso.ai/docs/build-agents/node-types/whatsapp-template-node.md): Send pre-approved WhatsApp message templates
+- [Agent architecture](https://docs.kapso.ai/docs/build-agents/philosophy.md)
+- [Tools reference](https://docs.kapso.ai/docs/build-agents/tools.md): Complete reference of tools available
+- [Started by user message](https://docs.kapso.ai/docs/build-agents/user-message-flow.md): How agents process messages initiated by users
+- [API setup](https://docs.kapso.ai/docs/build-voice-agents/api.md): Programmatically enable voice calling for your customers' WhatsApp accounts.
+- [Architecture](https://docs.kapso.ai/docs/build-voice-agents/architecture.md): Understand how Kapso orchestrates WhatsApp voice calls with Pipecat Cloud.
+- [Quickstart](https://docs.kapso.ai/docs/build-voice-agents/quickstart.md): Connect a Pipecat Cloud agent to Kapso and answer WhatsApp voice calls in minutes.
+- [AI fields](https://docs.kapso.ai/docs/flows/ai-fields.md): Dynamic content generation using AI at runtime
+- [Edges](https://docs.kapso.ai/docs/flows/edges.md): Connect workflow nodes to define execution paths
+- [Events](https://docs.kapso.ai/docs/flows/events.md): Workflow execution tracking and debugging
+- [Agent node](https://docs.kapso.ai/docs/flows/step-types/agent-node.md): AI agent that can use tools and hold conversations
+- [Decide node](https://docs.kapso.ai/docs/flows/step-types/decide-node.md): Route workflows with AI or custom logic
+- [Function node](https://docs.kapso.ai/docs/flows/step-types/function-node.md): Execute custom JavaScript functions in your workflow
+- [Handoff node](https://docs.kapso.ai/docs/flows/step-types/handoff-node.md): Transfer workflow execution to human agents
+- [Send interactive](https://docs.kapso.ai/docs/flows/step-types/send-interactive-node.md): Send interactive WhatsApp messages
+- [Send template](https://docs.kapso.ai/docs/flows/step-types/send-template-node.md): Send WhatsApp template messages
+- [Send text](https://docs.kapso.ai/docs/flows/step-types/send-text-node.md): Send WhatsApp text messages
+- [Start](https://docs.kapso.ai/docs/flows/step-types/start-node.md): Entry point for every workflow
+- [Wait for response](https://docs.kapso.ai/docs/flows/step-types/wait-for-response-node.md): Wait for user input before continuing
+- [Triggers](https://docs.kapso.ai/docs/flows/triggers.md): Start workflow execution from WhatsApp messages or API calls
+- [Variables and context](https://docs.kapso.ai/docs/flows/variables-and-context.md): Data management throughout workflow execution
+- [Functions cheatsheet](https://docs.kapso.ai/docs/functions/overview.md): Deploy serverless JavaScript functions with Kapso
+- [Connect WhatsApp](https://docs.kapso.ai/docs/how-to/whatsapp/connect-whatsapp.md): Connect your WhatsApp Business account to Kapso
+- [Use Kapso Sandbox](https://docs.kapso.ai/docs/how-to/whatsapp/use-sandbox-for-testing.md): Test your WhatsApp agents safely without production credentials
+- [Sending Templates](https://docs.kapso.ai/docs/integrations/whatsapp/sending-templates.md): Complete guide to sending WhatsApp template messages via API and Flows
+- [Introduction](https://docs.kapso.ai/docs/introduction.md): Send your first message.
+- [MCP server](https://docs.kapso.ai/docs/mcp/introduction.md): WhatsApp operations and platform API via MCP
+- [Broadcasts API](https://docs.kapso.ai/docs/platform/broadcasts-api.md): Send template messages to multiple recipients programmatically
+- [Connection detection](https://docs.kapso.ai/docs/platform/detecting-whatsapp-connection.md): Know when customers complete WhatsApp onboarding
+- [Getting started](https://docs.kapso.ai/docs/platform/getting-started.md): Enable WhatsApp for your customers
+- [Setup links](https://docs.kapso.ai/docs/platform/setup-links.md): Customize the WhatsApp onboarding experience
+- [Advanced features](https://docs.kapso.ai/docs/platform/webhooks/advanced.md): Message buffering, ordering, and retry policy
+- [Event types](https://docs.kapso.ai/docs/platform/webhooks/event-types.md): Available webhook events and their payloads
+- [Legacy v1 webhooks](https://docs.kapso.ai/docs/platform/webhooks/legacy.md): Migration guide for v1 webhook payloads
+- [Webhooks overview](https://docs.kapso.ai/docs/platform/webhooks/overview.md): Get real-time notifications for WhatsApp events
+- [Webhook security](https://docs.kapso.ai/docs/platform/webhooks/security.md): Verify webhook signatures to prevent unauthorized requests
+- [Receive messages](https://docs.kapso.ai/docs/whatsapp/receive-messages.md): Get notified when WhatsApp events happen
+- [Send audio](https://docs.kapso.ai/docs/whatsapp/send-messages/audio.md): Send audio and voice messages via SDK or API
+- [Send buttons](https://docs.kapso.ai/docs/whatsapp/send-messages/buttons.md): Send interactive button messages via SDK or API
+- [Send contact](https://docs.kapso.ai/docs/whatsapp/send-messages/contact.md): Send contact card messages via SDK or API
+- [Send document](https://docs.kapso.ai/docs/whatsapp/send-messages/document.md): Send document messages via SDK or API
+- [Send image](https://docs.kapso.ai/docs/whatsapp/send-messages/image.md): Send image messages via SDK or API
+- [Send lists](https://docs.kapso.ai/docs/whatsapp/send-messages/lists.md): Send interactive list messages via SDK or API
+- [Send location](https://docs.kapso.ai/docs/whatsapp/send-messages/location.md): Send location messages via SDK or API
+- [Mark messages as read](https://docs.kapso.ai/docs/whatsapp/send-messages/mark-read.md): Mark messages as read with optional typing indicator
+- [Send reaction](https://docs.kapso.ai/docs/whatsapp/send-messages/reaction.md): React to messages with emoji via SDK or API
+- [Send sticker](https://docs.kapso.ai/docs/whatsapp/send-messages/sticker.md): Send stickers via SDK or API
+- [Send text](https://docs.kapso.ai/docs/whatsapp/send-messages/text.md): Send text messages via SDK or API
+- [Send video](https://docs.kapso.ai/docs/whatsapp/send-messages/video.md): Send video messages via SDK or API
+- [Advanced](https://docs.kapso.ai/docs/whatsapp/templates/advanced.md): Create and send templates with catalog, MPM, and Flow buttons
+- [Authentication](https://docs.kapso.ai/docs/whatsapp/templates/authentication.md): Create and send OTP authentication templates
+- [Buttons](https://docs.kapso.ai/docs/whatsapp/templates/buttons.md): Create and send templates with URL and quick reply buttons
+- [Location header](https://docs.kapso.ai/docs/whatsapp/templates/location-header.md): Create and send templates with location headers
+- [Media header](https://docs.kapso.ai/docs/whatsapp/templates/media-header.md): Create and send templates with image, video, or document headers
+- [Simple text](https://docs.kapso.ai/docs/whatsapp/templates/simple-text.md): Create and send templates with body text parameters
+- [Text header](https://docs.kapso.ai/docs/whatsapp/templates/text-header.md): Create and send templates with text header, body, and footer
+- [Calls](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/calls.md): Initiate and manage WhatsApp voice calls with the TypeScript SDK
+- [Contacts](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/contacts.md): List, get, and update WhatsApp contacts with the TypeScript SDK
+- [Conversations](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/conversations.md): List, get, and update WhatsApp conversations with the TypeScript SDK
+- [Flows](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/flows.md): Author, deploy, preview, and send WhatsApp Flows with the TypeScript SDK
+- [Interactive messages](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/interactive.md): Send buttons, lists, products, flows, and more interactive types
+- [Quickstart](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/introduction.md): Use the open-source library to call the WhatsApp Cloud API
+- [Kapso extensions](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/kapso-extensions.md): Get extra fields with both REST API and TypeScript SDK
+- [Media upload](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/media.md): Upload and manage media files
+- [Messages](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/messages.md): Send text, media, location, contacts and reactions with the TypeScript SDK
+- [Phone numbers](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/phone-numbers.md): Manage WhatsApp phone number settings and business profile
+- [Templates](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/templates.md): Build and send approved WhatsApp templates
+- [Utilities](https://docs.kapso.ai/docs/whatsapp/typescript-sdk/utilities.md): Conversations, contacts, calls, and phone settings
+- [Introduction](https://docs.kapso.ai/docs/workflows/introduction.md): Build WhatsApp automations.
+
+
+## Optional
+
+- [Github](https://github.com/gokapso)

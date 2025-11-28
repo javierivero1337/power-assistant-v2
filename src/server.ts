@@ -47,12 +47,17 @@ const RESULT_TTL_MS = 30 * 60 * 1000;
 const mediaStore = new Map<string, StoredImage>();
 
 const requestSchema = z.object({
-  imageUrl: z.string().url('imageUrl must be a valid URL'),
+  imageUrl: z.string().optional(),
+  imageBase64: z.string().optional(),
+  imageMimeType: z.string().optional(),
   style: z.string(),
   aspectRatio: z.string().optional(),
   imageSize: z.string().optional(),
   userId: z.string().min(1, 'userId is required'),
-});
+}).refine(
+  (data) => data.imageUrl || data.imageBase64,
+  { message: 'Either imageUrl or imageBase64 is required' }
+);
 
 // Normalize phone number to a consistent format
 function normalizePhoneNumber(phone: string): string {
@@ -303,13 +308,28 @@ app.post(
         });
       }
 
-      const { buffer, mimeType } = await downloadImage(payload.imageUrl);
+      // Support both URL download and direct base64 input
+      let buffer: Buffer;
+      let mimeType: string;
+      
+      if (payload.imageBase64) {
+        // Direct base64 input (preferred - avoids auth issues)
+        buffer = Buffer.from(payload.imageBase64, 'base64');
+        mimeType = payload.imageMimeType ?? 'image/jpeg';
+      } else if (payload.imageUrl) {
+        // URL download (may fail if URL requires auth)
+        const downloaded = await downloadImage(payload.imageUrl);
+        buffer = downloaded.buffer;
+        mimeType = downloaded.mimeType;
+      } else {
+        return res.status(400).json({ error: 'Either imageUrl or imageBase64 is required' });
+      }
       const stylizedImage = await stylizeImage({
         presetPrompt: preset.prompt,
         aspectRatio: payload.aspectRatio ?? preset.aspectRatio,
         model: preset.model,
         baseImage: buffer,
-        baseMimeType: mimeType,
+        baseMimeType: mimeType as string,
       });
 
       // Deduct credit after successful generation

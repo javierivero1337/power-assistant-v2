@@ -33,6 +33,7 @@ Thumbs.db
 
 # Personal files with sensitive data
 .QUICK_START.md
+mcp.json
 
 # Logs
 logs/
@@ -45,6 +46,7 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
 
 
 
