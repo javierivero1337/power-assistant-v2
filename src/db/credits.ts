@@ -206,16 +206,16 @@ export async function getAllUsersWithCredits(): Promise<Array<{ userId: string; 
     
     // Scan for all credit keys
     const keys: string[] = [];
-    let cursor: string = '0';
+    let cursor = 0;
     
     do {
       const result = await client.scan(cursor, {
         MATCH: `${CREDIT_KEY_PREFIX}*`,
         COUNT: 100,
       });
-      cursor = String(result.cursor);
+      cursor = result.cursor;
       keys.push(...result.keys);
-    } while (cursor !== '0');
+    } while (cursor !== 0);
     
     if (keys.length === 0) {
       return [];
