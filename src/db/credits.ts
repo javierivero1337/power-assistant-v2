@@ -204,32 +204,26 @@ export async function getAllUsersWithCredits(): Promise<Array<{ userId: string; 
   try {
     const client = await getRedisClient();
     
-    // Scan for all credit keys
-    const keys: string[] = [];
-    let cursor = '0';
-    
-    do {
-      const result = await client.scan(cursor, {
-        MATCH: `${CREDIT_KEY_PREFIX}*`,
-        COUNT: 100,
-      });
-      cursor = String(result.cursor);
-      keys.push(...result.keys);
-    } while (cursor !== '0');
+    // Use KEYS command to get all credit keys
+    // Note: KEYS is simpler and works better with Upstash Redis
+    const keys = await client.keys(`${CREDIT_KEY_PREFIX}*`);
     
     if (keys.length === 0) {
       return [];
     }
     
-    // Get all credit values
+    // Get all credit values using MGET for efficiency
+    const values = await client.mGet(keys);
+    
     const users: Array<{ userId: string; credits: number }> = [];
     
-    for (const key of keys) {
-      const credits = await client.get(key);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = values[i];
       const userId = key.replace(CREDIT_KEY_PREFIX, '');
       users.push({
         userId,
-        credits: credits ? parseInt(credits, 10) : 0,
+        credits: value ? parseInt(value, 10) : 0,
       });
     }
     
