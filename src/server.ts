@@ -280,6 +280,43 @@ app.get('/admin/users', requireWebhookSecret, async (_req, res) => {
   }
 });
 
+// New endpoint: Download image from Kapso URL and return base64
+app.post(
+  '/download-image-to-base64',
+  requireWebhookSecret,
+  async (req: Request, res: Response) => {
+    try {
+      const { imageUrl } = req.body;
+      
+      if (!imageUrl || typeof imageUrl !== 'string') {
+        return res.status(400).json({ error: 'imageUrl is required' });
+      }
+      
+      console.log('[download-image-to-base64] Downloading:', imageUrl);
+      
+      const downloaded = await downloadImage(imageUrl);
+      const base64Data = downloaded.buffer.toString('base64');
+      
+      console.log('[download-image-to-base64] Success:', {
+        mimeType: downloaded.mimeType,
+        sizeKB: Math.round(downloaded.buffer.length / 1024),
+      });
+      
+      return res.json({
+        imageBase64: base64Data,
+        imageMimeType: downloaded.mimeType,
+        sizeBytes: downloaded.buffer.length,
+      });
+    } catch (error: any) {
+      console.error('[download-image-to-base64] Error:', error);
+      return res.status(500).json({
+        error: 'Failed to download image',
+        message: error.message,
+      });
+    }
+  }
+);
+
 app.post(
   '/generate-styled-image',
   requireWebhookSecret,
