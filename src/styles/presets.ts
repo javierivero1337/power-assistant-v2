@@ -167,6 +167,12 @@ const STYLE_ALIASES: Record<string, StyleKey> = {
   sesion: 'professional',
   'golden hour': 'professional',
   'hora dorada': 'professional',
+  
+  // Santa
+  '10': 'santa',
+  santa: 'santa',
+  navidad: 'santa',
+  christmas: 'santa',
 };
 
 export const normalizeStyleKey = (input: string): StyleKey | null => {
