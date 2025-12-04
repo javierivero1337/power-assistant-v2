@@ -328,9 +328,18 @@ app.post(
       } else if (payload.imageUrl) {
         // URL download (may fail if URL requires auth)
         console.log('[generate-styled-image] Downloading from URL:', payload.imageUrl);
-        const downloaded = await downloadImage(payload.imageUrl);
-        buffer = downloaded.buffer;
-        mimeType = downloaded.mimeType;
+        try {
+          const downloaded = await downloadImage(payload.imageUrl);
+          buffer = downloaded.buffer;
+          mimeType = downloaded.mimeType;
+        } catch (downloadError: any) {
+          console.error('[generate-styled-image] Image download failed:', downloadError);
+          return res.status(400).json({
+            error: 'Image download failed',
+            message: downloadError.message || 'Unable to download the image. Please send a new image.',
+            details: 'The image URL may have expired or is no longer accessible.',
+          });
+        }
       } else {
         return res.status(400).json({ error: 'Either imageUrl or imageBase64 is required' });
       }
@@ -544,11 +553,21 @@ async function downloadImage(url: string): Promise<{
 }> {
   console.log('[downloadImage] Attempting to download:', url);
   
+  // Check if this is a Kapso URL that needs special handling
+  const isKapsoUrl = url.includes('app.kapso.ai') || url.includes('kapso.ai');
+  
+  const headers: Record<string, string> = {
+    'User-Agent': 'Mozilla/5.0 (compatible; Revelio/1.0)',
+    'Accept': 'image/*,*/*',
+  };
+  
+  // Add Kapso webhook secret for authenticated downloads if it's a Kapso URL
+  if (isKapsoUrl && WEBHOOK_SECRET) {
+    headers['x-kapso-webhook-secret'] = WEBHOOK_SECRET;
+  }
+  
   const response = await fetch(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; Revelio/1.0)',
-      'Accept': 'image/*,*/*',
-    },
+    headers,
     redirect: 'follow',
   });
   
@@ -557,8 +576,17 @@ async function downloadImage(url: string): Promise<{
       status: response.status,
       statusText: response.statusText,
       url: response.url,
+      isKapsoUrl,
       headers: Object.fromEntries(response.headers.entries()),
     });
+    
+    // Provide more helpful error messages
+    if (response.status === 404) {
+      throw new Error('Image not found or expired. Please send a new image.');
+    } else if (response.status === 401 || response.status === 403) {
+      throw new Error('Unable to access image. Please send the image again.');
+    }
+    
     throw new Error(`Failed to download image: ${response.status}`);
   }
   
@@ -570,6 +598,7 @@ async function downloadImage(url: string): Promise<{
     finalUrl: response.url,
     mimeType,
     size: arrayBuffer.byteLength,
+    isKapsoUrl,
   });
   
   return {
