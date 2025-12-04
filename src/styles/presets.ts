@@ -9,7 +9,8 @@ export type StyleKey =
   | 'magazine'
   | '3d'
   | 'beauty'
-  | 'professional';
+  | 'professional'
+  | 'santa';
 
 export interface StylePreset {
   key: StyleKey;
@@ -26,14 +27,14 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     label: 'Artistic (Oil Painting)',
     prompt:
       'Using the provided image, transform this portrait into a masterful Renaissance-era oil painting. Apply rich, layered brush strokes with visible texture, dramatic chiaroscuro lighting reminiscent of Rembrandt or Caravaggio, warm golden undertones, and a dark moody background. The subject should appear noble and timeless, as if painted by an Old Master in the 15th-16th century. Include subtle craquelure texture for authenticity.',
-    aspectRatio: '3:4',
+    aspectRatio: '1:1',
     captionTemplate: '🎨 Una obra maestra del Renacimiento.',
   },
   cartoon: {
     key: 'cartoon',
     label: 'Cartoon / Anime',
     prompt:
-      'Using the provided image, transform this portrait into a comic book art style. The image should feature thick, dark outlines, vibrant yet flat colors, and clear shading that defines shapes rather than realistic blending. Emphasize a clean, graphic novel aesthetic with a hand-drawn feel, similar to modern webcomics or animated series character designs. Focus on strong character expressions and a dynamic composition. Bright, even lighting. Friendly pose',
+      'Using the provided image, transform this portrait into a vibrant anime illustration, cel-shaded, flat colors, playful, bold outlines. Friendly pose',
     aspectRatio: '1:1',
     captionTemplate: '🎬 ¡Modo caricatura activado!',
   },
@@ -58,7 +59,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     label: 'Cinematic B&W',
     prompt:
       'Super realistic studio portrait. Use the person in the uploaded image. Do not change or alter the face, bone structure, gender, age, skin tone, hairstyle, or identity. Keep the same hair length and style exactly as in the uploaded photo. Pose: Head slightly tilted downward, eyes looking directly into the camera, creating a strong, mysterious expression.Clothing: A black high-neck sweater. One hand casually touching or lightly adjusting the collar (not covering the mouth). The face remains mostly visible, only a subtle gesture with the hand near the collar.Lighting & Background: Warm, soft studio lighting with a gentle shadow on one side of the face. Dark red background, plain, uniform, no patterns. Slight background blur, delicate film grain, and soft vignette on the edges.Framing: Chest-up portrait, subject centered in the frame.Rendering Style: Photorealistic, high resolution, natural realistic skin texture, no beautification, preserve real facial details and identity.',
-          aspectRatio: '3:4',
+          aspectRatio: '1:1',
     captionTemplate: '🎬 Cinematográfico en blanco y negro.',
   },
   magazine: {
@@ -66,7 +67,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     label: 'Magazine Cover',
     prompt:
       'Using the provided image, transform this picture into a A cinematic close-up editorial portrait wearing sleek black blazer, and black turtleneck, very low angle chin tilted upward, direct gaze with subtle smirk, seamless vivid orange studio background, 85mm lens, f/4, ISO 100, shutter 1/200s, cinematic dual-tone lighting with warm orange glow and cool blue rim highlights',
-    aspectRatio: '3:4',
+    aspectRatio: '1:1',
     captionTemplate: '📰 Portada de revista, estilo editorial.',
   },
   '3d': {
@@ -82,7 +83,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     label: 'Beauty Assessment',
     prompt:
       'Using the provided image, create an analytical beauty assessment overlay. Annotate the photo with futuristic console-style HUD elements including: scan lines, data readouts, and pointer arrows highlighting facial features. Add loading bars rating different categories (symmetry, jawline, eyes, skin, hair, overall harmony) with percentage scores. Include an overall attractiveness rating prominently displayed. Use a tech/cyberpunk aesthetic with neon green or cyan text on a slightly darkened version of the original photo. Make it look like a sci-fi facial analysis system.',
-    aspectRatio: '3:4',
+    aspectRatio: '1:1',
     captionTemplate: '📊 Análisis de belleza completado.',
   },
   professional: {
@@ -90,9 +91,17 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     label: 'Professional Shoot',
     prompt:
       'Using the provided image, create an ultra-realistic 4K editorial portrait. Capture the subject in a relaxed yet confident pose against a textured wall, bathed in soft golden hour light that casts long, warm, contrasting shadows. The aesthetic should be cinematic, vintage, and editorial with warm color tones, subtle film grain, and timeless elegance. Apply professional skin retouching while maintaining natural texture. The lighting should evoke sunset warmth with a sophisticated, magazine-quality finish.',
-    aspectRatio: '3:4',
-    captionTemplate: '📸 Sesión profesional completada.',
+    aspectRatio: '1:1',
+    captionTemplate: '📸 Sesión profesional lista.',
   },
+santa: {
+  key: 'santa',
+  label: 'Navidad',
+  prompt:
+    'Using the provided image, generate a picture of a cheerful Santa Claus next to the person or people from the uploaded picture. They are sitting in a cozy, warm, and highly-detailed living room. In the background, there is a large, beautifully decorated Christmas tree with twinkling golden lights and a star on top. The scene features soft, cinematic 3-point lighting, smooth subsurface scattering, and vibrant saturated colors, with a stack of neatly wrapped gifts nearby',
+  aspectRatio: '1:1',
+  captionTemplate: '📸 Sesión navideña lista .',
+},
 };
 
 const STYLE_ALIASES: Record<string, StyleKey> = {
