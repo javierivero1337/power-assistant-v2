@@ -50,13 +50,16 @@ const requestSchema = z.object({
   imageUrl: z.string().optional(),
   imageBase64: z.string().optional(),
   imageMimeType: z.string().optional(),
+  // Allows Kapso to pass the human-readable inbound message content that contains a Kapso-hosted URL.
+  // Example: "Image attached (...) URL: https://app.kapso.ai/rails/active_storage/blobs/redirect/..."
+  messageContent: z.string().optional(),
   style: z.string(),
   aspectRatio: z.string().optional(),
   imageSize: z.string().optional(),
   userId: z.string().min(1, 'userId is required'),
 }).refine(
-  (data) => data.imageUrl || data.imageBase64,
-  { message: 'Either imageUrl or imageBase64 is required' }
+  (data) => data.imageUrl || data.imageBase64 || data.messageContent,
+  { message: 'Either imageUrl, imageBase64, or messageContent is required' }
 );
 
 // Normalize phone number to a consistent format
@@ -76,6 +79,17 @@ function normalizePhoneNumber(phone: string): string {
   }
   
   return normalized;
+}
+
+function extractFirstUrl(input: string): string | null {
+  if (!input) return null;
+  const match = input.match(/https?:\/\/[^\s]+/i);
+  if (!match) return null;
+
+  // Trim common trailing punctuation/brackets that often appear in logs or formatted strings.
+  const raw = match[0];
+  const cleaned = raw.replace(/[)\],.]+$/g, '');
+  return cleaned;
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -286,15 +300,18 @@ app.post(
   requireWebhookSecret,
   async (req: Request, res: Response) => {
     try {
-      const { imageUrl } = req.body;
+      const { imageUrl, messageContent } = req.body ?? {};
+      const resolvedUrl =
+        (typeof imageUrl === 'string' && imageUrl.trim()) ||
+        (typeof messageContent === 'string' ? extractFirstUrl(messageContent) : null);
       
-      if (!imageUrl || typeof imageUrl !== 'string') {
+      if (!resolvedUrl) {
         return res.status(400).json({ error: 'imageUrl is required' });
       }
       
-      console.log('[download-image-to-base64] Downloading:', imageUrl);
+      console.log('[download-image-to-base64] Downloading:', resolvedUrl);
       
-      const downloaded = await downloadImage(imageUrl);
+      const downloaded = await downloadImage(resolvedUrl);
       const base64Data = downloaded.buffer.toString('base64');
       
       console.log('[download-image-to-base64] Success:', {
@@ -362,11 +379,22 @@ app.post(
         console.log('[generate-styled-image] Using base64 input');
         buffer = Buffer.from(payload.imageBase64, 'base64');
         mimeType = payload.imageMimeType ?? 'image/jpeg';
-      } else if (payload.imageUrl) {
+      } else if (payload.imageUrl || payload.messageContent) {
         // URL download (may fail if URL requires auth)
-        console.log('[generate-styled-image] Downloading from URL:', payload.imageUrl);
+        const resolvedUrl =
+          payload.imageUrl ??
+          (payload.messageContent ? extractFirstUrl(payload.messageContent) : null);
+
+        if (!resolvedUrl) {
+          return res.status(400).json({
+            error: 'Image URL not found',
+            message: 'No se encontró una URL de imagen. Por favor envía la foto otra vez.',
+          });
+        }
+
+        console.log('[generate-styled-image] Downloading from URL:', resolvedUrl);
         try {
-          const downloaded = await downloadImage(payload.imageUrl);
+          const downloaded = await downloadImage(resolvedUrl);
           buffer = downloaded.buffer;
           mimeType = downloaded.mimeType;
         } catch (downloadError: any) {
@@ -378,15 +406,38 @@ app.post(
           });
         }
       } else {
-        return res.status(400).json({ error: 'Either imageUrl or imageBase64 is required' });
+        return res
+          .status(400)
+          .json({ error: 'Either imageUrl, imageBase64, or messageContent is required' });
       }
-      const stylizedImage = await stylizeImage({
-        presetPrompt: preset.prompt,
-        aspectRatio: payload.aspectRatio ?? preset.aspectRatio,
-        model: preset.model,
-        baseImage: buffer,
-        baseMimeType: mimeType as string,
+      
+      // Log image details before processing
+      console.log('[generate-styled-image] Image details:', {
+        size: `${Math.round(buffer.length / 1024)}KB`,
+        mimeType,
+        userId,
+        style: payload.style,
       });
+      
+      let stylizedImage;
+      try {
+        stylizedImage = await stylizeImage({
+          presetPrompt: preset.prompt,
+          aspectRatio: payload.aspectRatio ?? preset.aspectRatio,
+          model: preset.model,
+          baseImage: buffer,
+          baseMimeType: mimeType as string,
+        });
+      } catch (stylizeError: any) {
+        console.error('[generate-styled-image] Stylization failed:', stylizeError);
+        
+        // Return user-friendly error without deducting credits
+        return res.status(500).json({
+          error: 'Image processing failed',
+          message: stylizeError.message || 'Unable to process this image. Please try with a different photo.',
+          details: 'The image may be corrupted, too large, or in an unsupported format. Supported formats: JPEG, PNG, WebP (max 20MB).',
+        });
+      }
 
       // Deduct credit after successful generation
       const deductResult = await deductCredit(userId);
@@ -527,6 +578,48 @@ app.use(
   }
 );
 
+async function validateAndProcessImage(buffer: Buffer, mimeType: string): Promise<{ buffer: Buffer; mimeType: string }> {
+  // Validate image size (max 20MB for Gemini API)
+  const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+  if (buffer.length > MAX_SIZE) {
+    throw new Error(`Image too large: ${Math.round(buffer.length / 1024 / 1024)}MB. Maximum size is 20MB.`);
+  }
+
+  // Validate MIME type
+  const supportedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  const normalizedMimeType = mimeType.toLowerCase().split(';')[0].trim();
+  
+  if (!supportedMimeTypes.includes(normalizedMimeType)) {
+    console.warn(`[validateImage] Unsupported MIME type: ${mimeType}, normalizing to image/jpeg`);
+    // Default to jpeg if mime type is weird
+    return { buffer, mimeType: 'image/jpeg' };
+  }
+
+  // Validate that buffer is not empty
+  if (buffer.length === 0) {
+    throw new Error('Image buffer is empty');
+  }
+
+  // Basic validation that it looks like an image (check magic bytes)
+  const magicBytes = buffer.slice(0, 4).toString('hex');
+  const isValidImage = 
+    magicBytes.startsWith('ffd8ff') || // JPEG
+    magicBytes.startsWith('89504e47') || // PNG
+    magicBytes.startsWith('52494646'); // WEBP
+
+  if (!isValidImage) {
+    console.warn(`[validateImage] Image may be corrupted. Magic bytes: ${magicBytes}`);
+  }
+
+  console.log('[validateImage] Image validated:', {
+    size: `${Math.round(buffer.length / 1024)}KB`,
+    mimeType: normalizedMimeType,
+    magicBytes: magicBytes.substring(0, 8),
+  });
+
+  return { buffer, mimeType: normalizedMimeType };
+}
+
 async function stylizeImage({
   presetPrompt,
   aspectRatio,
@@ -540,48 +633,78 @@ async function stylizeImage({
   baseImage: Buffer;
   baseMimeType: string;
 }): Promise<{ buffer: Buffer; mimeType: string }> {
+  // Validate and process the image first
+  const { buffer: validatedBuffer, mimeType: validatedMimeType } = await validateAndProcessImage(baseImage, baseMimeType);
+  
   // Use Gemini image generation API (Nano Banana)
   const geminiModel = model ?? DEFAULT_IMAGEN_MODEL;
   
-  const response = await ai.models.generateContent({
+  console.log('[stylizeImage] Sending request to Gemini:', {
     model: geminiModel,
-    contents: [
-      {
-        parts: [
-          { text: presetPrompt },
-          {
-            inlineData: {
-              mimeType: baseMimeType,
-              data: baseImage.toString('base64'),
-            },
-          },
-        ],
-      },
-    ],
-    config: {
-      responseModalities: ['IMAGE'],
-      imageConfig: {
-        aspectRatio: aspectRatio ?? '1:1',
-        imageSize: '1K', // 1K resolution (1024px) - same token cost as 2K (1210 tokens)
-      },
-    },
+    imageSize: `${Math.round(validatedBuffer.length / 1024)}KB`,
+    mimeType: validatedMimeType,
+    aspectRatio: aspectRatio ?? '1:1',
+    promptLength: presetPrompt.length,
   });
+  
+  try {
+    const response = await ai.models.generateContent({
+      model: geminiModel,
+      contents: [
+        {
+          parts: [
+            { text: presetPrompt },
+            {
+              inlineData: {
+                mimeType: validatedMimeType,
+                data: validatedBuffer.toString('base64'),
+              },
+            },
+          ],
+        },
+      ],
+      config: {
+        responseModalities: ['IMAGE'],
+        imageConfig: {
+          aspectRatio: aspectRatio ?? '1:1',
+          imageSize: '1K', // 1K resolution (1024px) - same token cost as 2K (1210 tokens)
+        },
+      },
+    });
 
-  // Extract image from response
-  const candidate = response.candidates?.[0];
-  if (!candidate?.content?.parts) {
-    throw new Error('Gemini response did not include content parts');
+    // Extract image from response
+    const candidate = response.candidates?.[0];
+    if (!candidate?.content?.parts) {
+      throw new Error('Gemini response did not include content parts');
+    }
+
+    const imagePart = candidate.content.parts.find((part: any) => part.inlineData);
+    if (!imagePart?.inlineData?.data) {
+      throw new Error('Gemini response did not include image data');
+    }
+
+    console.log('[stylizeImage] Successfully generated image');
+
+    return {
+      buffer: Buffer.from(imagePart.inlineData.data, 'base64'),
+      mimeType: imagePart.inlineData.mimeType ?? 'image/png',
+    };
+  } catch (error: any) {
+    console.error('[stylizeImage] Gemini API error:', {
+      error: error.message,
+      status: error.status,
+      code: error.code,
+      imageSize: `${Math.round(validatedBuffer.length / 1024)}KB`,
+      mimeType: validatedMimeType,
+    });
+    
+    // Provide user-friendly error messages
+    if (error.status === 400) {
+      throw new Error('Unable to process this image. Please try with a different photo or ensure the image is clear and not corrupted.');
+    }
+    
+    throw error;
   }
-
-  const imagePart = candidate.content.parts.find((part: any) => part.inlineData);
-  if (!imagePart?.inlineData?.data) {
-    throw new Error('Gemini response did not include image data');
-  }
-
-  return {
-    buffer: Buffer.from(imagePart.inlineData.data, 'base64'),
-    mimeType: imagePart.inlineData.mimeType ?? 'image/png',
-  };
 }
 
 async function downloadImage(url: string): Promise<{
