@@ -98,7 +98,7 @@ santa: {
   key: 'santa',
   label: 'Navidad',
   prompt:
-    'Using the provided image, generate a picture of a cheerful Santa Claus next to the person or people from the uploaded picture. They are sitting in a cozy, warm, and highly-detailed living room. In the background, there is a large, beautifully decorated Christmas tree with twinkling golden lights and a star on top. The scene features soft, cinematic 3-point lighting, smooth subsurface scattering, and vibrant saturated colors, with a stack of neatly wrapped gifts nearby',
+    'Transform the people in this image into Pixar-style 3D animated characters in a classic Santa photo pose: Santa Claus seated in the center on a red velvet chair with the family gathered around him. Cozy Christmas setting with a decorated tree and warm glowing lights behind them. Large expressive eyes, stylized features, joyful expressions',
   aspectRatio: '1:1',
   captionTemplate: '📸 Sesión navideña lista .',
 },
