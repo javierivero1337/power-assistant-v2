@@ -16,6 +16,11 @@
     padding: 0;
 }
 
+html,
+body {
+    height: 100%;
+}
+
 body {
     font-family: var(--font-family);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Lighter purple gradient */
@@ -24,6 +29,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    min-height: 100dvh; /* Use dynamic viewport height on modern mobile browsers */
     padding: 20px;
     overflow: hidden; /* Prevent scroll bars from background */
 }
@@ -139,7 +145,7 @@ header {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding-bottom: 80px; /* Space for CTA */
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* Space for CTA + iOS safe-area */
 }
 
 .message {
@@ -225,6 +231,7 @@ header {
     left: 0;
     width: 100%;
     padding: 16px 20px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); /* Keep CTA above iOS home indicator */
     background: linear-gradient(to top, rgba(255,255,255,1) 80%, rgba(255,255,255,0));
     display: flex;
     justify-content: center;
@@ -261,5 +268,24 @@ header {
 
 .whatsapp-btn:active {
     transform: translateY(0);
+}
+
+/* Mobile layout fixes:
+   - Avoid iOS Safari "vh" cutoff by sizing card via svh/dvh
+   - Ensure card fits inside viewport with body padding
+   - Keep CTA visible above safe-area */
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+        align-items: stretch;
+    }
+
+    .main-container {
+        height: calc(100vh - 24px);  /* Fallback */
+        height: calc(100svh - 24px); /* "Small" viewport height (avoids iOS bottom cutoff) */
+        height: calc(100dvh - 24px); /* Dynamic viewport height (modern mobile browsers) */
+        max-height: none;
+        border-radius: 20px;
+    }
 }
 
