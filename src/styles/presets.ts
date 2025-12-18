@@ -82,7 +82,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     key: 'beauty',
     label: 'Beauty Assessment',
     prompt:
-      'Using the provided image, create an analytical beauty assessment overlay. Annotate the photo with futuristic console-style HUD elements including: scan lines, data readouts, and pointer arrows highlighting facial features. Add loading bars rating different categories (symmetry, jawline, eyes, skin, hair, overall harmony) with percentage scores. Include an overall attractiveness rating prominently displayed. Use a tech/cyberpunk aesthetic with neon green or cyan text on a slightly darkened version of the original photo. Make it look like a sci-fi facial analysis system.',
+      'Using the provided image, create an analytical beauty assessment overlay of the existing image. Annotate the photo with futuristic console-style HUD elements including: scan lines, data readouts, and pointer arrows highlighting facial features. Add loading bars rating different categories (symmetry, jawline, eyes, skin, hair, overall harmony) with percentage scores. Include an overall attractiveness rating prominently displayed. Use a tech/cyberpunk aesthetic with neon green or cyan text on a slightly darkened version of the original photo. Make it look like a sci-fi facial analysis system.',
     aspectRatio: '1:1',
     captionTemplate: '📊 Análisis de belleza completado.',
   },
