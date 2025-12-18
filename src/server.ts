@@ -21,7 +21,7 @@ const PORT = Number(process.env.PORT ?? 4000);
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const WEBHOOK_SECRET = process.env.KAPSO_WEBHOOK_SECRET;
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL?.replace(/\/$/, '');
-const STRIPE_PAYMENT_LINK = process.env.STRIPE_PAYMENT_LINK || 'https://buy.stripe.com/3cI8wOaC20ht9ZUgJO8bS01';
+const STRIPE_PAYMENT_LINK = process.env.STRIPE_PAYMENT_LINK;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -468,7 +468,6 @@ app.post(
         caption: preset.captionTemplate,
         style: preset.label,
         creditsRemaining: deductResult.remaining,
-        paymentLink: STRIPE_PAYMENT_LINK || 'https://stripe.com',
       });
     } catch (error) {
       next(error);
