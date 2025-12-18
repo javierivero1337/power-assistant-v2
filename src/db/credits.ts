@@ -122,8 +122,8 @@ export async function initializeUser(userId: string): Promise<void> {
     const exists = await client.exists(key);
     
     if (!exists) {
-      await client.set(key, '0');
-      console.log(`[credits:initializeUser] Initialized user ${userId} with 0 credits`);
+      await client.set(key, '1');
+      console.log(`[credits:initializeUser] Initialized user ${userId} with 1 free credit`);
     }
   } catch (error) {
     console.error('[credits:initializeUser]', error);
