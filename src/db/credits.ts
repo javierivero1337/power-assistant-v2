@@ -46,7 +46,14 @@ export async function getUserCredits(userId: string): Promise<number> {
     const client = await getRedisClient();
     const key = `${CREDIT_KEY_PREFIX}${userId}`;
     const credits = await client.get(key);
-    return credits ? parseInt(credits, 10) : 0;
+    
+    // If user doesn't exist, initialize them with default credits (1)
+    if (credits === null) {
+      await initializeUser(userId);
+      return 1;
+    }
+    
+    return parseInt(credits, 10);
   } catch (error) {
     console.error('[credits:getUserCredits]', error);
     throw new Error('Failed to retrieve user credits');
