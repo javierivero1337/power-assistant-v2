@@ -1,116 +1,85 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const chatContainer = document.getElementById('chat-container');
-    const ctaContainer = document.getElementById('cta-container');
-    const msgTemplate = document.getElementById('msg-template');
-    const imgTemplate = document.getElementById('img-template');
-    const typingTemplate = document.getElementById('typing-template');
+const presets = [
+    {
+        name: 'oil',
+        before: 'img/oilbefore.jpeg',
+        after: 'img/oilafter.jpeg'
+    },
+    {
+        name: 'santa',
+        before: 'img/santabefore.jpeg',
+        after: 'img/santaafter.jpeg'
+    },
+    {
+        name: '3d',
+        before: 'img/3dbefore.jpg',
+        after: 'img/3dafter.jpg'
+    },
+    {
+        name: 'pixar',
+        before: 'img/pixarbefore.jpg',
+        after: 'img/pixarafter.jpg'
+    },
+    {
+        name: 'studio',
+        before: 'img/studiobefore.jpg',
+        after: 'img/studioafter.jpeg'
+    }
+];
 
-    // Helper to format time
-    const getTime = () => {
-        const now = new Date();
-        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    };
+let currentIndex = 0;
+const beforeImg = document.getElementById('img-before');
+const afterImg = document.getElementById('img-after');
+const showcaseContainer = document.querySelector('.polaroid-showcase');
+const afterPolaroid = document.querySelector('.polaroid.after');
 
-    // Helper to delay execution
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+function rotateImages() {
+    currentIndex = (currentIndex + 1) % presets.length;
+    const nextPreset = presets[currentIndex];
 
-    // Add text message
-    const addMessage = (text, sender = 'bot') => {
-        const clone = msgTemplate.content.cloneNode(true);
-        const msgDiv = clone.querySelector('.message');
-        msgDiv.classList.add(sender);
-        clone.querySelector('.message-content').textContent = text;
-        clone.querySelector('.message-time').textContent = getTime();
-        chatContainer.appendChild(clone);
-        scrollToBottom();
-    };
+    // Add fade-out effect
+    beforeImg.style.opacity = '0';
+    afterImg.style.opacity = '0';
+    afterPolaroid.classList.remove('shimmer');
+    
+    // Add magic shake to container
+    showcaseContainer.classList.add('magic-shake');
 
-    // Add image message
-    const addImage = (src, sender = 'bot') => {
-        const clone = imgTemplate.content.cloneNode(true);
-        const msgDiv = clone.querySelector('.message');
-        msgDiv.classList.add(sender);
-        
-        const img = clone.querySelector('img');
-        img.src = src;
-        
-        // Scroll when image loads to ensure full height is accounted for
-        img.onload = () => {
-            scrollToBottom();
+    setTimeout(() => {
+        // Change sources
+        beforeImg.src = nextPreset.before;
+        afterImg.src = nextPreset.after;
+
+        // Wait for image load
+        beforeImg.onload = () => {
+             beforeImg.style.opacity = '1';
         };
+
+        const onAfterLoad = () => {
+             afterImg.style.opacity = '1';
+             // Trigger shimmer effect
+             afterPolaroid.classList.remove('shimmer');
+             void afterPolaroid.offsetWidth; // Force reflow
+             afterPolaroid.classList.add('shimmer');
+        };
+
+        afterImg.onload = onAfterLoad;
+
+        // Fallback if cached
+        if (beforeImg.complete) beforeImg.style.opacity = '1';
+        if (afterImg.complete) onAfterLoad();
         
-        clone.querySelector('.message-time').textContent = getTime();
-        chatContainer.appendChild(clone);
-        scrollToBottom();
-    };
+        // Remove magic shake
+        setTimeout(() => {
+            showcaseContainer.classList.remove('magic-shake');
+        }, 500);
 
-    // Typing indicator management
-    let typingIndicatorElement = null;
+    }, 500); // Wait 500ms for fade out
+}
 
-    const showTyping = () => {
-        if (typingIndicatorElement) return;
-        const clone = typingTemplate.content.cloneNode(true);
-        typingIndicatorElement = chatContainer.appendChild(clone.firstElementChild); // Append the div directly
-        scrollToBottom();
-    };
+// Start rotation
+setInterval(rotateImages, 4000); // 4 seconds total (3s view + 1s transition approx)
 
-    const hideTyping = () => {
-        if (typingIndicatorElement) {
-            typingIndicatorElement.remove();
-            typingIndicatorElement = null;
-        }
-    };
-
-    // Scroll to bottom
-    const scrollToBottom = () => {
-        // Use parent element to scroll
-        const parent = chatContainer.parentElement;
-        parent.scrollTo({
-            top: parent.scrollHeight,
-            behavior: 'smooth'
-        });
-    };
-
-    // Main Animation Sequence
-    const runSequence = async () => {
-        // Initial delay
-        await delay(1000);
-
-        // 1. Bot greeting
-        addMessage("Hola! Qué imagen te gustaría editar hoy?", 'bot');
-
-        await delay(1500);
-
-        // 2. User uploads image
-        // Assuming 'user' sender styles right align and change color
-        addImage('img/userimage.jpeg', 'user');
-
-        await delay(1000);
-
-        // 3. Bot thinking
-        showTyping();
-        
-        // Simulate processing time
-        await delay(2500);
-        
-        hideTyping();
-
-        // 4. Bot response text
-        addMessage("Aquí tienes tu imagen en versión caricatura! 🎨", 'bot');
-
-        await delay(600);
-
-        // 5. Bot sends edited image
-        addImage('img/editedimage.jpeg', 'bot');
-
-        await delay(1500);
-
-        // 6. Show CTA
-        ctaContainer.classList.add('visible');
-        scrollToBottom();
-    };
-
-    // Start the sequence
-    runSequence();
-});
+// Add CSS class for shake via JS just in case, or rely on CSS file.
+// Let's inject the keyframe if not present, but better to put in CSS.
+// I will assume style-v2.css needs this 'magic-shake' class.
 

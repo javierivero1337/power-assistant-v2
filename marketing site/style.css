@@ -1,40 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
 :root {
-    --primary-color: #25D366; /* WhatsApp Green */
-    --primary-dark: #128C7E;
-    --bg-color: #f0f2f5;
-    --chat-bg: #efeae2;
-    --bot-msg-bg: #ffffff;
-    --user-msg-bg: #d9fdd3;
-    --text-primary: #111b21;
-    --text-secondary: #667781;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --primary-color: #6C5CE7;
+    --secondary-color: #a29bfe;
+    --accent-color: #FD79A8;
+    --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    --text-color: #2d3436;
+    --polaroid-bg: #ffffff;
 }
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
-}
-
-html,
-body {
-    height: 100%;
+    box-sizing: border-box;
 }
 
 body {
-    font-family: var(--font-family);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Lighter purple gradient */
-    background-attachment: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text-color);
+    background: #f0f2f5;
+    overflow-x: hidden;
     min-height: 100vh;
-    min-height: 100dvh; /* Use dynamic viewport height on modern mobile browsers */
-    padding: 20px;
-    overflow: hidden; /* Prevent scroll bars from background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.background-animation {
+.background-blobs {
     position: fixed;
     top: 0;
     left: 0;
@@ -42,250 +35,308 @@ body {
     height: 100%;
     z-index: -1;
     overflow: hidden;
+    pointer-events: none;
 }
 
-.wave {
+.blob {
     position: absolute;
-    background: rgba(255, 255, 255, 0.1);
-    width: 200%;
-    height: 200%;
-    border-radius: 40%;
-    animation: wave 25s infinite linear;
-    top: -50%;
-    left: -50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 20s infinite alternate ease-in-out;
 }
 
-.wave.wave1 {
-    animation-duration: 18s;
-    opacity: 0.3;
+.blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: #a29bfe;
+    animation-delay: 0s;
 }
 
-.wave.wave2 {
-    animation-duration: 24s;
-    opacity: 0.2;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 45%;
+.blob-2 {
+    bottom: -20%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: #74b9ff;
+    animation-delay: -5s;
 }
 
-.wave.wave3 {
-    animation-duration: 30s;
-    opacity: 0.1;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 35%;
+.blob-3 {
+    top: 40%;
+    left: 40%;
+    width: 40vw;
+    height: 40vw;
+    background: #ffeaa7;
+    animation-delay: -10s;
 }
 
-@keyframes wave {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(30px, 50px) rotate(10deg); }
 }
 
-.main-container {
+.container {
+    max-width: 1000px;
     width: 100%;
-    max-width: 450px;
-    background-color: #fff;
-    border-radius: 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 85vh;
-    max-height: 800px;
-    position: relative;
+    padding: 2rem;
+    text-align: center;
+    z-index: 1;
 }
 
-header {
-    background-color: #fff;
-    padding: 12px 20px;
-    border-bottom: 1px solid #e0e0e0;
-    z-index: 10;
+.logo-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-}
-
-/* Removed .back-btn styles */
-
-.header-profile {
-    position: relative;
-}
-
-.profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-}
-
-.header-info {
-    display: flex;
-    flex-direction: column;
     justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
-.header-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--text-primary);
-}
-
-/* Removed .header-status styles */
-
-.chat-interface {
-    flex: 1;
-    background-color: var(--chat-bg);
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15 15h10v10H15zm20 20h10v10H35zm20 20h10v10H55zm20 20h10v10H75z' fill='%23e5e0d8' fill-opacity='0.4'/%3E%3C/svg%3E"); /* Subtle pattern */
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* Space for CTA + iOS safe-area */
-}
-
-.message {
-    max-width: 80%;
-    padding: 8px 12px;
-    border-radius: 12px;
-    position: relative;
-    animation: fadeIn 0.3s ease-out;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    font-size: 0.95rem;
-    line-height: 1.4;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Bot Message Styles */
-.message.bot {
-    align-self: flex-start;
-    background-color: var(--bot-msg-bg);
-    color: var(--text-primary);
-    border-top-left-radius: 0;
-}
-
-/* User Message Styles */
-.message.user {
-    align-self: flex-end;
-    background-color: var(--user-msg-bg);
-    color: var(--text-primary);
-    border-top-right-radius: 0;
-}
-
-.message-content {
-    word-wrap: break-word;
-}
-
-.message-time {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    text-align: right;
-    margin-top: 4px;
-}
-
-/* Image Styles */
-.image-content img {
-    width: 100%;
-    border-radius: 8px;
-    display: block;
-    max-height: 250px;
+.logo-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Typing Indicator */
-.typing-indicator {
+.logo-text {
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    letter-spacing: -0.5px;
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.headline {
+    font-weight: 900;
+    font-size: 3rem;
+    line-height: 1.1;
+    color: #2d3436;
+}
+
+.subheadline {
+    font-size: 1.25rem;
+    color: #636e72;
+    max-width: 600px;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+.polaroid-showcase {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 0;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+    position: relative;
 }
 
-.typing-indicator span {
-    width: 6px;
-    height: 6px;
-    background-color: #b4b4b4;
-    border-radius: 50%;
-    animation: bounce 1.4s infinite ease-in-out both;
+.polaroid {
+    background: var(--polaroid-bg);
+    padding: 1rem 1rem 3.5rem 1rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    width: 280px;
 }
 
-.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
+.polaroid:hover {
+    transform: scale(1.05) rotate(0) !important;
+    z-index: 10;
 }
 
-/* CTA Button */
-.cta-container {
+.polaroid.before {
+    transform: rotate(-3deg);
+}
+
+.polaroid.after {
+    transform: rotate(3deg);
+}
+
+.frame {
+    width: 100%;
+    aspect-ratio: 1/1; /* 1:1 for polaroid picture area */
+    background: #eee;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.caption {
     position: absolute;
-    bottom: 0;
+    bottom: -2.5rem; /* Adjusted to be in the bottom white space */
     left: 0;
     width: 100%;
-    padding: 16px 20px;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); /* Keep CTA above iOS home indicator */
-    background: linear-gradient(to top, rgba(255,255,255,1) 80%, rgba(255,255,255,0));
-    display: flex;
-    justify-content: center;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    text-align: center;
+    font-family: 'Patrick Hand', cursive, sans-serif; /* Fallback to sans-serif */
+    font-size: 1.5rem;
+    color: #555;
 }
 
-.cta-container.visible {
-    opacity: 1;
-    transform: translateY(0);
+.caption {
+    font-family: 'Patrick Hand', cursive;
 }
 
-.whatsapp-btn {
+
+.magic-wand {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    background-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.sparkles {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    animation: sparkle-float 3s infinite ease-in-out;
+    display: inline-block;
+}
+
+.arrow-icon {
+    width: 80px;
+    height: 50px;
+    transform: rotate(-5deg);
+    filter: drop-shadow(0px 2px 0px rgba(0,0,0,0.1));
+    animation: arrow-bounce 2s infinite ease-in-out;
+}
+
+@keyframes sparkle-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(15deg) scale(1.2); }
+}
+
+@keyframes arrow-bounce {
+    0%, 100% { transform: rotate(-5deg) translateX(0); }
+    50% { transform: rotate(-5deg) translateX(5px); }
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #25D366; /* WhatsApp Green */
     color: white;
-    text-decoration: none;
-    padding: 14px 24px;
+    padding: 1rem 2rem;
     border-radius: 50px;
-    font-weight: 600;
-    width: 100%;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-    transition: transform 0.2s, background-color 0.2s;
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 2rem;
 }
 
-.whatsapp-btn:hover {
+.cta-button:hover {
     transform: translateY(-2px);
-    background-color: var(--primary-dark);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
 }
 
-.whatsapp-btn:active {
-    transform: translateY(0);
-}
-
-/* Mobile layout fixes:
-   - Avoid iOS Safari "vh" cutoff by sizing card via svh/dvh
-   - Ensure card fits inside viewport with body padding
-   - Keep CTA visible above safe-area */
-@media (max-width: 600px) {
-    body {
-        padding: 12px;
-        align-items: stretch;
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .headline {
+        font-size: 2rem;
+    }
+    
+    .polaroid-showcase {
+        flex-direction: row; /* Keep side by side on mobile */
+        gap: 0.5rem; /* Reduce gap */
+        flex-wrap: nowrap;
+    }
+    
+    .polaroid {
+        width: 48%; /* Fit side by side */
+        max-width: none;
+        padding: 0.5rem 0.5rem 2rem 0.5rem; /* Reduce padding */
+    }
+    
+    .magic-wand {
+        transform: rotate(0deg); /* Point right */
+        margin: 0 -10px; /* Pull them closer */
+        z-index: 5;
     }
 
-    .main-container {
-        height: calc(100vh - 24px);  /* Fallback */
-        height: calc(100svh - 24px); /* "Small" viewport height (avoids iOS bottom cutoff) */
-        height: calc(100dvh - 24px); /* Dynamic viewport height (modern mobile browsers) */
-        max-height: none;
-        border-radius: 20px;
+    .polaroid.before, .polaroid.after {
+        transform: rotate(0);
+    }
+    
+    /* Re-apply rotation slightly for playful feel even in column */
+    .polaroid.before { transform: rotate(-2deg); }
+    .polaroid.after { transform: rotate(2deg); }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .headline {
+        font-size: 1.8rem;
+    }
+    
+    .subheadline {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .caption {
+        font-size: 1.2rem;
+        bottom: -2rem;
     }
 }
 
+
+.magic-shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Shimmer Effect for Reveal */
+.polaroid.after .frame {
+    position: relative;
+    overflow: hidden;
+}
+
+.polaroid.after .frame::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.8) 50%, 
+        rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.polaroid.after.shimmer .frame::after {
+    animation: shine-reveal 1.2s ease-in-out;
+}
+
+@keyframes shine-reveal {
+    0% { left: -150%; }
+    100% { left: 150%; }
+}

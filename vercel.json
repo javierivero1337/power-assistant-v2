@@ -8,6 +8,62 @@
   ],
   "routes": [
     {
+      "src": "^/$",
+      "dest": "marketing site/index.html"
+    },
+    {
+      "src": "^/santa/?$",
+      "dest": "marketing site/santa.html"
+    },
+    {
+      "src": "^/studio/?$",
+      "dest": "marketing site/studio.html"
+    },
+    {
+      "src": "^/pixar/?$",
+      "dest": "marketing site/pixar.html"
+    },
+    {
+      "src": "^/oil/?$",
+      "dest": "marketing site/oil.html"
+    },
+    {
+      "src": "^/3d/?$",
+      "dest": "marketing site/3d.html"
+    },
+    {
+      "src": "^/style\\.css$",
+      "dest": "marketing site/style.css"
+    },
+    {
+      "src": "^/script\\.js$",
+      "dest": "marketing site/script.js"
+    },
+    {
+      "src": "^/script-santa\\.js$",
+      "dest": "marketing site/script-santa.js"
+    },
+    {
+      "src": "^/script-studio\\.js$",
+      "dest": "marketing site/script-studio.js"
+    },
+    {
+      "src": "^/script-pixar\\.js$",
+      "dest": "marketing site/script-pixar.js"
+    },
+    {
+      "src": "^/script-oil\\.js$",
+      "dest": "marketing site/script-oil.js"
+    },
+    {
+      "src": "^/script-3d\\.js$",
+      "dest": "marketing site/script-3d.js"
+    },
+    {
+      "src": "^/img/(.*)$",
+      "dest": "marketing site/img/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "src/server.ts"
     }
