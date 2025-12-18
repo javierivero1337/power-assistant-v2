@@ -7,8 +7,8 @@ This document provides an overview of the credit-based payment system implemente
 The bot now uses a **credit-based payment system** where users must purchase credits to generate styled images. Each image generation costs 1 credit.
 
 ### Pricing
-- **Package**: 50 credits for $5.00 USD
-- **Cost per generation**: $0.10
+- **Package**: 10 credits for $100.00 MXN
+- **Cost per generation**: $10.00 MXN
 - **Free trial**: None (users must purchase before first use)
 - **Credit expiration**: None (credits never expire)
 
@@ -19,7 +19,7 @@ User sends photo → Kapso Agent → Webhook checks credits →
   ├─ Sufficient credits → Generate image → Deduct credit → Return result
   └─ Insufficient credits → Return 402 with payment link
   
-User completes payment → Stripe webhook → Add 50 credits → User can generate
+User completes payment → Stripe webhook → Add 10 credits → User can generate
 ```
 
 ## Components
@@ -54,7 +54,7 @@ Manages all credit operations using Vercel KV (Redis):
 - Receives Stripe checkout completion events
 - Verifies webhook signature for security
 - Extracts user's phone number from payment
-- Adds 50 credits to user's account
+- Adds 10 credits to user's account
 - Logs transaction for debugging
 
 **`GET /admin/credits/:userId`** (New)
@@ -73,7 +73,7 @@ Manages all credit operations using Vercel KV (Redis):
 ### 3. Payment Integration
 
 #### Stripe Configuration
-1. **Product**: "StyleBot Credits - 50 Pack" at $5
+1. **Product**: "StyleBot Credits - 10 Pack" at $100 MXN
 2. **Payment Link**: Collects WhatsApp phone number
 3. **Webhook**: Listens for `checkout.session.completed` events
 4. **Security**: Signature verification on all webhooks
@@ -128,7 +128,7 @@ Body:
 HTTP 402 Payment Required
 {
   "error": "Insufficient credits",
-  "message": "You need credits to generate images. Purchase 50 credits for $5!",
+  "message": "No tienes créditos suficientes. Compra 10 créditos por $100 MXN para generar tu imagen.",
   "creditsRemaining": 0,
   "paymentLink": "https://buy.stripe.com/xxxxx"
 }
@@ -255,13 +255,13 @@ See `docs/testing/CREDIT_SYSTEM_TESTS.md` for comprehensive test scenarios.
 
 ### First-Time User
 1. User sends photo to WhatsApp bot
-2. Bot responds: "You need credits to generate images. Purchase 50 credits for $5!"
+2. Bot responds: "No tienes créditos suficientes. Compra 10 créditos por $100 MXN..."
 3. User clicks payment link
 4. User completes payment
 5. Bot confirms: "Credits added! Send your photo to get started."
 6. User sends photo again
 7. Bot generates and sends styled image
-8. Bot says: "Here's your LinkedIn look! You have 49 credits remaining."
+8. Bot says: "Here's your LinkedIn look! You have 9 credits remaining."
 
 ### Returning User with Credits
 1. User sends photo
@@ -270,7 +270,7 @@ See `docs/testing/CREDIT_SYSTEM_TESTS.md` for comprehensive test scenarios.
 
 ### User Running Low on Credits
 1. User generates image (3 credits remaining)
-2. Bot says: "Running low! Get 50 more credits for $5: [link]"
+2. Bot says: "Running low! Get 10 more credits for $100 MXN: [link]"
 
 ## Security Considerations
 
@@ -334,7 +334,7 @@ curl "https://your-app.vercel.app/admin/users/+15551234567/credits" \
 https://vercel.com/your-username/power-assistant-v2/logs
 
 # Look for:
-[credits:addCredits] Added 50 credits to +15551234567
+[credits:addCredits] Added 10 credits to +15551234567
 [stripe-webhook] Credits added: {userId, creditsAdded, newBalance}
 [credits:deductCredit] Deducted credit from +15551234567
 [transactions:log] Logged transaction cs_xxx for +15551234567
@@ -362,7 +362,7 @@ https://vercel.com/your-username/power-assistant-v2/logs
 
 Potential improvements to consider:
 
-1. **Credit Packages**: Multiple tiers (25/$3, 50/$5, 100/$9)
+1. **Credit Packages**: Multiple tiers (10/$100 MXN, 25/$200 MXN, 50/$350 MXN)
 2. **Subscription Model**: Monthly unlimited for $10/month
 3. **Referral System**: Give 5 free credits for referrals
 4. **Credit Expiration**: Optional expiry after 90 days

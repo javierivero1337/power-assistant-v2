@@ -121,7 +121,7 @@ curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15551234567" \
 ```json
 {
   "userId": "+15551234567",
-  "credits": 50
+  "credits": 10
 }
 ```
 
@@ -266,7 +266,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
 ```json
 {
   "error": "Insufficient credits",
-  "message": "You need credits to generate images. Purchase 50 credits for $5!",
+  "message": "No tienes créditos suficientes. Compra 10 créditos por $100 MXN para generar tu imagen.",
   "creditsRemaining": 0,
   "paymentLink": "https://buy.stripe.com/test_xxxxx"
 }
@@ -338,12 +338,12 @@ curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15559876543" \
 ```json
 {
   "userId": "+15559876543",
-  "credits": 50
+  "credits": 10
 }
 ```
 
 **Pass Criteria**:
-- Credits are exactly 50 (or 50 more than before if user already had credits)
+- Credits are exactly 10 (or 10 more than before if user already had credits)
 
 #### Test 4.3: Webhook Signature Verification
 
@@ -398,7 +398,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/stripe-webhook" \
    curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15558675309" \
      -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET"
    ```
-   **Expected**: 50 credits
+   **Expected**: 10 credits
 
 4. **User generates image** (should succeed):
    ```bash
@@ -411,7 +411,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/stripe-webhook" \
        "userId": "+15558675309"
      }'
    ```
-   **Expected**: Success with `creditsRemaining: 49`
+   **Expected**: Success with `creditsRemaining: 9`
 
 5. **Verify credit deduction**:
    ```bash

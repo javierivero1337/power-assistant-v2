@@ -15,10 +15,10 @@ This guide walks you through setting up Stripe to accept payments for the credit
 2. Navigate to **Products** in the left sidebar
 3. Click **+ Add product**
 4. Fill in the details:
-   - **Name**: `StyleBot Credits - 50 Pack`
-   - **Description**: `50 image generation credits for StyleBot WhatsApp service`
+   - **Name**: `StyleBot Credits - 10 Pack`
+   - **Description**: `10 image generation credits for StyleBot WhatsApp service`
    - **Pricing**: 
-     - **Price**: `$5.00 USD`
+     - **Price**: `$100.00 MXN`
      - **Billing period**: `One time`
 5. Click **Save product**
 
@@ -114,12 +114,12 @@ Example Payment Link format: `https://buy.stripe.com/test_xxxxxxxxxxxxx`
      -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET"
    
    # Expected response:
-   # {"userId":"+15551234567","credits":50}
+   # {"userId":"+15551234567","credits":10}
    ```
 
 4. **Test credit deduction**:
    - Use the Kapso WhatsApp bot to generate an image
-   - Check credits again - should be 49
+   - Check credits again - should be 9
 
 #### Troubleshooting
 
@@ -160,15 +160,15 @@ When you're ready to accept real payments:
    - Redeploy
 
 4. **Test with a real card** (small amount):
-   - Make a real $5 purchase to verify everything works
+   - Make a real $100 MXN purchase to verify everything works
    - Check that credits are added correctly
    - Refund the test transaction if needed
 
 ## Pricing Configuration
 
 Current setup:
-- **Package**: 50 credits for $5.00 USD
-- **Cost per generation**: $0.10
+- **Package**: 10 credits for $100.00 MXN
+- **Cost per generation**: $10.00 MXN
 - **Free trial**: None (users must purchase before first use)
 - **Credit expiration**: None (credits never expire)
 
@@ -176,7 +176,7 @@ To change pricing:
 1. Create a new product in Stripe with different pricing
 2. Create a new payment link
 3. Update `STRIPE_PAYMENT_LINK` environment variable
-4. Update the credit amount in `/stripe-webhook` endpoint (currently hardcoded to 50)
+4. Update the credit amount in `/stripe-webhook` endpoint (currently hardcoded to 10)
 
 ## Security Best Practices
 
@@ -196,7 +196,7 @@ To change pricing:
 ## Checklist
 
 - [ ] Stripe account created and verified
-- [ ] Product created: "StyleBot Credits - 50 Pack" at $5
+- [ ] Product created: "StyleBot Credits - 10 Pack" at $100 MXN
 - [ ] Payment link created with custom phone number field
 - [ ] API keys copied to Vercel environment variables
 - [ ] Webhook endpoint created and configured

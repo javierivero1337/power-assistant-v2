@@ -159,8 +159,9 @@ app.get('/media/:id', (req, res) => {
 app.get('/admin/credits/:userId', requireWebhookSecret, async (req, res) => {
   try {
     const { userId } = req.params;
-    const credits = await getUserCredits(userId);
-    res.json({ userId, credits });
+    const normalizedUserId = normalizePhoneNumber(userId);
+    const credits = await getUserCredits(normalizedUserId);
+    res.json({ userId: normalizedUserId, credits });
   } catch (error) {
     console.error('[admin:credits:get]', error);
     res.status(500).json({ error: 'Failed to retrieve credits' });
@@ -180,8 +181,9 @@ app.post('/admin/credits/add', requireWebhookSecret, async (req, res) => {
       return res.status(400).json({ error: 'amount must be a positive number' });
     }
     
-    const newBalance = await addCredits(userId, amount);
-    res.json({ userId, newBalance });
+    const normalizedUserId = normalizePhoneNumber(userId);
+    const newBalance = await addCredits(normalizedUserId, amount);
+    res.json({ userId: normalizedUserId, newBalance });
   } catch (error) {
     console.error('[admin:credits:add]', error);
     res.status(500).json({ error: 'Failed to add credits' });
@@ -201,8 +203,9 @@ app.post('/admin/credits/set', requireWebhookSecret, async (req, res) => {
       return res.status(400).json({ error: 'amount must be a non-negative number' });
     }
     
-    const newBalance = await setCredits(userId, amount);
-    res.json({ userId, newBalance });
+    const normalizedUserId = normalizePhoneNumber(userId);
+    const newBalance = await setCredits(normalizedUserId, amount);
+    res.json({ userId: normalizedUserId, newBalance });
   } catch (error) {
     console.error('[admin:credits:set]', error);
     res.status(500).json({ error: 'Failed to set credits' });
@@ -213,13 +216,14 @@ app.post('/admin/credits/set', requireWebhookSecret, async (req, res) => {
 app.delete('/admin/users/:userId', requireWebhookSecret, async (req, res) => {
   try {
     const { userId } = req.params;
-    const deleted = await deleteUser(userId);
+    const normalizedUserId = normalizePhoneNumber(userId);
+    const deleted = await deleteUser(normalizedUserId);
     
     if (!deleted) {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    res.json({ success: true, userId });
+    res.json({ success: true, userId: normalizedUserId });
   } catch (error) {
     console.error('[admin:users:delete]', error);
     res.status(500).json({ error: 'Failed to delete user' });
@@ -229,7 +233,11 @@ app.delete('/admin/users/:userId', requireWebhookSecret, async (req, res) => {
 // Admin endpoint: List all transactions with optional filtering
 app.get('/admin/transactions', requireWebhookSecret, async (req, res) => {
   try {
-    const userId = req.query.userId as string | undefined;
+    const rawUserId = typeof req.query.userId === 'string' ? req.query.userId : undefined;
+    const userId =
+      rawUserId && rawUserId.trim()
+        ? normalizePhoneNumber(rawUserId.trim())
+        : undefined;
     const limit = parseInt(req.query.limit as string) || 50;
     const offset = parseInt(req.query.offset as string) || 0;
     
@@ -348,7 +356,7 @@ app.post(
       if (currentCredits < 1) {
         return res.status(402).json({
           error: 'Insufficient credits',
-          message: 'You need credits to generate images. Purchase 50 credits for $5!',
+          message: 'No tienes créditos suficientes. Compra 10 créditos por $100 MXN para generar tu imagen.',
           creditsRemaining: 0,
           paymentLink: STRIPE_PAYMENT_LINK || 'https://stripe.com',
         });
@@ -533,8 +541,9 @@ app.post('/stripe-webhook', async (req: Request, res: Response) => {
       // Normalize the phone number for consistency
       userId = normalizePhoneNumber(userId);
 
-      // Add 20 credits to the user
-      const CREDITS_PER_PURCHASE = 20;
+      // Add credits to the user
+      // Credit package: $100 MXN → 10 credits
+      const CREDITS_PER_PURCHASE = 10;
       const newBalance = await addCredits(userId, CREDITS_PER_PURCHASE);
 
       // Log the transaction for the dashboard

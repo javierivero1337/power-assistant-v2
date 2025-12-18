@@ -697,7 +697,14 @@
   <!-- Dashboard -->
   <div id="dashboard" class="container">
     <header>
-      <h1>Credits Dashboard</h1>
+      <div>
+        <h1>Credits Dashboard</h1>
+        <div style="margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.85rem;">
+          API: <span style="font-family: 'JetBrains Mono', monospace;" id="api-origin">-</span>
+          <span style="margin: 0 0.5rem; opacity: 0.6;">•</span>
+          MX numbers are normalized: <span style="font-family: 'JetBrains Mono', monospace;">+521XXXXXXXXXX → +52XXXXXXXXXX</span>
+        </div>
+      </div>
       <div class="header-actions">
         <button class="add-user-btn" onclick="showAddUserModal()">+ Add User</button>
         <button class="logout-btn" onclick="logout()">Logout</button>
@@ -724,6 +731,44 @@
       </div>
     </div>
 
+    <!-- Quick Lookup -->
+    <div class="table-container" style="margin-bottom: 1.5rem;">
+      <div style="padding: 1rem; border-bottom: 1px solid var(--border); background: var(--bg-secondary);">
+        <div style="font-weight: 600;">Quick lookup</div>
+        <div style="margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.85rem;">
+          Checks the exact user id stored in Redis (credits + transaction count).
+        </div>
+      </div>
+      <div style="padding: 1rem;">
+        <div class="search-bar" style="margin-bottom: 0.75rem;">
+          <input type="text" id="lookup-input" placeholder="Paste phone number (e.g. +5215522970102)">
+          <button onclick="lookupUser()">Lookup</button>
+          <button class="clear-btn" onclick="clearLookup()">Clear</button>
+        </div>
+        <div id="lookup-result" style="display:none; padding: 0.9rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 1rem;">
+            <div>
+              <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em;">User</div>
+              <div class="phone" id="lookup-user"></div>
+              <div style="margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;" id="lookup-user-wa"></div>
+            </div>
+            <div style="text-align:right;">
+              <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em;">Credits</div>
+              <div class="value" style="font-size: 1.4rem;" id="lookup-credits">-</div>
+              <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.8rem;">
+                Txns: <span style="font-family: 'JetBrains Mono', monospace;" id="lookup-txns">-</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 0.75rem; display:flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="action-btn" onclick="applyLookupToUsersSearch()">Search Users tab</button>
+            <button class="action-btn" onclick="applyLookupToTxnSearch()">Search Transactions tab</button>
+          </div>
+        </div>
+        <div id="lookup-error" style="display:none; margin-top: 0.75rem; color: var(--danger); font-size: 0.9rem;"></div>
+      </div>
+    </div>
+
     <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('users')">Users & Balances</button>
@@ -736,6 +781,10 @@
         <input type="text" id="user-search-input" placeholder="Filter by phone number...">
         <button onclick="filterUsers()">Search</button>
         <button class="clear-btn" onclick="clearUserFilter()">Clear</button>
+      </div>
+      <div style="margin: -0.75rem 0 1.25rem; color: var(--text-secondary); font-size: 0.85rem;">
+        Tip: if you’re looking for a WhatsApp Mexico number like <span style="font-family: 'JetBrains Mono', monospace;">+5215522970102</span>,
+        it will be stored/displayed as <span style="font-family: 'JetBrains Mono', monospace;">+525522970102</span>.
       </div>
 
       <div class="table-container">
@@ -770,6 +819,9 @@
         <input type="text" id="txn-search-input" placeholder="Filter by phone number...">
         <button onclick="searchTransactions()">Search</button>
         <button class="clear-btn" onclick="clearTransactionSearch()">Clear</button>
+      </div>
+      <div style="margin: -0.75rem 0 1.25rem; color: var(--text-secondary); font-size: 0.85rem;">
+        Tip: MX WhatsApp numbers are normalized to <span style="font-family: 'JetBrains Mono', monospace;">+52…</span> (we still show the <span style="font-family: 'JetBrains Mono', monospace;">+521…</span> variant next to it).
       </div>
 
       <div class="table-container">
@@ -869,6 +921,124 @@
     let allUsers = [];
     let filteredUsers = [];
 
+    // Normalize phone number to match backend storage format
+    // - trims spaces/dashes/parentheses
+    // - ensures leading +
+    // - normalizes Mexico WhatsApp mobile prefix: +521XXXXXXXXXX -> +52XXXXXXXXXX
+    function normalizePhoneNumber(phone) {
+      if (!phone) return '';
+      let normalized = String(phone).replace(/[\s\-\(\)]/g, '');
+      if (!normalized) return '';
+      if (!normalized.startsWith('+')) normalized = '+' + normalized;
+      if (normalized.startsWith('+521') && normalized.length === 14) {
+        normalized = '+52' + normalized.slice(4);
+      }
+      return normalized;
+    }
+
+    function getMexicoWhatsAppVariant(normalizedE164) {
+      // If stored as +52 + 10 digits, WhatsApp might show it as +521 + 10 digits
+      // Example: +525522970102 -> +5215522970102
+      const s = String(normalizedE164 || '');
+      if (s.startsWith('+52') && s.length === 13) {
+        return '+521' + s.slice(3);
+      }
+      return null;
+    }
+
+    function renderPhoneCell(userId) {
+      const primary = escapeHtml(String(userId ?? ''));
+      const wa = getMexicoWhatsAppVariant(userId);
+      const waHtml = wa
+        ? `<div style="margin-top: 0.2rem; font-size: 0.75rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">WA: ${escapeHtml(wa)}</div>`
+        : '';
+      return `<div>${primary}${waHtml}</div>`;
+    }
+
+    function clearLookup() {
+      document.getElementById('lookup-input').value = '';
+      document.getElementById('lookup-result').style.display = 'none';
+      document.getElementById('lookup-error').style.display = 'none';
+      document.getElementById('lookup-error').textContent = '';
+    }
+
+    async function lookupUser() {
+      const raw = document.getElementById('lookup-input').value.trim();
+      const normalized = normalizePhoneNumber(raw);
+      const resultEl = document.getElementById('lookup-result');
+      const errEl = document.getElementById('lookup-error');
+
+      resultEl.style.display = 'none';
+      errEl.style.display = 'none';
+      errEl.textContent = '';
+
+      if (!normalized) {
+        errEl.textContent = 'Enter a phone number to lookup.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      try {
+        const [creditsRes, txnsRes] = await Promise.all([
+          fetch(`/admin/credits/${encodeURIComponent(normalized)}`, {
+            headers: { 'X-Kapso-Webhook-Secret': secret }
+          }),
+          fetch(`/admin/transactions?limit=1&offset=0&userId=${encodeURIComponent(normalized)}`, {
+            headers: { 'X-Kapso-Webhook-Secret': secret }
+          })
+        ]);
+
+        if (creditsRes.status === 401 || txnsRes.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!creditsRes.ok) {
+          throw new Error('Credits lookup failed');
+        }
+
+        if (!txnsRes.ok) {
+          throw new Error('Transactions lookup failed');
+        }
+
+        const creditsData = await creditsRes.json();
+        const txnsData = await txnsRes.json();
+
+        // Fill UI
+        document.getElementById('lookup-user').textContent = creditsData.userId ?? normalized;
+        const wa = getMexicoWhatsAppVariant(creditsData.userId ?? normalized);
+        const waEl = document.getElementById('lookup-user-wa');
+        waEl.textContent = wa ? `WA: ${wa}` : '';
+        document.getElementById('lookup-credits').textContent = String(creditsData.credits ?? 0);
+        document.getElementById('lookup-txns').textContent = String(txnsData?.pagination?.total ?? 0);
+
+        // Save for "apply" buttons
+        resultEl.dataset.userId = String(creditsData.userId ?? normalized);
+
+        resultEl.style.display = 'block';
+      } catch (e) {
+        errEl.textContent =
+          'Lookup failed. If this is production and the purchase succeeded, this often means the webhook didn’t write to Redis (env vars / webhook delivery).';
+        errEl.style.display = 'block';
+      }
+    }
+
+    function applyLookupToUsersSearch() {
+      const userId = document.getElementById('lookup-result').dataset.userId;
+      if (!userId) return;
+      document.getElementById('user-search-input').value = userId;
+      switchTab('users');
+      filterUsers();
+    }
+
+    function applyLookupToTxnSearch() {
+      const userId = document.getElementById('lookup-result').dataset.userId;
+      if (!userId) return;
+      document.getElementById('txn-search-input').value = userId;
+      switchTab('transactions');
+      searchTransactions();
+    }
+
     // Check for stored session
     if (sessionStorage.getItem('dashboardSecret')) {
       secret = sessionStorage.getItem('dashboardSecret');
@@ -915,6 +1085,7 @@
     function showDashboard() {
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('api-origin').textContent = window.location.origin;
       loadUsers();
       loadTransactions();
     }
@@ -1000,7 +1171,7 @@
 
       tbody.innerHTML = filteredUsers.map(user => `
         <tr>
-          <td class="phone">${escapeHtml(user.userId)}</td>
+          <td class="phone">${renderPhoneCell(user.userId)}</td>
           <td><span class="credits-badge ${user.credits === 0 ? 'zero' : ''}">${user.credits}</span></td>
           <td class="actions">
             <button class="action-btn edit" onclick="showEditModal('${escapeHtml(user.userId)}', ${user.credits})">Edit</button>
@@ -1014,12 +1185,17 @@
 
     function filterUsers() {
       const input = document.getElementById('user-search-input');
-      const filter = input.value.trim().toLowerCase();
+      const rawFilter = input.value.trim();
+      const filter = rawFilter.toLowerCase();
+      const normalizedFilter = normalizePhoneNumber(rawFilter).toLowerCase();
       
       if (!filter) {
         filteredUsers = allUsers;
       } else {
-        filteredUsers = allUsers.filter(u => u.userId.toLowerCase().includes(filter));
+        filteredUsers = allUsers.filter(u => {
+          const id = String(u.userId ?? '').toLowerCase();
+          return id.includes(filter) || (normalizedFilter && id.includes(normalizedFilter));
+        });
       }
       
       renderUsers();
@@ -1054,7 +1230,7 @@
     }
 
     async function saveCredits() {
-      const userId = document.getElementById('edit-user-id').value;
+      const userId = normalizePhoneNumber(document.getElementById('edit-user-id').value);
       const credits = parseInt(document.getElementById('edit-credits').value);
 
       if (isNaN(credits) || credits < 0) {
@@ -1085,7 +1261,7 @@
     }
 
     async function confirmDelete() {
-      const userId = document.getElementById('delete-user-id').value;
+      const userId = normalizePhoneNumber(document.getElementById('delete-user-id').value);
 
       try {
         const res = await fetch(`/admin/users/${encodeURIComponent(userId)}`, {
@@ -1108,7 +1284,7 @@
     }
 
     async function addNewUser() {
-      const userId = document.getElementById('add-user-id').value.trim();
+      const userId = normalizePhoneNumber(document.getElementById('add-user-id').value.trim());
       const credits = parseInt(document.getElementById('add-credits').value);
 
       if (!userId) {
@@ -1204,7 +1380,7 @@
 
         tbody.innerHTML = data.transactions.map(txn => `
           <tr>
-            <td class="phone">${escapeHtml(txn.userId)}</td>
+            <td class="phone">${renderPhoneCell(txn.userId)}</td>
             <td><span class="credits-badge add">+${txn.creditsAdded}</span></td>
             <td class="amount">$${(txn.amountPaid / 100).toFixed(2)}</td>
             <td class="email hide-mobile">${txn.email ? escapeHtml(txn.email) : '-'}</td>
@@ -1259,7 +1435,7 @@
 
     function searchTransactions() {
       const input = document.getElementById('txn-search-input');
-      currentFilter = input.value.trim();
+      currentFilter = normalizePhoneNumber(input.value.trim());
       currentOffset = 0;
       loadTransactions();
     }
@@ -1308,6 +1484,10 @@
 
     document.getElementById('txn-search-input').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') searchTransactions();
+    });
+
+    document.getElementById('lookup-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') lookupUser();
     });
 
     // Close modals on overlay click

@@ -32,7 +32,7 @@ npm install
 3. Fill in:
    - Name: `StyleBot Credits - 50 Pack`
    - Description: `50 image generation credits`
-   - Price: `$5.00 USD` (One time)
+   - Price: `$100.00 MXN` (One time)
 4. Click **Save product**
 
 #### B. Create Payment Link (5 min)
@@ -134,9 +134,9 @@ curl "https://power-assistant-v2.vercel.app/admin/credits/+15559876543" \
   -H "X-Kapso-Webhook-Secret: YOUR_KAPSO_WEBHOOK_SECRET"
 ```
 
-**Expected**: `{"userId":"+15559876543","credits":50}`
+**Expected**: `{"userId":"+15559876543","credits":10}`
 
-✅ If you see 50 credits, the Stripe webhook is working!
+✅ If you see 10 credits, the Stripe webhook is working!
 
 #### F. Check Stripe Webhook Logs
 1. Go to https://dashboard.stripe.com/test/webhooks
@@ -157,7 +157,7 @@ curl "https://power-assistant-v2.vercel.app/admin/credits/+15559876543" \
    WhatsApp phone number as the userId parameter.
    
    If the tool returns HTTP 402 (Insufficient credits):
-   - Tell the user: "You need credits! Purchase 50 for $5:"
+   - Tell the user: "You need credits! Purchase 10 for $100 MXN:"
    - Include the paymentLink from the error response
    - Do NOT retry the request
    
@@ -182,7 +182,7 @@ curl "https://power-assistant-v2.vercel.app/admin/credits/+15559876543" \
 Your credit system is now live. Users can:
 1. Try to generate an image (will fail - no credits)
 2. Click the payment link
-3. Pay $5 for 50 credits
+3. Pay $100 MXN for 10 credits
 4. Generate images (1 credit each)
 
 ## What's Next?
@@ -198,7 +198,7 @@ Your credit system is now live. Users can:
 2. Switch from test mode to live mode in Stripe
 3. Create new product, payment link, and webhook in live mode
 4. Update Vercel environment variables with live keys
-5. Test with a real $5 payment
+5. Test with a real $100 MXN payment
 
 ### Get Help
 - **Detailed docs**: See `CREDIT_SYSTEM_README.md`
