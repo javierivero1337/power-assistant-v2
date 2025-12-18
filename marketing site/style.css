@@ -249,52 +249,90 @@ body {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        /* Ensure content is centered but safe from being cut off at top */
+        justify-content: flex-start; 
+        min-height: auto; /* Let it grow naturally */
+    }
+
+    body {
+        /* Allow scroll if needed but try to center if it fits */
+        justify-content: flex-start;
+        padding-top: 2rem; /* Add some top space */
+    }
+
+    .logo-header {
+        margin-bottom: 0.5rem;
+    }
+    
     .headline {
-        font-size: 2rem;
+        font-size: 1.75rem;
+        line-height: 1.1;
+    }
+    
+    .subheadline {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    .hero {
+        gap: 0.75rem;
     }
     
     .polaroid-showcase {
-        flex-direction: row; /* Keep side by side on mobile */
-        gap: 0.5rem; /* Reduce gap */
+        flex-direction: row;
+        gap: 0.25rem;
         flex-wrap: nowrap;
+        margin: 0.5rem 0;
+        align-items: center; /* Vertically center items */
     }
     
     .polaroid {
-        width: 48%; /* Fit side by side */
+        width: 46%; /* Slightly smaller to ensure fit */
         max-width: none;
-        padding: 0.5rem 0.5rem 2rem 0.5rem; /* Reduce padding */
+        padding: 0.4rem 0.4rem 1.8rem 0.4rem; /* Compact padding */
+    }
+    
+    .caption {
+        font-size: 1.1rem;
+        bottom: -1.6rem;
     }
     
     .magic-wand {
-        transform: rotate(0deg); /* Point right */
-        margin: 0 -10px; /* Pull them closer */
+        transform: rotate(0deg);
+        margin: 0 -8px;
         z-index: 5;
+    }
+    
+    .sparkles {
+        font-size: 1.5rem; /* Smaller sparkles */
+    }
+    
+    .arrow-icon {
+        width: 50px; /* Smaller arrow */
+        height: 30px;
     }
 
     .polaroid.before, .polaroid.after {
         transform: rotate(0);
     }
     
-    /* Re-apply rotation slightly for playful feel even in column */
     .polaroid.before { transform: rotate(-2deg); }
     .polaroid.after { transform: rotate(2deg); }
 
-    .container {
+    /* Prominent CTA */
+    .cta-button {
+        width: 90%;
+        justify-content: center;
         padding: 1rem;
-    }
-
-    .headline {
-        font-size: 1.8rem;
-    }
-    
-    .subheadline {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .caption {
-        font-size: 1.2rem;
-        bottom: -2rem;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.5);
+        /* Ensure it pops */
+        background: linear-gradient(45deg, #25D366, #128C7E);
+        border: 2px solid rgba(255,255,255,0.2);
     }
 }
 
