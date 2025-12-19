@@ -351,23 +351,7 @@ app.post(
       const userId = normalizePhoneNumber(payload.userId);
 
       // Check user's credit balance
-      let currentCredits = await getUserCredits(userId);
-      
-      // Free Trial Logic: If 0 credits, check if they are a new user (no purchase history)
-      if (currentCredits < 1) {
-        // Check if user has ever purchased credits
-        const { totalCreditsFromPurchases } = await getUserTransactionHistory(userId);
-        
-        // If they have never purchased credits and have 0 balance, give them 1 free credit
-        // This is a safe "lazy initialization" for the free trial
-        if (totalCreditsFromPurchases === 0) {
-          console.log(`[generate-styled-image] New user ${userId} detected. Granting 1 free trial credit.`);
-          // Initialize/Grant 1 credit
-          // We use setCredits instead of addCredits to ensure they start at exactly 1
-          await setCredits(userId, 1);
-          currentCredits = 1;
-        }
-      }
+      const currentCredits = await getUserCredits(userId);
       
       if (currentCredits < 1) {
         return res.status(402).json({
