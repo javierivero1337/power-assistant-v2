@@ -132,6 +132,40 @@ export async function initializeUser(userId: string): Promise<void> {
 }
 
 /**
+ * Try to grant a free trial credit to a new user
+ * Uses SETNX to atomically set 1 credit ONLY if the user doesn't exist.
+ * This prevents users from getting multiple free trials.
+ * 
+ * @param userId - User identifier (phone number)
+ * @returns Object indicating if free trial was granted (user was new)
+ */
+export async function tryGrantFreeTrial(userId: string): Promise<{
+  granted: boolean;
+  isNewUser: boolean;
+}> {
+  try {
+    const client = await getRedisClient();
+    const key = `${CREDIT_KEY_PREFIX}${userId}`;
+    
+    // SETNX: Set only if key doesn't exist
+    // Returns true if set succeeded (new user), false if key already exists
+    const wasSet = await client.setNX(key, '1');
+    
+    if (wasSet) {
+      console.log(`[credits:tryGrantFreeTrial] Granted 1 free trial credit to new user: ${userId}`);
+    }
+    
+    return {
+      granted: wasSet,
+      isNewUser: wasSet,
+    };
+  } catch (error) {
+    console.error('[credits:tryGrantFreeTrial]', error);
+    throw new Error('Failed to grant free trial');
+  }
+}
+
+/**
  * Set a user's credit balance to a specific amount (for admin use)
  * @param userId - User identifier (phone number)
  * @param amount - Credit balance to set

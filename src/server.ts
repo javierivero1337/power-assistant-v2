@@ -14,7 +14,7 @@ import {
   getStylePreset,
   STYLE_MENU,
 } from './styles/presets.js';
-import { getUserCredits, deductCredit, addCredits, setCredits, checkKVConnection, getAllUsersWithCredits, deleteUser } from './db/credits.js';
+import { getUserCredits, deductCredit, addCredits, setCredits, checkKVConnection, getAllUsersWithCredits, deleteUser, tryGrantFreeTrial } from './db/credits.js';
 import { logTransaction, CreditTransaction, getTransactions, getTransactionStats, getUserTransactionHistory } from './db/transactions.js';
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -350,7 +350,26 @@ app.post(
       const payload = requestSchema.parse(req.body);
       const userId = normalizePhoneNumber(payload.userId);
 
-      // Check user's credit balance
+      // Try to grant free trial to new users (uses SETNX - only succeeds for brand new users)
+      const trialResult = await tryGrantFreeTrial(userId);
+      
+      if (trialResult.granted) {
+        console.log(`[generate-styled-image] Free trial granted to new user: ${userId}`);
+        
+        // Log the free trial as a transaction for analytics
+        const freeTrialTransaction: CreditTransaction = {
+          id: `free-trial-${Date.now()}-${userId.slice(-4)}`,
+          userId,
+          creditsAdded: 1,
+          amountPaid: 0,
+          currency: 'usd',
+          createdAt: Date.now(),
+          type: 'free_trial',
+        };
+        await logTransaction(freeTrialTransaction);
+      }
+
+      // Check user's credit balance (after potential free trial grant)
       const currentCredits = await getUserCredits(userId);
       
       if (currentCredits < 1) {
@@ -555,6 +574,7 @@ app.post('/stripe-webhook', async (req: Request, res: Response) => {
         currency: session.currency ?? 'usd',
         createdAt: Date.now(),
         email: session.customer_details?.email ?? undefined,
+        type: 'purchase',
       };
       await logTransaction(transaction);
 

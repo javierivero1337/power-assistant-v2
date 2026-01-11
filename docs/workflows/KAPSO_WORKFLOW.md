@@ -1,6 +1,21 @@
-# Kapso Deterministic Workflow — WhatsApp Image Styler
+# Kapso Deterministic Flow — WhatsApp Image Styler
 
 A fully working WhatsApp bot that transforms user photos into AI-styled images using Kapso's deterministic flow (no Agent node).
+
+## Workflow Metadata
+
+| Field | Value |
+|-------|-------|
+| **ID** | `720ae1a2-0476-42dc-b718-1727ee2ad2c3` |
+| **Name** | Deterministic Flow |
+| **Status** | Active |
+| **Lock Version** | 751 |
+| **Message Debounce** | 1 second |
+| **Created** | 2025-12-17 |
+| **Last Updated** | 2025-12-22 |
+| **Connected WhatsApp** | Revelio NN (`862579566949092`) |
+
+---
 
 ## Overview
 
@@ -37,11 +52,11 @@ WhatsApp User
 Start (WhatsApp inbound)
     ↓
 Decision (revelio-router)
-    ├── got_image → Send Text (menu) → Wait for Response → back to Decision
-    ├── got_style → map-style → Send Text ("Perfecto...") → Webhook (generate) → extract-response → Decision (post-generate-router)
-    │                 ├── needs_payment → Send Text (payment link) → End (user buys and comes back later)
-    │                 └── got_result → Webhook (send image)
-    └── help → Send Text ("Envíame una foto...")
+    ├── got_image → Send Text (style menu) → Wait for Response → back to Decision
+    ├── got_style → map-style → Webhook (generate) → extract-response → Decision (post-generate-router)
+    │                 ├── needs_payment → Send Text (payment link) → End
+    │                 └── got_result → Webhook (send image via WhatsApp API)
+    └── help → Send Text ("Send me a picture...") → Wait for Response → back to Decision
 ```
 
 ---
@@ -50,16 +65,56 @@ Decision (revelio-router)
 
 | # | Key | Label |
 |--:|-----|-------|
-| 1 | `artistic` | Pintura al Óleo 🎨 |
-| 2 | `cartoon` | Caricatura/Anime 👀 |
+| 1 | `artistic` | Oil Painting 🎨 |
+| 2 | `cartoon` | Cartoon/Anime 👀 |
 | 3 | `linkedin` | LinkedIn 💼 |
 | 4 | `lego` | LEGO 🧱 |
-| 5 | `cinematic` | Cinematográfico B&W 🎬 |
-| 6 | `magazine` | Portada Revista 📰 |
-| 7 | `3d` | Caricatura 3D 🎮 |
-| 8 | `beauty` | Análisis Belleza 📊 |
-| 9 | `professional` | Sesión Profesional 📸 |
-| 10 | `santa` | Foto con Santa 🎅🏻 |
+| 5 | `cinematic` | Cinematic B&W 🎬 |
+| 6 | `magazine` | Magazine Cover 📰 |
+| 7 | `3d` | 3D Character 🎮 |
+| 8 | `beauty` | Beauty Analysis 📊 |
+| 9 | `professional` | Professional Shoot 📸 |
+| 10 | `santa` | Photo with Santa 🎅🏻 |
+
+---
+
+## Node Summary
+
+### Decision Nodes
+
+| Node ID | Function | Description |
+|---------|----------|-------------|
+| `decide_1766002833254` | `revelio-router` | Routes based on user input (image/style/help) |
+| `decide_1766018124950` | `post-generate-router` | Routes based on payment status after generation |
+
+### Function Nodes
+
+| Node ID | Function | Description |
+|---------|----------|-------------|
+| `function_1766004096729` | `map-style` | Maps user's numeric selection (1-10) to style key |
+| `function_1766015616539` | `extract-response` | Extracts image URL, caption, credits from API response |
+
+### Webhook Nodes
+
+| Node ID | Purpose | URL |
+|---------|---------|-----|
+| `webhook_1766004490926` | Generate styled image | `https://power-assistant-v2.vercel.app/generate-styled-image` |
+| `webhook_1766005263411` | Send image to user | `https://api.kapso.ai/meta/whatsapp/v24.0/862579566949092/messages` |
+
+### Message Nodes
+
+| Node ID | Message |
+|---------|---------|
+| `send_text_1766094162828` | Style selection menu (10 options) |
+| `send_text_1766004233379` | Help message ("Send me a picture...") |
+| `send_text_1766095970475` | Payment required message |
+
+### Other Nodes
+
+| Node ID | Type | Description |
+|---------|------|-------------|
+| `start` | Start | Entry point for the workflow |
+| `wait_for_response_1766004330827` | Wait | Waits for user input after sending messages |
 
 ---
 
@@ -67,7 +122,17 @@ Decision (revelio-router)
 
 ### 1. `revelio-router` (Decision Node)
 
+**Function ID:** `ba357120-3e76-49d1-8447-d3b92993dc9f`
+
 Routes incoming messages to the appropriate branch.
+
+**Edge labels:** `got_image`, `got_style`, `help`
+
+| Condition | Label | Description |
+|-----------|-------|-------------|
+| User sent an image | `got_image` | Inbound message contains an image (or "Image attached ... URL: ..."). Store it and ask for style 1–10. |
+| User selected a style | `got_style` | User is awaiting style selection and replied with a number 1–10. Proceed to generation. |
+| Invalid input | `help` | No image received yet, or invalid input. Prompt user to send a photo (or reply 1–10 if awaiting). |
 
 ```javascript
 export async function handler(request, env) {
@@ -124,11 +189,11 @@ export async function handler(request, env) {
 
 > **Note:** This router no longer needs to track `user_phone_number` since we use `{{context.contact.wa_id}}` directly in webhooks, which is always available from Kapso's execution context.
 
-**Edge labels:** `got_image`, `got_style`, `help`
-
 ---
 
 ### 2. `map-style` (Function Node)
+
+**Function ID:** `135c3e0e-03fd-4dbb-bdc5-4d4b4bbafd42`
 
 Converts style number (1-10) to style key.
 
@@ -185,6 +250,8 @@ export async function handler(request, env) {
 
 ### 3. `extract-response` (Function Node)
 
+**Function ID:** `926bf13a-f1c9-448a-8beb-4af109ab5c32`
+
 Extracts nested webhook response into flat variables (Kapso quirk: stores responses with literal key `vars.generate_response`).
 
 ```javascript
@@ -235,34 +302,40 @@ export async function handler(request, env) {
 
 ### 4. `post-generate-router` (Decision Node)
 
+**Function ID:** `00c0af46-c7d4-49c2-ad5d-be912dc6c248`
+
 Routes based on whether the generation webhook returned a payment requirement.
 
-- If `vars.payment_required == "true"` → `needs_payment`
-- Else → `got_result`
+| Condition | Label | Description |
+|-----------|-------|-------------|
+| `vars.payment_required == "true"` | `needs_payment` | Payment is required |
+| Otherwise | `got_result` | Image was generated successfully |
 
 **Edge labels:** `needs_payment`, `got_result`
+
+---
 
 ## Webhook Configurations
 
 ### Webhook 1: Generate Styled Image (Vercel Backend)
 
+**Node ID:** `webhook_1766004490926`
+
 | Field | Value |
 |-------|-------|
 | URL | `https://power-assistant-v2.vercel.app/generate-styled-image` |
 | Method | `POST` |
-| Headers | See below |
-| Body | See below |
 | Save Response To | `vars.generate_response` |
 
 **Headers:**
 ```json
 {
   "Content-Type": "application/json",
-  "x-kapso-webhook-secret": "<YOUR_VERCEL_SECRET>"
+  "x-kapso-webhook-secret": "secret_kapso_javierivero"
 }
 ```
 
-**Body:**
+**Body Template:**
 ```json
 {
   "style": "{{vars.selected_style_key}}",
@@ -277,29 +350,29 @@ Routes based on whether the generation webhook returned a payment requirement.
 
 ### Webhook 2: Send Image via WhatsApp (Kapso API)
 
+**Node ID:** `webhook_1766005263411`
+
 | Field | Value |
 |-------|-------|
-| URL | `https://api.kapso.ai/meta/whatsapp/v24.0/<PHONE_NUMBER_ID>/messages` |
+| URL | `https://api.kapso.ai/meta/whatsapp/v24.0/862579566949092/messages` |
 | Method | `POST` |
-| Headers | See below |
-| Body | See below |
 
 **Headers:**
 ```json
 {
-  "Content-Type": "application/json",
-  "X-API-Key": "<YOUR_KAPSO_API_KEY>"
+  "X-API-Key": "<YOUR_KAPSO_API_KEY>",
+  "Content-Type": "application/json"
 }
 ```
 
-**Body:**
+**Body Template:**
 ```json
 {
   "to": "{{context.contact.wa_id}}",
   "type": "image",
   "image": {
     "link": "{{vars.image_url}}",
-    "caption": "{{vars.image_caption}}\n\nTe quedan {{vars.credits_remaining}} créditos."
+    "caption": "{{vars.image_caption}}\n\nYou have {{vars.credits_remaining}} credits left.\n\nGet more credits here: https://buy.stripe.com/dRmfZg9xY1lx7RMeBG8bS02"
   },
   "recipient_type": "individual",
   "messaging_product": "whatsapp"
@@ -307,6 +380,54 @@ Routes based on whether the generation webhook returned a payment requirement.
 ```
 
 > **Important:** Use `{{context.contact.wa_id}}` for consistent phone number handling across all regions and workflow steps.
+
+---
+
+## Text Messages
+
+### Style Menu (`send_text_1766094162828`)
+
+Sent after receiving an image from the user.
+
+```
+Thanks for your photo! 📸 Choose a style:
+
+1. Oil Painting 🎨
+2. Cartoon/Anime 👀
+3. LinkedIn 💼
+4. LEGO 🧱
+5. Cinematic B&W 🎬
+6. Magazine Cover 📰
+7. 3D Character 🎮
+8. Beauty Analysis 📊
+9. Professional Shoot 📸
+10. Photo with Santa 🎅🏻
+
+Reply with the number only
+```
+
+### Help Message (`send_text_1766004233379`)
+
+Sent when user sends invalid input or no image.
+
+```
+Send me a picture to get started!  📸
+```
+
+### Payment Required (`send_text_1766095970475`)
+
+Sent when user has insufficient credits.
+
+```
+Oops! 😅 You need at least 1 credit to generate your image
+
+Get your credits here: 
+    {{vars.payment_link}}
+
+After your payment your credits will be added automatically. 
+
+Send a new image when you're ready! 📸
+```
 
 ---
 
@@ -355,41 +476,319 @@ Kapso sends data in specific locations:
 
 ---
 
-## Text Messages
+## Workflow Graph (JSON)
 
-### Style Menu (after receiving image)
+The complete workflow graph exported from Kapso:
+
+```json
+{
+  "nodes": [
+    {
+      "id": "webhook_1766004490926",
+      "type": "flow-node",
+      "position": { "x": 120, "y": 700 },
+      "data": {
+        "node_type": "webhook",
+        "config": {
+          "url": "https://power-assistant-v2.vercel.app/generate-styled-image",
+          "method": "POST",
+          "headers": "{\"Content-Type\":\"application/json\",\"x-kapso-webhook-secret\":\"secret_kapso_javierivero\"}",
+          "body_template": "{\"style\":\"{{vars.selected_style_key}}\",\"userId\":\"{{context.contact.wa_id}}\",\"messageContent\":\"{{vars.pending_image_message}}\"}",
+          "save_response_to": "vars.generate_response"
+        },
+        "display_name": "Call Webhook"
+      }
+    },
+    {
+      "id": "function_1766015616539",
+      "type": "flow-node",
+      "position": { "x": 160, "y": 880 },
+      "data": {
+        "node_type": "function",
+        "config": {
+          "function_id": "926bf13a-f1c9-448a-8beb-4af109ab5c32",
+          "function_name": "extract-response",
+          "save_response_to": null
+        },
+        "display_name": "Function: extract-response"
+      }
+    },
+    {
+      "id": "webhook_1766005263411",
+      "type": "flow-node",
+      "position": { "x": 0, "y": 1220 },
+      "data": {
+        "node_type": "webhook",
+        "config": {
+          "url": "https://api.kapso.ai/meta/whatsapp/v24.0/862579566949092/messages",
+          "method": "POST",
+          "headers": "{\"X-API-Key\":\"<YOUR_KAPSO_API_KEY>\",\"Content-Type\":\"application/json\"}",
+          "body_template": "{\"to\":\"{{context.contact.wa_id}}\",\"type\":\"image\",\"image\":{\"link\":\"{{vars.image_url}}\",\"caption\":\"{{vars.image_caption}}\\n\\nYou have {{vars.credits_remaining}} credits left.\\n\\nGet more credits here: https://buy.stripe.com/dRmfZg9xY1lx7RMeBG8bS02\"},\"recipient_type\":\"individual\",\"messaging_product\":\"whatsapp\"}",
+          "save_response_to": null
+        },
+        "display_name": "Call Webhook"
+      }
+    },
+    {
+      "id": "decide_1766002833254",
+      "type": "flow-node",
+      "position": { "x": 80, "y": 340 },
+      "data": {
+        "node_type": "decide",
+        "config": {
+          "decision_type": "function",
+          "conditions": [
+            {
+              "id": "70d49f6e-f90c-4a9e-8dd0-d6ecc31a699f",
+              "label": "got_image",
+              "description": "Inbound message contains an image (or an \"Image attached ... URL: ...\" message). Store it and ask for style 1–10."
+            },
+            {
+              "id": "175ebcb7-2ec3-4499-adc4-5126e7117a15",
+              "label": "got_style",
+              "description": "User is awaiting style selection and replied with a number 1–10. Proceed to generation."
+            },
+            {
+              "id": "237becd5-e564-4f1d-86d5-c687e65b9db8",
+              "label": "help",
+              "description": "No image received yet, or invalid input. Prompt user to send a photo (or reply 1–10 if awaiting)."
+            }
+          ],
+          "function_id": "ba357120-3e76-49d1-8447-d3b92993dc9f",
+          "function_name": "revelio-router"
+        },
+        "display_name": "Decision: Function"
+      }
+    },
+    {
+      "id": "decide_1766018124950",
+      "type": "flow-node",
+      "position": { "x": 160, "y": 1040 },
+      "data": {
+        "node_type": "decide",
+        "config": {
+          "decision_type": "function",
+          "conditions": [
+            {
+              "id": "5b2cc22c-ef69-41e1-868d-0d64227df84f",
+              "label": "needs_payment",
+              "description": "Payment is required (when vars.payment_required equals \"true\")"
+            },
+            {
+              "id": "d35ffb46-31f9-4b65-80d8-b667de587e98",
+              "label": "got_result",
+              "description": "Payment not required, image was generated successfully"
+            }
+          ],
+          "function_id": "00c0af46-c7d4-49c2-ad5d-be912dc6c248",
+          "function_name": "post-generate-router"
+        },
+        "display_name": "Decision: Function"
+      }
+    },
+    {
+      "id": "function_1766004096729",
+      "type": "flow-node",
+      "position": { "x": 120, "y": 500 },
+      "data": {
+        "node_type": "function",
+        "config": {
+          "function_id": "135c3e0e-03fd-4dbb-bdc5-4d4b4bbafd42",
+          "function_name": "map-style",
+          "save_response_to": null
+        },
+        "display_name": "Function: map-style"
+      }
+    },
+    {
+      "id": "send_text_1766004233379",
+      "type": "flow-node",
+      "position": { "x": 480, "y": 500 },
+      "data": {
+        "node_type": "send_text",
+        "config": {
+          "message": "Send me a picture to get started!  📸",
+          "delay_seconds": 0
+        },
+        "display_name": "Send Text Message"
+      }
+    },
+    {
+      "id": "start",
+      "type": "flow-node",
+      "position": { "x": 80, "y": 160 },
+      "data": {
+        "node_type": "start",
+        "config": {},
+        "display_name": "Start"
+      }
+    },
+    {
+      "id": "wait_for_response_1766004330827",
+      "type": "flow-node",
+      "position": { "x": -180, "y": 640 },
+      "data": {
+        "node_type": "wait_for_response",
+        "config": {
+          "has_timeout": false,
+          "timeout_seconds": null,
+          "save_response_to": null
+        },
+        "display_name": "Wait for Response"
+      }
+    },
+    {
+      "id": "send_text_1766094162828",
+      "type": "flow-node",
+      "position": { "x": -220, "y": 500 },
+      "data": {
+        "node_type": "send_text",
+        "config": {
+          "message": "Thanks for your photo! 📸 Choose a style:\n\n1. Oil Painting 🎨\n2. Cartoon/Anime 👀\n3. LinkedIn 💼\n4. LEGO 🧱\n5. Cinematic B&W 🎬\n6. Magazine Cover 📰\n7. 3D Character 🎮\n8. Beauty Analysis 📊\n9. Professional Shoot 📸\n10. Photo with Santa 🎅🏻\n\nReply with the number only",
+          "delay_seconds": 0
+        },
+        "display_name": "Send Text Message"
+      }
+    },
+    {
+      "id": "send_text_1766095970475",
+      "type": "flow-node",
+      "position": { "x": 360, "y": 1220 },
+      "data": {
+        "node_type": "send_text",
+        "config": {
+          "message": "Oops! 😅 You need at least 1 credit to generate your image\n\nGet your credits here: \n    {{vars.payment_link}}\n\nAfter your payment your credits will be added automatically. \n\nSend a new image when you're ready! 📸",
+          "delay_seconds": 0
+        },
+        "display_name": "Send Text Message"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "bf2f4c0c-8ba8-4966-88b6-d6edefc58ee5",
+      "source": "webhook_1766004490926",
+      "target": "function_1766015616539",
+      "label": "next"
+    },
+    {
+      "id": "72233b52-cf98-4c03-95f0-b2ee43a68a0b",
+      "source": "function_1766015616539",
+      "target": "decide_1766018124950",
+      "label": "next"
+    },
+    {
+      "id": "9d5ec8e1-5f4c-4490-a8e6-03c4320891b1",
+      "source": "decide_1766002833254",
+      "target": "function_1766004096729",
+      "label": "got_style",
+      "flow_condition_id": "175ebcb7-2ec3-4499-adc4-5126e7117a15"
+    },
+    {
+      "id": "f89d40e9-55d2-4d71-8d33-1d70111ea5d8",
+      "source": "decide_1766002833254",
+      "target": "send_text_1766004233379",
+      "label": "help",
+      "flow_condition_id": "237becd5-e564-4f1d-86d5-c687e65b9db8"
+    },
+    {
+      "id": "a8a52ace-b687-44ef-8860-fdbf747d78ee",
+      "source": "decide_1766002833254",
+      "target": "send_text_1766094162828",
+      "label": "got_image",
+      "flow_condition_id": "70d49f6e-f90c-4a9e-8dd0-d6ecc31a699f"
+    },
+    {
+      "id": "334df9bd-dff0-4eb3-997a-c158eda1ebc0",
+      "source": "decide_1766018124950",
+      "target": "webhook_1766005263411",
+      "label": "got_result",
+      "flow_condition_id": "d35ffb46-31f9-4b65-80d8-b667de587e98"
+    },
+    {
+      "id": "ecf4cdcc-69f4-4a03-821c-cb4f81bf9be7",
+      "source": "decide_1766018124950",
+      "target": "send_text_1766095970475",
+      "label": "needs_payment",
+      "flow_condition_id": "5b2cc22c-ef69-41e1-868d-0d64227df84f"
+    },
+    {
+      "id": "34a66df4-ff1e-4692-bc55-8c9be754795c",
+      "source": "function_1766004096729",
+      "target": "webhook_1766004490926",
+      "label": "next"
+    },
+    {
+      "id": "8833f9f5-dd25-464f-8971-6eb131cf612f",
+      "source": "send_text_1766004233379",
+      "target": "wait_for_response_1766004330827",
+      "label": "next"
+    },
+    {
+      "id": "5d6c10f2-69c8-44f3-90a6-59f9fe231d04",
+      "source": "start",
+      "target": "decide_1766002833254",
+      "label": "next"
+    },
+    {
+      "id": "ffea0f83-b7f3-4f3d-954f-c8aaa8fbe975",
+      "source": "wait_for_response_1766004330827",
+      "target": "decide_1766002833254",
+      "label": "next"
+    },
+    {
+      "id": "35953195-7900-410e-a4b2-f98aedd083cc",
+      "source": "send_text_1766094162828",
+      "target": "wait_for_response_1766004330827",
+      "label": "next"
+    }
+  ]
+}
 ```
-Gracias por tu foto! 📸 Elige un estilo:
 
-1. Pintura al Óleo 🎨
-2. Caricatura/Anime 👀
-3. LinkedIn 💼
-4. LEGO 🧱
-5. Cinematográfico B&W 🎬
-6. Portada Revista 📰
-7. Caricatura 3D 🎮
-8. Análisis Belleza 📊
-9. Sesión Profesional 📸
-10. Foto con Santa 🎅🏻
+---
 
-Responde con el número únicamente
+## Backend Endpoints
+
+### `POST /generate-styled-image`
+
+Generates a styled image using Gemini AI.
+
+**Request:**
+```json
+{
+  "messageContent": "Image attached ... URL: https://...",
+  "style": "cartoon",
+  "userId": "523331904491"
+}
 ```
 
-### Payment Required (after user chose style)
+**Success Response (200):**
+```json
+{
+  "stylizedImageUrl": "https://power-assistant-v2.vercel.app/media/abc123",
+  "caption": "🎬 Cartoon mode activated!",
+  "style": "Cartoon (Anime Style)",
+  "creditsRemaining": 7
+}
 ```
-Uff 😅 para generar tu imagen necesitas créditos.
 
-Compra 10 créditos por $100 MXN aquí:
-{{vars.payment_link}}
-
-Cuando termines de pagar, responde: LISTO ✅
-(no hace falta reenviar la foto)
+**Payment Required Response (402):**
+```json
+{
+  "error": "Insufficient credits",
+  "message": "You need at least 1 credit to generate an image",
+  "paymentLink": "https://buy.stripe.com/...",
+  "creditsRemaining": 0
+}
 ```
 
-### Help Message (no image)
-```
-Envíame una foto para empezar. 📸
-```
+**Errors:**
+| Status | Description |
+|--------|-------------|
+| `401` | Missing/invalid `x-kapso-webhook-secret` header |
+| `402` | Insufficient credits (includes `paymentLink` in response) |
+| `400` | Invalid style or missing image URL in message |
 
 ---
 
@@ -416,38 +815,6 @@ Envíame una foto para empezar. 📸
 4. **Empty variables?** → Check variable paths in Kapso payload
 5. **Image not sent?** → Check Webhook 2 body and WhatsApp API response
 6. **User has credits but still fails?** → Check phone number is being sent correctly
-
----
-
-## Backend Endpoints
-
-### `POST /generate-styled-image`
-
-Generates a styled image using Gemini AI.
-
-**Request:**
-```json
-{
-  "messageContent": "Image attached ... URL: https://...",
-  "style": "cartoon",
-  "userId": "523331904491"
-}
-```
-
-**Response:**
-```json
-{
-  "stylizedImageUrl": "https://power-assistant-v2.vercel.app/media/abc123",
-  "caption": "🎬 ¡Modo caricatura activado!",
-  "style": "Cartoon (Anime Style)",
-  "creditsRemaining": 7
-}
-```
-
-**Errors:**
-- `401` - Missing/invalid auth header
-- `402` - Insufficient credits (includes `paymentLink`)
-- `400` - Invalid style or missing image
 
 ---
 
@@ -500,3 +867,5 @@ If you need to store custom data across workflow steps:
 - ❌ Don't rely on variables persisting automatically between branches
 
 ---
+
+*Exported from Kapso Workflows on 2025-12-22*

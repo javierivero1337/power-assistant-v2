@@ -14,13 +14,14 @@ const USER_TRANSACTIONS_PREFIX = 'credits:txns:user:';
 let redis: RedisClientType | null = null;
 
 export interface CreditTransaction {
-  id: string;           // Stripe session ID
+  id: string;           // Stripe session ID or unique identifier
   userId: string;       // Phone number
   creditsAdded: number;
-  amountPaid: number;   // In cents
+  amountPaid: number;   // In cents (0 for free trials)
   currency: string;
   createdAt: number;    // Unix timestamp ms
   email?: string;
+  type?: 'purchase' | 'free_trial' | 'admin_grant';  // Transaction type for analytics
 }
 
 /**
