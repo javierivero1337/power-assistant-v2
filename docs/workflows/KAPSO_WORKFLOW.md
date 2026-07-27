@@ -370,7 +370,7 @@ Routes based on whether the generation webhook returned a payment requirement.
   "type": "image",
   "image": {
     "link": "{{vars.image_url}}",
-    "caption": "{{vars.image_caption}}\n\nYou have {{vars.credits_remaining}} credits left.\n\nGet more credits here: https://buy.stripe.com/dRmfZg9xY1lx7RMeBG8bS02"
+    "caption": "{{vars.image_caption}}\n\nYou have {{vars.credits_remaining}} credits left.\n\nGet more credits here: https://buy.stripe.com/bJeeVc6lM1lxgoi8di8bS03"
   },
   "recipient_type": "individual",
   "messaging_product": "whatsapp"
@@ -520,7 +520,7 @@ The complete workflow graph exported from Kapso:
           "url": "https://api.kapso.ai/meta/whatsapp/v24.0/862579566949092/messages",
           "method": "POST",
           "headers": "{\"X-API-Key\":\"<YOUR_KAPSO_API_KEY>\",\"Content-Type\":\"application/json\"}",
-          "body_template": "{\"to\":\"{{context.contact.wa_id}}\",\"type\":\"image\",\"image\":{\"link\":\"{{vars.image_url}}\",\"caption\":\"{{vars.image_caption}}\\n\\nYou have {{vars.credits_remaining}} credits left.\\n\\nGet more credits here: https://buy.stripe.com/dRmfZg9xY1lx7RMeBG8bS02\"},\"recipient_type\":\"individual\",\"messaging_product\":\"whatsapp\"}",
+          "body_template": "{\"to\":\"{{context.contact.wa_id}}\",\"type\":\"image\",\"image\":{\"link\":\"{{vars.image_url}}\",\"caption\":\"{{vars.image_caption}}\\n\\nYou have {{vars.credits_remaining}} credits left.\\n\\nGet more credits here: https://buy.stripe.com/bJeeVc6lM1lxgoi8di8bS03\"},\"recipient_type\":\"individual\",\"messaging_product\":\"whatsapp\"}",
           "save_response_to": null
         },
         "display_name": "Call Webhook"

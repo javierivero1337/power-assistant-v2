@@ -33,7 +33,7 @@ Credits are stored in Redis via the `node-redis` client (`REDIS_URL`).
 3. Fill in:
    - Name: `StyleBot Credits - 10 Pack`
    - Description: `10 image generation credits`
-   - Price: `$100.00 MXN` (One time)
+   - Price: `$20.00 MXN` (One time)
 4. Click **Save product**
 
 #### B. Create Payment Link (5 min)
@@ -183,7 +183,7 @@ The bot uses a **deterministic flow** (not an Agent node). Follow the canonical 
 
 Your credit system is now live. Users can:
 1. Send a photo and pick a style — **new users get 1 free credit** on their first generation (via Redis SETNX)
-2. After free credit is used, purchase 10 credits for $100 MXN via the Stripe payment link
+2. After free credit is used, purchase 10 credits for $20 MXN via the Stripe payment link
 3. Generate images (1 credit each; credits never expire)
 
 ## What's Next?
@@ -199,7 +199,7 @@ Your credit system is now live. Users can:
 2. Switch from test mode to live mode in Stripe
 3. Create new product, payment link, and webhook in live mode
 4. Update Vercel environment variables with live keys
-5. Test with a real $100 MXN payment
+5. Test with a real $20 MXN payment
 
 ### Get Help
 - **Detailed docs**: See `CREDIT_SYSTEM_README.md`

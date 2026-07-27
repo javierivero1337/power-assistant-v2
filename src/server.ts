@@ -375,7 +375,7 @@ app.post(
       if (currentCredits < 1) {
         return res.status(402).json({
           error: 'Insufficient credits',
-          message: 'No tienes créditos suficientes. Compra 10 créditos por $100 MXN para generar tu imagen.',
+          message: 'No tienes créditos suficientes. Compra 10 créditos por $20 MXN para generar tu imagen.',
           creditsRemaining: 0,
           paymentLink: STRIPE_PAYMENT_LINK || 'https://stripe.com',
         });
@@ -567,7 +567,7 @@ app.post('/stripe-webhook', async (req: Request, res: Response) => {
       }
 
       // Add credits to the user
-      // Credit package: $100 MXN → 10 credits
+      // Credit package: $20 MXN → 10 credits
       const CREDITS_PER_PURCHASE = 10;
 
       try {

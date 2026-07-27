@@ -7,8 +7,8 @@ This document provides an overview of the credit-based payment system implemente
 The bot now uses a **credit-based payment system** where users must purchase credits to generate styled images. Each image generation costs 1 credit.
 
 ### Pricing
-- **Package**: 10 credits for $100.00 MXN
-- **Cost per generation**: 1 credit ($10.00 MXN effective)
+- **Package**: 10 credits for $20.00 MXN
+- **Cost per generation**: 1 credit ($2.00 MXN effective)
 - **Free trial**: 1 free credit for new users (granted atomically via Redis SETNX on first `/generate-styled-image` call)
 - **Credit expiration**: None (credits never expire)
 
@@ -78,7 +78,7 @@ Manages all credit operations using Redis (`REDIS_URL`, `node-redis` client):
 ### 3. Payment Integration
 
 #### Stripe Configuration
-1. **Product**: "StyleBot Credits - 10 Pack" at $100 MXN
+1. **Product**: "StyleBot Credits - 10 Pack" at $20 MXN
 2. **Payment Link**: Collects WhatsApp phone number
 3. **Webhook**: Listens for `checkout.session.completed` events
 4. **Security**: Signature verification on all webhooks
@@ -136,7 +136,7 @@ Also accepted (any one required): `imageUrl`, `imageBase64` (+ optional `imageMi
 HTTP 402 Payment Required
 {
   "error": "Insufficient credits",
-  "message": "No tienes créditos suficientes. Compra 10 créditos por $100 MXN para generar tu imagen.",
+  "message": "No tienes créditos suficientes. Compra 10 créditos por $20 MXN para generar tu imagen.",
   "creditsRemaining": 0,
   "paymentLink": "https://buy.stripe.com/xxxxx"
 }
@@ -271,7 +271,7 @@ See `docs/testing/CREDIT_SYSTEM_TESTS.md` for comprehensive test scenarios.
 
 ### User Running Low on Credits
 1. User generates image (3 credits remaining)
-2. Bot says: "Running low! Get 10 more credits for $100 MXN: [link]"
+2. Bot says: "Running low! Get 10 more credits for $20 MXN: [link]"
 
 ## Security Considerations
 
@@ -362,7 +362,7 @@ https://vercel.com/your-username/power-assistant-v2/logs
 
 Potential improvements to consider:
 
-1. **Credit Packages**: Multiple tiers (10/$100 MXN, 25/$200 MXN, 50/$350 MXN)
+1. **Credit Packages**: Multiple tiers (10/$20 MXN, 25/$200 MXN, 50/$350 MXN)
 2. **Subscription Model**: Monthly unlimited for $10/month
 3. **Referral System**: Give 5 free credits for referrals
 4. **Credit Expiration**: Optional expiry after 90 days

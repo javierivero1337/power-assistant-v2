@@ -18,7 +18,7 @@ This guide walks you through setting up Stripe to accept payments for the credit
    - **Name**: `StyleBot Credits - 10 Pack`
    - **Description**: `10 image generation credits for StyleBot WhatsApp service`
    - **Pricing**: 
-     - **Price**: `$100.00 MXN`
+     - **Price**: `$20.00 MXN`
      - **Billing period**: `One time`
 5. Click **Save product**
 
@@ -165,14 +165,14 @@ When you're ready to accept real payments:
    - Redeploy
 
 4. **Test with a real card** (small amount):
-   - Make a real $100 MXN purchase to verify everything works
+   - Make a real $20 MXN purchase to verify everything works
    - Check that credits are added correctly
    - Refund the test transaction if needed
 
 ## Pricing Configuration
 
 Current setup:
-- **Package**: 10 credits for $100.00 MXN
+- **Package**: 10 credits for $20.00 MXN
 - **Cost per generation**: 1 credit
 - **Free trial**: 1 free credit for new users (granted on first `/generate-styled-image` call via Redis SETNX)
 - **Credit expiration**: None (credits never expire)
@@ -202,7 +202,7 @@ To change pricing:
 ## Checklist
 
 - [ ] Stripe account created and verified
-- [ ] Product created: "StyleBot Credits - 10 Pack" at $100 MXN
+- [ ] Product created: "StyleBot Credits - 10 Pack" at $20 MXN
 - [ ] Payment link created with custom phone number field
 - [ ] API keys copied to Vercel environment variables
 - [ ] Webhook endpoint created and configured

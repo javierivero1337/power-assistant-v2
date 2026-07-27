@@ -1,4 +1,4 @@
-# Kapso Manual Setup Guide — Simple Payment Flow (10 credits for $100 MXN)
+# Kapso Manual Setup Guide — Simple Payment Flow (10 credits for $20 MXN)
 
 This guide shows how to implement the **simplest possible** payment flow in Kapso for the workflow described in `docs/workflows/KAPSO_WORKFLOW.md`:
 
@@ -21,7 +21,7 @@ Why this approach:
   - You will send header `x-kapso-webhook-secret: <YOUR_VERCEL_SECRET>`
 - Stripe payment link configured in backend (`STRIPE_PAYMENT_LINK`)
 - Pricing in backend is configured as:
-  - **10 credits per purchase** ($100 MXN)
+  - **10 credits per purchase** ($20 MXN)
   - **1 free trial credit** for brand-new users (SETNX on first generation)
   - **1 credit per generation**
 
@@ -170,7 +170,7 @@ Use a short, clear message:
 ```
 Uff 😅 para generar tu imagen necesitas créditos.
 
-Compra 10 créditos por $100 MXN aquí:
+Compra 10 créditos por $20 MXN aquí:
 {{vars.payment_link}}
 
 Cuando termines, vuelve a mandarme una foto para empezar. 📸

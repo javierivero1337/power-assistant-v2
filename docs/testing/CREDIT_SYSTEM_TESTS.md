@@ -270,7 +270,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
 ```json
 {
   "error": "Insufficient credits",
-  "message": "No tienes créditos suficientes. Compra 10 créditos por $100 MXN para generar tu imagen.",
+  "message": "No tienes créditos suficientes. Compra 10 créditos por $20 MXN para generar tu imagen.",
   "creditsRemaining": 0,
   "paymentLink": "https://buy.stripe.com/test_xxxxx"
 }
