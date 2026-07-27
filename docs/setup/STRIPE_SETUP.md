@@ -74,6 +74,7 @@ Example Payment Link format: `https://buy.stripe.com/test_xxxxxxxxxxxxx`
 
 | Variable Name | Value | Example |
 |---------------|-------|---------|
+| `REDIS_URL` | Redis connection URL | `rediss://default:...@...upstash.io:6379` |
 | `STRIPE_SECRET_KEY` | Your Stripe secret key | `sk_test_51Abc...` |
 | `STRIPE_WEBHOOK_SECRET` | Your webhook signing secret | `whsec_xyz...` |
 | `STRIPE_PAYMENT_LINK` | Your payment link URL | `https://buy.stripe.com/test_...` |
@@ -117,7 +118,11 @@ Example Payment Link format: `https://buy.stripe.com/test_xxxxxxxxxxxxx`
    # {"userId":"+15551234567","credits":10}
    ```
 
-4. **Test credit deduction**:
+4. **Test idempotency** (optional):
+   - Re-deliver the same `checkout.session.completed` event from Stripe Dashboard
+   - Credits should **not** increase again (dedup via `stripe:processed:{sessionId}` in Redis)
+
+5. **Test credit deduction**:
    - Use the Kapso WhatsApp bot to generate an image
    - Check credits again - should be 9
 
@@ -168,9 +173,10 @@ When you're ready to accept real payments:
 
 Current setup:
 - **Package**: 10 credits for $100.00 MXN
-- **Cost per generation**: $10.00 MXN
-- **Free trial**: None (users must purchase before first use)
+- **Cost per generation**: 1 credit
+- **Free trial**: 1 free credit for new users (granted on first `/generate-styled-image` call via Redis SETNX)
 - **Credit expiration**: None (credits never expire)
+- **Webhook idempotency**: Duplicate `checkout.session.completed` events are ignored via `stripe:processed:{sessionId}` in Redis
 
 To change pricing:
 1. Create a new product in Stripe with different pricing

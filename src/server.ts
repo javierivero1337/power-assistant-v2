@@ -14,7 +14,7 @@ import {
   getStylePreset,
   STYLE_MENU,
 } from './styles/presets.js';
-import { getUserCredits, deductCredit, addCredits, setCredits, checkKVConnection, getAllUsersWithCredits, deleteUser, tryGrantFreeTrial } from './db/credits.js';
+import { getUserCredits, deductCredit, addCredits, setCredits, checkKVConnection, getAllUsersWithCredits, deleteUser, tryGrantFreeTrial, claimStripeSession, releaseStripeSession } from './db/credits.js';
 import { logTransaction, CreditTransaction, getTransactions, getTransactionStats, getUserTransactionHistory } from './db/transactions.js';
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -560,35 +560,48 @@ app.post('/stripe-webhook', async (req: Request, res: Response) => {
       // Normalize the phone number for consistency
       userId = normalizePhoneNumber(userId);
 
+      const claimed = await claimStripeSession(session.id);
+      if (!claimed) {
+        console.log('[stripe-webhook] Duplicate session, skipping:', session.id);
+        return res.json({ received: true, duplicate: true });
+      }
+
       // Add credits to the user
       // Credit package: $100 MXN → 10 credits
       const CREDITS_PER_PURCHASE = 10;
-      const newBalance = await addCredits(userId, CREDITS_PER_PURCHASE);
 
-      // Log the transaction for the dashboard
-      const transaction: CreditTransaction = {
-        id: session.id,
-        userId,
-        creditsAdded: CREDITS_PER_PURCHASE,
-        amountPaid: session.amount_total ?? 0,
-        currency: session.currency ?? 'usd',
-        createdAt: Date.now(),
-        email: session.customer_details?.email ?? undefined,
-        type: 'purchase',
-      };
-      await logTransaction(transaction);
+      try {
+        const newBalance = await addCredits(userId, CREDITS_PER_PURCHASE);
 
-      console.log('[stripe-webhook] Credits added:', {
-        userId,
-        creditsAdded: CREDITS_PER_PURCHASE,
-        newBalance,
-        sessionId: session.id,
-      });
+        // Log the transaction for the dashboard
+        const transaction: CreditTransaction = {
+          id: session.id,
+          userId,
+          creditsAdded: CREDITS_PER_PURCHASE,
+          amountPaid: session.amount_total ?? 0,
+          currency: session.currency ?? 'usd',
+          createdAt: Date.now(),
+          email: session.customer_details?.email ?? undefined,
+          type: 'purchase',
+        };
+        await logTransaction(transaction);
 
-      res.json({ received: true, userId, newBalance });
+        console.log('[stripe-webhook] Credits added:', {
+          userId,
+          creditsAdded: CREDITS_PER_PURCHASE,
+          newBalance,
+          sessionId: session.id,
+        });
+
+        res.json({ received: true, userId, newBalance });
+      } catch (error) {
+        await releaseStripeSession(session.id);
+        console.error('[stripe-webhook] Error adding credits:', error);
+        return res.status(500).json({ error: 'Failed to add credits' });
+      }
     } catch (error) {
-      console.error('[stripe-webhook] Error adding credits:', error);
-      return res.status(500).json({ error: 'Failed to add credits' });
+      console.error('[stripe-webhook] Error processing checkout:', error);
+      return res.status(500).json({ error: 'Failed to process checkout' });
     }
   } else {
     // Unexpected event type

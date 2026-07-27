@@ -21,8 +21,9 @@ Why this approach:
   - You will send header `x-kapso-webhook-secret: <YOUR_VERCEL_SECRET>`
 - Stripe payment link configured in backend (`STRIPE_PAYMENT_LINK`)
 - Pricing in backend is configured as:
-  - **10 credits per purchase**
-  - **$100 MXN**
+  - **10 credits per purchase** ($100 MXN)
+  - **1 free trial credit** for brand-new users (SETNX on first generation)
+  - **1 credit per generation**
 
 ---
 
@@ -81,7 +82,7 @@ If any names differ, that’s fine—just keep the logic the same.
 ```json
 {
   "style": "{{vars.selected_style_key}}",
-  "userId": "{{vars.user_phone_number}}",
+  "userId": "{{context.contact.wa_id}}",
   "messageContent": "{{vars.pending_image_message}}"
 }
 ```

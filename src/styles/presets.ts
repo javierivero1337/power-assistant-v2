@@ -1,4 +1,4 @@
-export const DEFAULT_IMAGEN_MODEL = 'gemini-3-pro-image-preview';
+export const DEFAULT_IMAGEN_MODEL = 'gemini-3.1-flash-lite-image';
 
 export type StyleKey =
   | 'artistic'
@@ -9,8 +9,7 @@ export type StyleKey =
   | 'magazine'
   | '3d'
   | 'beauty'
-  | 'professional'
-  | 'santa';
+  | 'professional';
 
 export interface StylePreset {
   key: StyleKey;
@@ -94,14 +93,6 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     aspectRatio: '1:1',
     captionTemplate: '📸 Professional shoot ready.',
   },
-  santa: {
-    key: 'santa',
-    label: 'Navidad',
-    prompt:
-      'Transform the people in this image into Pixar-style 3D animated characters in a classic Santa photo pose: Santa Claus seated in the center on a red velvet chair with the family gathered around him. Cozy Christmas setting with a decorated tree and warm glowing lights behind them. Large expressive eyes, stylized features, joyful expressions',
-    aspectRatio: '1:1',
-    captionTemplate: '📸 Christmas session ready.',
-  },
 };
 
 const STYLE_ALIASES: Record<string, StyleKey> = {
@@ -123,8 +114,6 @@ const STYLE_ALIASES: Record<string, StyleKey> = {
   // LinkedIn
   '3': 'linkedin',
   linkedin: 'linkedin',
-  professional: 'linkedin',
-  profesional: 'linkedin',
   headshot: 'linkedin',
   
   // Lego
@@ -163,16 +152,12 @@ const STYLE_ALIASES: Record<string, StyleKey> = {
   
   // Professional
   '9': 'professional',
+  professional: 'professional',
+  profesional: 'professional',
   'professional shoot': 'professional',
   sesion: 'professional',
   'golden hour': 'professional',
   'hora dorada': 'professional',
-  
-  // Santa
-  '10': 'santa',
-  santa: 'santa',
-  navidad: 'santa',
-  christmas: 'santa',
 };
 
 export const normalizeStyleKey = (input: string): StyleKey | null => {

@@ -15,14 +15,15 @@ cd /Users/javierrivero/Coding/power-assistant-v2
 npm install
 ```
 
-### 2. Enable Vercel KV (5 minutes)
-1. Go to https://vercel.com/dashboard
-2. Click on `power-assistant-v2` project
-3. Click **Storage** tab
-4. Click **Create Database** → **KV**
-5. Name: `credits-db`
-6. Click **Create** and **Connect to Project**
-7. Done! Environment variables are auto-added
+### 2. Set Up Redis (5 minutes)
+Credits are stored in Redis via the `node-redis` client (`REDIS_URL`).
+
+1. Provision a Redis instance (e.g., [Upstash](https://upstash.com) via the Vercel Marketplace, or any Redis provider)
+2. Copy the connection URL (format: `redis://...` or `rediss://...`)
+3. In Vercel → **Settings** → **Environment Variables**, add:
+   - **Name**: `REDIS_URL`
+   - **Value**: your Redis connection URL
+4. Apply to Production (and Preview if you test there)
 
 ### 3. Set Up Stripe (15 minutes)
 
@@ -30,8 +31,8 @@ npm install
 1. Go to https://dashboard.stripe.com/test/products
 2. Click **+ Add product**
 3. Fill in:
-   - Name: `StyleBot Credits - 50 Pack`
-   - Description: `50 image generation credits`
+   - Name: `StyleBot Credits - 10 Pack`
+   - Description: `10 image generation credits`
    - Price: `$100.00 MXN` (One time)
 4. Click **Save product**
 
@@ -72,8 +73,19 @@ npm install
 1. Go to https://vercel.com/dashboard
 2. Click on `power-assistant-v2`
 3. Go to **Settings** → **Environment Variables**
-4. Add these three variables:
+4. Add these variables (Production + Preview as needed):
 
+| Variable | Example / notes |
+|----------|-----------------|
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `KAPSO_WEBHOOK_SECRET` | Shared secret for Kapso/admin endpoints (`x-kapso-webhook-secret`) |
+| `REDIS_URL` | Redis connection URL (`redis://...` or `rediss://...`) |
+| `STRIPE_SECRET_KEY` | `sk_test_...` or `sk_live_...` |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_...` from Stripe webhook settings |
+| `STRIPE_PAYMENT_LINK` | `https://buy.stripe.com/...` |
+| `PUBLIC_BASE_URL` | `https://power-assistant-v2.vercel.app` |
+| `PORT` | `4000` (local dev only; Vercel sets this automatically) |
+| `NODE_ENV` | `production` (optional) |
 
 5. Click **Save** for each one
 
@@ -145,25 +157,15 @@ curl "https://power-assistant-v2.vercel.app/admin/credits/+15559876543" \
 4. You should see a `checkout.session.completed` event with status **Succeeded**
 
 ### 7. Update Kapso Workflow (10 minutes)
-1. Go to https://app.kapso.ai
-2. Open your WhatsApp workflow
-3. Click on the Agent node
-4. Update the webhook tool:
-   - Add `userId` as a required parameter
-   - Update the tool to extract phone number from WhatsApp context
-5. Update the system prompt:
-   ```
-   When calling generate_styled_image, ALWAYS include the user's 
-   WhatsApp phone number as the userId parameter.
-   
-   If the tool returns HTTP 402 (Insufficient credits):
-   - Tell the user: "You need credits! Purchase 10 for $100 MXN:"
-   - Include the paymentLink from the error response
-   - Do NOT retry the request
-   
-   After successful generation, tell the user how many credits remain.
-   ```
-6. Save and test in sandbox
+The bot uses a **deterministic flow** (not an Agent node). Follow the canonical setup in [`docs/workflows/KAPSO_WORKFLOW.md`](docs/workflows/KAPSO_WORKFLOW.md):
+
+1. Go to https://app.kapso.ai and open the **Deterministic Flow** workflow
+2. Confirm the generate webhook body uses:
+   - `"userId": "{{context.contact.wa_id}}"`
+   - `"messageContent": "{{vars.pending_image_message}}"`
+   - `"style": "{{vars.selected_style_key}}"`
+3. Confirm `extract-response` and `post-generate-router` handle HTTP 402 (payment link) vs success
+4. Save and test in sandbox: send photo → pick style 1–10 → receive image or payment message
 
 ## Troubleshooting
 
@@ -180,10 +182,9 @@ curl "https://power-assistant-v2.vercel.app/admin/credits/+15559876543" \
 ## You're Done! 🎉
 
 Your credit system is now live. Users can:
-1. Try to generate an image (will fail - no credits)
-2. Click the payment link
-3. Pay $100 MXN for 10 credits
-4. Generate images (1 credit each)
+1. Send a photo and pick a style — **new users get 1 free credit** on their first generation (via Redis SETNX)
+2. After free credit is used, purchase 10 credits for $100 MXN via the Stripe payment link
+3. Generate images (1 credit each; credits never expire)
 
 ## What's Next?
 

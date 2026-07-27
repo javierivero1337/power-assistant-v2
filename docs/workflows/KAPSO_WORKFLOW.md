@@ -20,7 +20,7 @@ A fully working WhatsApp bot that transforms user photos into AI-styled images u
 ## Overview
 
 **Flow:**
-1. User sends photo → Bot shows style menu (1–10)
+1. User sends photo → Bot shows style menu (1–9)
 2. User replies with number → Bot generates styled image via Gemini AI
 3. Bot sends styled image back via WhatsApp
 
@@ -74,7 +74,6 @@ Decision (revelio-router)
 | 7 | `3d` | 3D Character 🎮 |
 | 8 | `beauty` | Beauty Analysis 📊 |
 | 9 | `professional` | Professional Shoot 📸 |
-| 10 | `santa` | Photo with Santa 🎅🏻 |
 
 ---
 
@@ -91,7 +90,7 @@ Decision (revelio-router)
 
 | Node ID | Function | Description |
 |---------|----------|-------------|
-| `function_1766004096729` | `map-style` | Maps user's numeric selection (1-10) to style key |
+| `function_1766004096729` | `map-style` | Maps user's numeric selection (1-9) to style key |
 | `function_1766015616539` | `extract-response` | Extracts image URL, caption, credits from API response |
 
 ### Webhook Nodes
@@ -105,7 +104,7 @@ Decision (revelio-router)
 
 | Node ID | Message |
 |---------|---------|
-| `send_text_1766094162828` | Style selection menu (10 options) |
+| `send_text_1766094162828` | Style selection menu (9 options) |
 | `send_text_1766004233379` | Help message ("Send me a picture...") |
 | `send_text_1766095970475` | Payment required message |
 
@@ -130,9 +129,9 @@ Routes incoming messages to the appropriate branch.
 
 | Condition | Label | Description |
 |-----------|-------|-------------|
-| User sent an image | `got_image` | Inbound message contains an image (or "Image attached ... URL: ..."). Store it and ask for style 1–10. |
-| User selected a style | `got_style` | User is awaiting style selection and replied with a number 1–10. Proceed to generation. |
-| Invalid input | `help` | No image received yet, or invalid input. Prompt user to send a photo (or reply 1–10 if awaiting). |
+| User sent an image | `got_image` | Inbound message contains an image (or "Image attached ... URL: ..."). Store it and ask for style 1–9. |
+| User selected a style | `got_style` | User is awaiting style selection and replied with a number 1–9. Proceed to generation. |
+| Invalid input | `help` | No image received yet, or invalid input. Prompt user to send a photo (or reply 1–9 if awaiting). |
 
 ```javascript
 export async function handler(request, env) {
@@ -160,7 +159,7 @@ export async function handler(request, env) {
 
   var trimmed = messageText.trim();
   var n = parseInt(trimmed, 10);
-  var isStyleChoice = !isNaN(n) && n >= 1 && n <= 10 && trimmed === String(n);
+  var isStyleChoice = !isNaN(n) && n >= 1 && n <= 9 && trimmed === String(n);
 
   if (awaitingStyle && isStyleChoice) {
     nextEdge = "got_style";
@@ -195,7 +194,7 @@ export async function handler(request, env) {
 
 **Function ID:** `135c3e0e-03fd-4dbb-bdc5-4d4b4bbafd42`
 
-Converts style number (1-10) to style key.
+Converts style number (1-9) to style key.
 
 ```javascript
 export async function handler(request, env) {
@@ -221,8 +220,7 @@ export async function handler(request, env) {
     6: "magazine",
     7: "3d",
     8: "beauty",
-    9: "professional",
-    10: "santa"
+    9: "professional"
   };
 
   var key = styleMap[n];
@@ -331,7 +329,7 @@ Routes based on whether the generation webhook returned a payment requirement.
 ```json
 {
   "Content-Type": "application/json",
-  "x-kapso-webhook-secret": "secret_kapso_javierivero"
+  "x-kapso-webhook-secret": "YOUR_KAPSO_WEBHOOK_SECRET"
 }
 ```
 
@@ -390,20 +388,19 @@ Routes based on whether the generation webhook returned a payment requirement.
 Sent after receiving an image from the user.
 
 ```
-Thanks for your photo! 📸 Choose a style:
+Gracias por enviar tu foto! 📸 
 
-1. Oil Painting 🎨
-2. Cartoon/Anime 👀
-3. LinkedIn 💼
+Escoge tu estilo escribiendo SOLO el número!
+
+1. Pintura al óleo 🎨
+2. Anime 👀
+3. Sesión Profesional LinkedIn 💼
 4. LEGO 🧱
-5. Cinematic B&W 🎬
-6. Magazine Cover 📰
-7. 3D Character 🎮
-8. Beauty Analysis 📊
-9. Professional Shoot 📸
-10. Photo with Santa 🎅🏻
-
-Reply with the number only
+5. Sesion profesional blanco y negro 🎬
+6. Portada de Revista 📰
+7. Personaje Pixar 🎮
+8. Analisis de Belleza 📊
+9. Sesión Profesional 📸
 ```
 
 ### Help Message (`send_text_1766004233379`)
@@ -446,7 +443,7 @@ Send a new image when you're ready! 📸
 |----------|-------------|
 | `pending_image_message` | Full inbound message containing image URL |
 | `awaiting_style` | `"true"` when waiting for style selection |
-| `selected_style_number` | User's choice (1-10) |
+| `selected_style_number` | User's choice (1-9) |
 | `selected_style_key` | Mapped style key (e.g., `artistic`) |
 | `vars.generate_response` | Webhook response from image generation |
 | `image_url` | Extracted stylized image URL |
@@ -492,7 +489,7 @@ The complete workflow graph exported from Kapso:
         "config": {
           "url": "https://power-assistant-v2.vercel.app/generate-styled-image",
           "method": "POST",
-          "headers": "{\"Content-Type\":\"application/json\",\"x-kapso-webhook-secret\":\"secret_kapso_javierivero\"}",
+          "headers": "{\"Content-Type\":\"application/json\",\"x-kapso-webhook-secret\":\"YOUR_KAPSO_WEBHOOK_SECRET\"}",
           "body_template": "{\"style\":\"{{vars.selected_style_key}}\",\"userId\":\"{{context.contact.wa_id}}\",\"messageContent\":\"{{vars.pending_image_message}}\"}",
           "save_response_to": "vars.generate_response"
         },
@@ -541,17 +538,17 @@ The complete workflow graph exported from Kapso:
             {
               "id": "70d49f6e-f90c-4a9e-8dd0-d6ecc31a699f",
               "label": "got_image",
-              "description": "Inbound message contains an image (or an \"Image attached ... URL: ...\" message). Store it and ask for style 1–10."
+              "description": "Inbound message contains an image (or an \"Image attached ... URL: ...\" message). Store it and ask for style 1–9."
             },
             {
               "id": "175ebcb7-2ec3-4499-adc4-5126e7117a15",
               "label": "got_style",
-              "description": "User is awaiting style selection and replied with a number 1–10. Proceed to generation."
+              "description": "User is awaiting style selection and replied with a number 1–9. Proceed to generation."
             },
             {
               "id": "237becd5-e564-4f1d-86d5-c687e65b9db8",
               "label": "help",
-              "description": "No image received yet, or invalid input. Prompt user to send a photo (or reply 1–10 if awaiting)."
+              "description": "No image received yet, or invalid input. Prompt user to send a photo (or reply 1–9 if awaiting)."
             }
           ],
           "function_id": "ba357120-3e76-49d1-8447-d3b92993dc9f",
@@ -644,7 +641,7 @@ The complete workflow graph exported from Kapso:
       "data": {
         "node_type": "send_text",
         "config": {
-          "message": "Thanks for your photo! 📸 Choose a style:\n\n1. Oil Painting 🎨\n2. Cartoon/Anime 👀\n3. LinkedIn 💼\n4. LEGO 🧱\n5. Cinematic B&W 🎬\n6. Magazine Cover 📰\n7. 3D Character 🎮\n8. Beauty Analysis 📊\n9. Professional Shoot 📸\n10. Photo with Santa 🎅🏻\n\nReply with the number only",
+          "message": "Gracias por enviar tu foto! 📸 \n\nEscoge tu estilo escribiendo SOLO el número!\n\n1. Pintura al óleo 🎨\n2. Anime 👀\n3. Sesión Profesional LinkedIn 💼\n4. LEGO 🧱\n5. Sesion profesional blanco y negro 🎬\n6. Portada de Revista 📰\n7. Personaje Pixar 🎮\n8. Analisis de Belleza 📊\n9. Sesión Profesional 📸",
           "delay_seconds": 0
         },
         "display_name": "Send Text Message"
@@ -869,3 +866,4 @@ If you need to store custom data across workflow steps:
 ---
 
 *Exported from Kapso Workflows on 2025-12-22*
+*Prompt: Make a miniature, full-body, isometric, realistic figurine of this person, wearing ABC, doing XYZ, on a white background, minimal, 4K resolution*

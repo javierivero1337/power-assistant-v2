@@ -9,6 +9,9 @@ import { createClient, RedisClientType } from 'redis';
  */
 
 const CREDIT_KEY_PREFIX = 'credits:';
+const STRIPE_PROCESSED_PREFIX = 'stripe:processed:';
+// 30 days — longer than Stripe's retry window, bounds key growth
+const STRIPE_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 // Redis client singleton
 let redis: RedisClientType | null = null;
@@ -149,7 +152,7 @@ export async function tryGrantFreeTrial(userId: string): Promise<{
     
     // SETNX: Set only if key doesn't exist
     // Returns true if set succeeded (new user), false if key already exists
-    const wasSet = await client.setNX(key, '1');
+    const wasSet = (await client.setNX(key, '1')) === 1;
     
     if (wasSet) {
       console.log(`[credits:tryGrantFreeTrial] Granted 1 free trial credit to new user: ${userId}`);
@@ -210,6 +213,41 @@ export async function deleteUser(userId: string): Promise<boolean> {
   } catch (error) {
     console.error('[credits:deleteUser]', error);
     throw new Error('Failed to delete user');
+  }
+}
+
+/**
+ * Atomically claim a Stripe checkout session for processing.
+ * Uses SET NX so duplicate webhook deliveries are ignored.
+ * @returns true if this caller claimed the session, false if already processed
+ */
+export async function claimStripeSession(sessionId: string): Promise<boolean> {
+  try {
+    const client = await getRedisClient();
+    const key = `${STRIPE_PROCESSED_PREFIX}${sessionId}`;
+    const claimed = await client.set(key, '1', {
+      NX: true,
+      EX: STRIPE_SESSION_TTL_SECONDS,
+    });
+    return claimed === 'OK';
+  } catch (error) {
+    console.error('[credits:claimStripeSession]', error);
+    throw new Error('Failed to claim Stripe session');
+  }
+}
+
+/**
+ * Release a Stripe session claim after a failed credit grant,
+ * allowing Stripe retries to succeed.
+ */
+export async function releaseStripeSession(sessionId: string): Promise<void> {
+  try {
+    const client = await getRedisClient();
+    const key = `${STRIPE_PROCESSED_PREFIX}${sessionId}`;
+    await client.del(key);
+  } catch (error) {
+    console.error('[credits:releaseStripeSession]', error);
+    throw new Error('Failed to release Stripe session claim');
   }
 }
 

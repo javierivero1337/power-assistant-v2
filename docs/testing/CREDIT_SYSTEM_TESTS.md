@@ -6,7 +6,7 @@ This document provides comprehensive test scenarios for the credit-based payment
 
 Before testing, ensure:
 - [ ] All dependencies installed (`npm install`)
-- [ ] Vercel KV is enabled and configured
+- [ ] Redis is configured (`REDIS_URL` set)
 - [ ] Stripe is configured (test mode recommended)
 - [ ] All environment variables are set in Vercel
 - [ ] Application is deployed and accessible
@@ -24,11 +24,11 @@ Before testing, ensure:
    ```bash
    GEMINI_API_KEY=your_gemini_key
    KAPSO_WEBHOOK_SECRET=test_webhook_secret
+   REDIS_URL=redis://localhost:6379
    STRIPE_SECRET_KEY=sk_test_your_stripe_test_key
    STRIPE_WEBHOOK_SECRET=whsec_test_your_webhook_secret
    STRIPE_PAYMENT_LINK=https://buy.stripe.com/test_xxxxx
-   KV_REST_API_URL=your_vercel_kv_url
-   KV_REST_API_TOKEN=your_vercel_kv_token
+   PUBLIC_BASE_URL=http://localhost:4000
    PORT=4000
    ```
 
@@ -86,7 +86,7 @@ curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15551234567" \
 
 **Pass Criteria**:
 - Status code: 200
-- New users start with 0 credits
+- Admin GET returns 0 for users who have not yet called `/generate-styled-image` (free trial is granted on first generation, not on admin lookup)
 
 #### Test 2.2: Manually Add Credits
 ```bash
@@ -121,9 +121,13 @@ curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15551234567" \
 ```json
 {
   "userId": "+15551234567",
-  "credits": 10
+  "credits": 50
 }
 ```
+
+**Pass Criteria**:
+- Status code: 200
+- Balance reflects the amount added in Test 2.2 (50)
 
 #### Test 2.4: Unauthorized Access (No Secret)
 ```bash
@@ -213,7 +217,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
   -H "Content-Type: application/json" \
   -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
   -d '{
-    "imageUrl": "https://example.com/test-image.jpg",
+    "messageContent": "Image attached ... URL: https://example.com/test-image.jpg",
     "style": "linkedin",
     "userId": "+15551234567"
   }'
@@ -256,7 +260,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
   -H "Content-Type: application/json" \
   -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
   -d '{
-    "imageUrl": "https://example.com/test-image.jpg",
+    "messageContent": "Image attached ... URL: https://example.com/test-image.jpg",
     "style": "cartoon",
     "userId": "+15551234567"
   }'
@@ -283,7 +287,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
   -H "Content-Type: application/json" \
   -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
   -d '{
-    "imageUrl": "https://example.com/test-image.jpg",
+    "messageContent": "Image attached ... URL: https://example.com/test-image.jpg",
     "style": "cinematic"
   }'
 ```
@@ -375,50 +379,62 @@ curl -X POST "https://power-assistant-v2.vercel.app/stripe-webhook" \
 
 #### Scenario: New User Complete Flow
 
-1. **New user tries to generate image** (should fail):
+1. **New user first generation** (free trial):
    ```bash
-   # User has 0 credits
    curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
      -H "Content-Type: application/json" \
      -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
      -d '{
-       "imageUrl": "https://example.com/photo.jpg",
-       "style": "vintage",
+       "messageContent": "Image attached ... URL: https://example.com/photo.jpg",
+       "style": "artistic",
+       "userId": "+15558675309"
+     }'
+   ```
+   **Expected**: 200 success; `tryGrantFreeTrial` grants 1 credit then deducts it → `creditsRemaining: 0`
+
+2. **Second generation without payment** (should fail):
+   ```bash
+   curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
+     -H "Content-Type: application/json" \
+     -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
+     -d '{
+       "messageContent": "Image attached ... URL: https://example.com/photo.jpg",
+       "style": "cartoon",
        "userId": "+15558675309"
      }'
    ```
    **Expected**: 402 error with payment link
 
-2. **User completes payment**:
+3. **User completes payment**:
    - Open payment link
    - Complete test payment with phone `+15558675309`
 
-3. **Verify credits added**:
+4. **Verify credits added**:
    ```bash
    curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15558675309" \
      -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET"
    ```
    **Expected**: 10 credits
 
-4. **User generates image** (should succeed):
+5. **User generates image** (should succeed):
    ```bash
    curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
      -H "Content-Type: application/json" \
      -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
      -d '{
-       "imageUrl": "https://example.com/photo.jpg",
-       "style": "vintage",
+       "messageContent": "Image attached ... URL: https://example.com/photo.jpg",
+       "style": "linkedin",
        "userId": "+15558675309"
      }'
    ```
    **Expected**: Success with `creditsRemaining: 9`
 
-5. **Verify credit deduction**:
+6. **Verify credit deduction**:
    ```bash
    curl -X GET "https://power-assistant-v2.vercel.app/admin/credits/+15558675309" \
      -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET"
    ```
-   **Expected**: 49 credits
+   **Expected**: 9 credits
 
 ---
 
@@ -440,7 +456,7 @@ for i in {1..10}; do
     -H "Content-Type: application/json" \
     -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
     -d '{
-      "imageUrl": "https://example.com/photo.jpg",
+      "messageContent": "Image attached ... URL: https://example.com/photo.jpg",
       "style": "cartoon",
       "userId": "+15551111111"
     }' &
@@ -459,7 +475,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
   -H "Content-Type: application/json" \
   -H "X-Kapso-Webhook-Secret: YOUR_WEBHOOK_SECRET" \
   -d '{
-    "imageUrl": "https://example.com/photo.jpg",
+    "messageContent": "Image attached ... URL: https://example.com/photo.jpg",
     "style": "invalid_style",
     "userId": "+15551234567"
   }'
@@ -470,7 +486,7 @@ curl -X POST "https://power-assistant-v2.vercel.app/generate-styled-image" \
 
 #### Test 6.3: Database Connection Failure
 
-Temporarily disable Vercel KV (remove env vars) and test:
+Temporarily unset `REDIS_URL` (or stop local Redis) and test:
 ```bash
 curl https://power-assistant-v2.vercel.app/health
 ```
@@ -521,7 +537,7 @@ curl -s -X POST "$BASE_URL/generate-styled-image" \
   -H "Content-Type: application/json" \
   -H "X-Kapso-Webhook-Secret: $WEBHOOK_SECRET" \
   -d "{
-    \"imageUrl\": \"https://example.com/photo.jpg\",
+    \"messageContent\": \"Image attached ... URL: https://example.com/photo.jpg\",
     \"style\": \"linkedin\",
     \"userId\": \"$TEST_USER\"
   }" | jq
@@ -560,7 +576,7 @@ chmod +x test-credits.sh
 - [ ] Admin endpoints require authentication
 - [ ] Can add credits manually
 - [ ] Can check credit balance
-- [ ] New users start with 0 credits
+- [ ] New users receive 1 free trial credit on first generation (SETNX)
 - [ ] Admin dashboard loads at `/admin/dashboard`
 - [ ] Dashboard authenticates with webhook secret
 
@@ -582,7 +598,7 @@ chmod +x test-credits.sh
 
 ### Edge Cases
 - [ ] Concurrent requests don't create negative balances
-- [ ] Credits persist across server restarts (Vercel KV)
+- [ ] Credits persist across server restarts (Redis)
 - [ ] Large credit amounts work correctly
 - [ ] Special characters in userId are handled
 
@@ -604,9 +620,8 @@ chmod +x test-credits.sh
 4. Ensure phone number field is configured correctly in Payment Link
 
 ### Database Connection Issues
-1. Verify Vercel KV is enabled in project settings
-2. Check `KV_REST_API_URL` and `KV_REST_API_TOKEN` are set
-3. Test connection with health endpoint
+1. Verify `REDIS_URL` is set and the Redis instance is reachable
+2. Test connection with `/health` endpoint
 
 ### Image Generation Fails
 1. Check `GEMINI_API_KEY` is valid

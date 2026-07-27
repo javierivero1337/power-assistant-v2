@@ -8,36 +8,40 @@ The bot now uses a **credit-based payment system** where users must purchase cre
 
 ### Pricing
 - **Package**: 10 credits for $100.00 MXN
-- **Cost per generation**: $10.00 MXN
-- **Free trial**: None (users must purchase before first use)
+- **Cost per generation**: 1 credit ($10.00 MXN effective)
+- **Free trial**: 1 free credit for new users (granted atomically via Redis SETNX on first `/generate-styled-image` call)
 - **Credit expiration**: None (credits never expire)
 
 ## Architecture
 
 ```
-User sends photo → Kapso Agent → Webhook checks credits → 
-  ├─ Sufficient credits → Generate image → Deduct credit → Return result
-  └─ Insufficient credits → Return 402 with payment link
-  
-User completes payment → Stripe webhook → Add 10 credits → User can generate
+User sends photo → Kapso deterministic flow → POST /generate-styled-image →
+  ├─ New user? tryGrantFreeTrial (SETNX → 1 credit)
+  ├─ Sufficient credits → Gemini → Deduct 1 credit → Return /media/:id URL
+  └─ Insufficient credits → Return HTTP 402 with paymentLink
+
+User completes payment → Stripe webhook → +10 credits (idempotent via stripe:processed:{sessionId})
 ```
 
 ## Components
 
 ### 1. Database Layer (`src/db/credits.ts`)
 
-Manages all credit operations using Vercel KV (Redis):
+Manages all credit operations using Redis (`REDIS_URL`, `node-redis` client):
 
 - **`getUserCredits(userId)`**: Get current credit balance
+- **`tryGrantFreeTrial(userId)`**: Atomically grant 1 credit to brand-new users (SETNX)
 - **`deductCredit(userId)`**: Atomically deduct 1 credit
 - **`addCredits(userId, amount)`**: Add credits after payment
 - **`setCredits(userId, amount)`**: Admin function to set balance
-- **`checkKVConnection()`**: Health check for database
+- **`claimStripeSession(sessionId)`**: Idempotency guard for Stripe webhooks
+- **`checkKVConnection()`**: Health check for Redis connectivity
 
 **Key Features**:
 - Atomic operations prevent race conditions
-- Redis keys: `credits:{phoneNumber}`
-- Automatic initialization for new users (0 credits)
+- Redis keys: `credits:{phoneNumber}` (E.164, normalized)
+- Transaction sorted sets: `credits:txns`, `credits:txns:user:{userId}`
+- Stripe dedup keys: `stripe:processed:{sessionId}`
 
 ### 2. Main Server (`src/server.ts`)
 
@@ -53,9 +57,10 @@ Manages all credit operations using Vercel KV (Redis):
 **`POST /stripe-webhook`** (New)
 - Receives Stripe checkout completion events
 - Verifies webhook signature for security
-- Extracts user's phone number from payment
+- Extracts user's phone number from custom fields (`phone` / `whatsapp_number`), metadata, or `customer_details.phone`
+- Idempotent: skips duplicate deliveries via `stripe:processed:{sessionId}` in Redis
 - Adds 10 credits to user's account
-- Logs transaction for debugging
+- Logs purchase transaction for the dashboard
 
 **`GET /admin/credits/:userId`** (New)
 - Check any user's credit balance
@@ -67,8 +72,8 @@ Manages all credit operations using Vercel KV (Redis):
 - Protected by webhook secret
 
 **`GET /health`** (Updated)
-- Now includes database connection status
-- Returns "ok" or "degraded" based on KV connectivity
+- Now includes Redis connection status
+- Returns "ok" or "degraded" based on Redis connectivity
 
 ### 3. Payment Integration
 
@@ -80,19 +85,20 @@ Manages all credit operations using Vercel KV (Redis):
 
 See `docs/setup/STRIPE_SETUP.md` for detailed setup instructions.
 
-### 4. Kapso Integration Updates
+### 4. Kapso Integration
 
-#### Tool Schema (`docs/workflows/generate-styled-image-tool.json`)
-- Added required `userId` parameter
-- Added `creditsRemaining` to response
-- Added error fields for payment required scenarios
+The WhatsApp bot uses a **deterministic flow** (not an Agent node). See `docs/workflows/KAPSO_WORKFLOW.md` for the canonical workflow setup.
 
-#### Agent Prompt (`docs/workflows/whatsapp-image-styler.md`)
-- Extract user's phone number from WhatsApp context
-- Always include `userId` in webhook calls
-- Handle 402 errors gracefully with payment link
-- Inform users of remaining credits after each generation
-- Warn users when credits are low (< 5)
+Key webhook body for `POST /generate-styled-image`:
+```json
+{
+  "style": "{{vars.selected_style_key}}",
+  "userId": "{{context.contact.wa_id}}",
+  "messageContent": "{{vars.pending_image_message}}"
+}
+```
+
+The `extract-response` function detects HTTP 402 responses (`paymentLink`, `payment_required`) and routes to a payment message or image delivery.
 
 ## API Reference
 
@@ -107,11 +113,13 @@ Headers:
 
 Body:
 {
-  "imageUrl": "https://whatsapp-media.com/image.jpg",
+  "messageContent": "Image attached ... URL: https://...",
   "style": "linkedin",
   "userId": "+15551234567"
 }
 ```
+
+Also accepted (any one required): `imageUrl`, `imageBase64` (+ optional `imageMimeType`).
 
 **Response (Success)**:
 ```json
@@ -177,12 +185,12 @@ Add these to your Vercel project:
 # Existing variables
 GEMINI_API_KEY=<your-gemini-key>
 KAPSO_WEBHOOK_SECRET=<your-kapso-secret>
+REDIS_URL=<redis-connection-url>
 PORT=4000
 PUBLIC_BASE_URL=https://your-app.vercel.app
+NODE_ENV=production
 
-# New variables for credit system
-KV_REST_API_URL=<auto-populated-by-vercel>
-KV_REST_API_TOKEN=<auto-populated-by-vercel>
+# Credit system / Stripe
 STRIPE_SECRET_KEY=sk_test_<your-stripe-key>
 STRIPE_WEBHOOK_SECRET=whsec_<your-webhook-secret>
 STRIPE_PAYMENT_LINK=https://buy.stripe.com/<your-link>
@@ -190,14 +198,11 @@ STRIPE_PAYMENT_LINK=https://buy.stripe.com/<your-link>
 
 ## Setup Instructions
 
-### 1. Enable Vercel KV
+### 1. Set Up Redis
 
-1. Go to your Vercel project dashboard
-2. Navigate to **Storage** tab
-3. Click **Create Database** → **KV**
-4. Name it (e.g., "credits-db")
-5. Connect to your project
-6. Environment variables are auto-populated
+1. Provision a Redis instance (e.g., Upstash via Vercel Marketplace)
+2. Add `REDIS_URL` to Vercel environment variables
+3. Verify with `/health` — `database` should be `"connected"`
 
 ### 2. Configure Stripe
 
@@ -210,9 +215,7 @@ Follow the detailed guide in `docs/setup/STRIPE_SETUP.md`:
 
 ### 3. Update Kapso Workflow
 
-1. Update tool schema with `userId` parameter
-2. Update agent prompt to handle payment errors
-3. Test in Kapso sandbox
+Follow `docs/workflows/KAPSO_WORKFLOW.md` to configure the deterministic flow (style menu 1–10, webhooks, 402 payment routing).
 
 ### 4. Deploy
 
@@ -254,14 +257,12 @@ See `docs/testing/CREDIT_SYSTEM_TESTS.md` for comprehensive test scenarios.
 ## User Experience Flow
 
 ### First-Time User
-1. User sends photo to WhatsApp bot
-2. Bot responds: "No tienes créditos suficientes. Compra 10 créditos por $100 MXN..."
-3. User clicks payment link
-4. User completes payment
-5. Bot confirms: "Credits added! Send your photo to get started."
-6. User sends photo again
-7. Bot generates and sends styled image
-8. Bot says: "Here's your LinkedIn look! You have 9 credits remaining."
+1. User sends photo to WhatsApp bot → bot shows style menu (1–10)
+2. User picks a style → backend grants **1 free trial credit** (SETNX) and generates the image
+3. Bot sends styled image with remaining credits (0 after first use)
+4. User sends another photo → backend returns HTTP 402 with payment link
+5. User completes payment → 10 credits added via Stripe webhook
+6. User sends photo again → generation succeeds; bot shows 9 credits remaining
 
 ### Returning User with Credits
 1. User sends photo
@@ -293,7 +294,7 @@ A built-in dashboard is available to view all credit transactions by phone numbe
 ### Dashboard Features
 
 - **Stats Overview**: Total transactions, credits issued, revenue, unique users
-- **Transaction List**: All Stripe credit purchases with phone, amount, and timestamp
+- **Transaction List**: Stripe purchases and free-trial grants (deductions are not logged as transactions)
 - **Search/Filter**: Filter transactions by phone number
 - **Pagination**: Browse through all historical transactions
 
@@ -334,9 +335,9 @@ curl "https://your-app.vercel.app/admin/users/+15551234567/credits" \
 https://vercel.com/your-username/power-assistant-v2/logs
 
 # Look for:
+[credits:tryGrantFreeTrial] Granted 1 free trial credit to new user: +15551234567
 [credits:addCredits] Added 10 credits to +15551234567
 [stripe-webhook] Credits added: {userId, creditsAdded, newBalance}
-[credits:deductCredit] Deducted credit from +15551234567
 [transactions:log] Logged transaction cs_xxx for +15551234567
 ```
 
@@ -349,8 +350,7 @@ https://vercel.com/your-username/power-assistant-v2/logs
 - Ensure phone number field is configured in Payment Link
 
 ### Database Connection Issues
-- Verify Vercel KV is enabled
-- Check environment variables are set
+- Verify `REDIS_URL` is set and reachable
 - Test with `/health` endpoint
 
 ### Negative Credit Balance
@@ -389,10 +389,9 @@ For issues or questions:
 - `CREDIT_SYSTEM_README.md` - This file
 
 ### Modified Files
-- `package.json` - Added @vercel/kv and stripe dependencies
-- `src/server.ts` - Added credit checks, Stripe webhook, admin endpoints, dashboard
-- `docs/workflows/generate-styled-image-tool.json` - Updated tool schema
-- `docs/workflows/whatsapp-image-styler.md` - Updated agent instructions
+- `package.json` - Added `redis` and `stripe` dependencies
+- `src/server.ts` - Credit checks, free trial, Stripe webhook, admin endpoints, dashboard
+- `docs/workflows/KAPSO_WORKFLOW.md` - Canonical deterministic flow documentation
 
 ## License
 
