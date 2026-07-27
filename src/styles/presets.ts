@@ -27,7 +27,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, transform this portrait into a masterful Renaissance-era oil painting. Apply rich, layered brush strokes with visible texture, dramatic chiaroscuro lighting reminiscent of Rembrandt or Caravaggio, warm golden undertones, and a dark moody background. The subject should appear noble and timeless, as if painted by an Old Master in the 15th-16th century. Include subtle craquelure texture for authenticity.',
     aspectRatio: '1:1',
-    captionTemplate: '🎨 A Renaissance masterpiece.',
+    captionTemplate: '🎨 Una obra maestra del Renacimiento.',
   },
   cartoon: {
     key: 'cartoon',
@@ -35,7 +35,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, transform this portrait into a vibrant anime illustration, cel-shaded, flat colors, playful, bold outlines. Friendly pose',
     aspectRatio: '1:1',
-    captionTemplate: '🎬 Cartoon mode activated!',
+    captionTemplate: '🎬 ¡Modo anime activado!',
   },
   linkedin: {
     key: 'linkedin',
@@ -43,7 +43,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, create a polished, professional LinkedIn-style headshot with even soft studio lighting, a clean neutral gradient background (soft gray or blue), and realistic natural color grading. Keep the person\'s identity and features completely intact. Ensure professional appearance with smooth skin retouching, confident expression, and business-appropriate presentation. The lighting should be flattering with soft shadows.',
     aspectRatio: '1:1',
-    captionTemplate: '💼 Your professional photo is ready.',
+    captionTemplate: '💼 Tu foto profesional está lista.',
   },
   lego: {
     key: 'lego',
@@ -51,7 +51,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, transform this person into a LEGO-inspired character. The image should capture the distinctive blocky, modular aesthetic of LEGO, with elements that suggest plastic construction and interlocking bricks. Incorporate smooth, stylized surfaces and a sense of simplified, toy-like realism. Maintain the subjects key features in a recognizable yet distinctly LEGO-fied manner. The overall feel should be playful and vibrant, as if the character has been built from LEGO pieces, with bright, even lighting.',
     aspectRatio: '1:1',
-    captionTemplate: '🧱 Your LEGO version has arrived!',
+    captionTemplate: '🧱 ¡Llegó tu versión LEGO!',
   },
   cinematic: {
     key: 'cinematic',
@@ -59,7 +59,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Super realistic studio portrait. Use the person in the uploaded image. Do not change or alter the face, bone structure, gender, age, skin tone, hairstyle, or identity. Keep the same hair length and style exactly as in the uploaded photo. Pose: Head slightly tilted downward, eyes looking directly into the camera, creating a strong, mysterious expression.Clothing: A black high-neck sweater. One hand casually touching or lightly adjusting the collar (not covering the mouth). The face remains mostly visible, only a subtle gesture with the hand near the collar.Lighting & Background: Warm, soft studio lighting with a gentle shadow on one side of the face. Dark red background, plain, uniform, no patterns. Slight background blur, delicate film grain, and soft vignette on the edges.Framing: Chest-up portrait, subject centered in the frame.Rendering Style: Photorealistic, high resolution, natural realistic skin texture, no beautification, preserve real facial details and identity.',
           aspectRatio: '1:1',
-    captionTemplate: '🎬 Cinematic Black & White.',
+    captionTemplate: '🎬 ¡Estilo cinematográfico listo!',
   },
   magazine: {
     key: 'magazine',
@@ -67,7 +67,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, transform this picture into a A cinematic close-up editorial portrait wearing sleek black blazer, and black turtleneck, very low angle chin tilted upward, direct gaze with subtle smirk, seamless vivid orange studio background, 85mm lens, f/4, ISO 100, shutter 1/200s, cinematic dual-tone lighting with warm orange glow and cool blue rim highlights',
     aspectRatio: '1:1',
-    captionTemplate: '📰 Magazine cover, editorial style.',
+    captionTemplate: '📰 Portada de revista, estilo editorial.',
   },
   '3d': {
     key: '3d',
@@ -75,7 +75,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, transform this portrait into a 3D animated character portrait. The style should be reminiscent of modern Pixar or Dreamworks animation – with large, expressive eyes, smooth skin texture, slightly exaggerated but friendly facial features, and a vibrant, clean aesthetic. The lighting should be soft and inviting, similar to professional animation studio renders. Focus on a warm and approachable tone. High detail, vivid colors, cinematic animation still. Full body shot, looking directly at the viewer.',
     aspectRatio: '1:1',
-    captionTemplate: '🎮 Your 3D version is ready!',
+    captionTemplate: '🎮 ¡Tu versión 3D está lista!',
   },
   beauty: {
     key: 'beauty',
@@ -83,7 +83,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, create an analytical beauty assessment overlay of the existing image. Annotate the photo with futuristic console-style HUD elements including: scan lines, data readouts, and pointer arrows highlighting facial features. Add loading bars rating different categories (symmetry, jawline, eyes, skin, hair, overall harmony) with percentage scores. Include an overall attractiveness rating prominently displayed. Use a tech/cyberpunk aesthetic with neon green or cyan text on a slightly darkened version of the original photo. Make it look like a sci-fi facial analysis system.',
     aspectRatio: '1:1',
-    captionTemplate: '📊 Beauty analysis completed.',
+    captionTemplate: '📊 Análisis de belleza completado.',
   },
   professional: {
     key: 'professional',
@@ -91,7 +91,7 @@ export const STYLE_PRESETS: Record<StyleKey, StylePreset> = {
     prompt:
       'Using the provided image, create an ultra-realistic 4K editorial portrait. Capture the subject in a relaxed yet confident pose against a textured wall, bathed in soft golden hour light that casts long, warm, contrasting shadows. The aesthetic should be cinematic, vintage, and editorial with warm color tones, subtle film grain, and timeless elegance. Apply professional skin retouching while maintaining natural texture. The lighting should evoke sunset warmth with a sophisticated, magazine-quality finish.',
     aspectRatio: '1:1',
-    captionTemplate: '📸 Professional shoot ready.',
+    captionTemplate: '📸 Tu retrato profesional está listo.',
   },
 };
 
