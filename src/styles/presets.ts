@@ -1,4 +1,4 @@
-export const DEFAULT_IMAGEN_MODEL = 'gemini-3.1-flash-lite-image';
+export const DEFAULT_IMAGEN_MODEL = 'gemini-3.1-flash-image';
 
 export type StyleKey =
   | 'artistic'
